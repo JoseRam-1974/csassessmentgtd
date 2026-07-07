@@ -5,6 +5,7 @@ exports.handler = async (event) => {
 
   const origin = event.headers.origin || "";
   const allowed = [
+    "https://csassessmentgtd.netlify.app",
     "https://csdiagnosticogtd.netlify.app",
     "https://assessment.gtd.cl"
   ];
