@@ -431,7 +431,7 @@ function isAnswered(i) {
 
 function getRecs(a) {
   const narr = {}, projs = [];
-  const addProj = (proj, priority) => projs.push({text: proj, priority: priority});
+  const addProj = (proj, priority, qid) => projs.push({text: proj, priority: priority, qid: qid});
   const add = (qid, txt) => { narr[qid] = txt; };
 
   // Q2 — Acceso Remoto
@@ -654,8 +654,8 @@ function getRecs(a) {
         `La gobernanza está <strong>parcialmente implementada</strong>. Se recomienda completar el RAT y formalizar el rol de responsable para alcanzar pleno cumplimiento antes de diciembre de 2026.`
       ];
       add(17, textos17[a[17]]);
-      if (a[17] <= 1) addProj("Implementar Gobernanza de Protección de Datos — Ley 21.719", 1);
-      else addProj("Completar Registro de Actividades de Tratamiento (RAT)", 2);
+      if (a[17] <= 1) addProj("Implementar Gobernanza de Protección de Datos — Ley 21.719", 1, 17);
+      else addProj("Completar Registro de Actividades de Tratamiento (RAT)", 2, 17);
     } else {
       add(17, `La organización cuenta con un <strong>DPO o responsable formal y un Registro de Actividades de Tratamiento completo y actualizado</strong>. Excelente nivel de gobernanza en protección de datos, alineado con los requisitos de la Ley 21.719.`);
     }
@@ -670,8 +670,8 @@ function getRecs(a) {
         `Existe un proceso <strong>parcial para solicitudes de titulares pero sin protocolo de brechas</strong>. La notificación en 72 horas es uno de los requisitos más críticos de la Ley 21.719. Recomendamos completar este protocolo con urgencia.`
       ];
       add(18, textos18[a[18]]);
-      if (a[18] <= 1) addProj("Definir Procedimientos de Derechos de Titulares y Notificación de Brechas", 1);
-      else addProj("Implementar Protocolo de Notificación de Brechas (72 horas)", 2);
+      if (a[18] <= 1) addProj("Definir Procedimientos de Derechos de Titulares y Notificación de Brechas", 1, 18);
+      else addProj("Implementar Protocolo de Notificación de Brechas (72 horas)", 2, 18);
     } else {
       add(18, `La organización cuenta con <strong>procesos documentados para responder solicitudes de titulares y notificar brechas dentro de 72 horas</strong>. Cumplimiento sólido con los requisitos de la Ley 21.719.`);
     }
@@ -686,8 +686,8 @@ function getRecs(a) {
         `Los controles son <strong>parciales</strong>. Se recomienda completar la implementación técnica (cifrado, acceso por roles) y revisar todos los contratos con proveedores que procesan datos personales.`
       ];
       add(19, textos19[a[19]]);
-      if (a[19] <= 1) addProj("Implementar Controles Técnicos y Contractuales — Protección de Datos", 1);
-      else addProj("Completar Acuerdos de Tratamiento de Datos (DPA) con Proveedores", 2);
+      if (a[19] <= 1) addProj("Implementar Controles Técnicos y Contractuales — Protección de Datos", 1, 19);
+      else addProj("Completar Acuerdos de Tratamiento de Datos (DPA) con Proveedores", 2, 19);
     } else {
       add(19, `Los datos están <strong>cifrados, el acceso es por roles y todos los contratos con proveedores incluyen cláusulas de protección de datos</strong>. Nivel de controles técnicos y contractuales alineado con la Ley 21.719.`);
     }
@@ -702,8 +702,8 @@ function getRecs(a) {
         `La política existe pero su <strong>aplicación es parcial</strong>. Se recomienda fortalecer los mecanismos de comunicación y cumplimiento para asegurar que todos los usuarios la conozcan y apliquen.`
       ];
       add(20, textos20[a[20]]);
-      if (a[20] <= 1) addProj("Definir e Implementar Política Corporativa de Uso de IA Generativa", 1);
-      else addProj("Reforzar Comunicación y Cumplimiento de Política de IA", 2);
+      if (a[20] <= 1) addProj("Definir e Implementar Política Corporativa de Uso de IA Generativa", 1, 20);
+      else addProj("Reforzar Comunicación y Cumplimiento de Política de IA", 2, 20);
     } else {
       add(20, `La organización cuenta con una <strong>política formal de uso de IA, comunicada a todos los usuarios y con mecanismos de cumplimiento</strong>. Govern­anza de IA madura y alineada con las mejores prácticas de seguridad.`);
     }
@@ -718,8 +718,8 @@ function getRecs(a) {
         `El monitoreo es <strong>parcial y no cubre todas las plataformas</strong>. Las brechas de cobertura representan vectores de riesgo activos. Se recomienda implementar una solución que cubra todas las herramientas de IA generativa utilizadas en la organización.`
       ];
       add(21, textos21[a[21]]);
-      if (a[21] <= 1) addProj("Implementar Control de Seguridad en Tiempo Real para IA Generativa", 1);
-      else addProj("Ampliar Cobertura de Monitoreo a Todas las Plataformas de IA", 2);
+      if (a[21] <= 1) addProj("Implementar Control de Seguridad en Tiempo Real para IA Generativa", 1, 21);
+      else addProj("Ampliar Cobertura de Monitoreo a Todas las Plataformas de IA", 2, 21);
     } else {
       add(21, `La organización cuenta con una <strong>solución que inspecciona en tiempo real los prompts de IA generativa</strong>, previniendo fuga de información confidencial en todas las plataformas. Control de seguridad IA de nivel avanzado.`);
     }
@@ -855,12 +855,12 @@ function renderReport(el) {
   const SECS=[{qid:2,title:"Acceso Remoto"},{qid:3,title:"Protección de Endpoints (EDR/XDR)"},{qid:4,title:"Cumplimiento Legal — Ley Marco de Ciberseguridad"},{qid:5,title:"Continuidad Operativa y Respaldos de Datos Críticos"},{qid:6,title:"Autenticación Segura (MFA)"},{qid:7,title:"Plan de Cultura de Ciberseguridad"},{qid:8,title:"Phishing y Concientización"},{qid:9,title:"Seguridad en Firewall Perimetral"},{qid:10,title:"Conectividad SD-WAN"},{qid:11,title:"Scaneo de Vulnerabilidades"},{qid:12,title:"Gestión y Mitigación de Vulnerabilidades"},{qid:13,title:"Controles Base de Ciberseguridad en la Nube"},{qid:14,title:"Monitoreo 24/7 de Alertas"},{qid:15,title:"Monitoreo Deep Web / Dark Web — Marca"},{qid:16,title:"Presupuesto de Ciberseguridad"},{qid:17,title:"Ley 21.719 — Gobernanza y Trazabilidad"},{qid:18,title:"Ley 21.719 — Derechos de Titulares y Brechas"},{qid:19,title:"Ley 21.719 — Controles Técnicos y Terceros"},{qid:20,title:"Seguridad IA — Política de Uso"},{qid:21,title:"Seguridad IA — Control en Tiempo Real"}];
   const WMAP={3:"EDR",4:"Ley",6:"MFA",7:"Capacitación",8:"Phishing",9:"Firewall",10:"SD-WAN",11:"Scaneo",12:"Patch",13:"Nube",14:"Monitoreo",15:"Deep",16:"Presupuesto",17:"Gobernanza de Protección",18:"Derechos de Titulares",19:"Contractuales",20:"Política Corporativa",21:"Tiempo Real para IA"};
   let secsHtml="";
-  SECS.forEach(s=>{const txt=narr[s.qid];if(!txt)return;const isW=projs.some(p=>WMAP[s.qid]&&p.toLowerCase().includes(WMAP[s.qid].toLowerCase()));secsHtml+=`<div class="area-block"><div class="area-heading">${s.title}</div><div class="rec-box ${isW?"rec-warn":"rec-ok"}">${txt}</div></div>`;});
+  SECS.forEach(s=>{const txt=narr[s.qid];if(!txt)return;const isW=projs.some(p=>p.qid===s.qid);secsHtml+=`<div class="area-block"><div class="area-heading">${s.title}</div><div class="rec-box ${isW?"rec-warn":"rec-ok"}">${txt}</div></div>`;});
   const projsHtml=projs.length>0?projs.map((p,i)=>`<div class="proj-item"><span class="proj-num">${String(i+1).padStart(2,"0")}</span><span>${p}</span></div>`).join(""):`<div class="proj-item"><span class="proj-num" style="background:var(--success)">✓</span><span>La organización muestra una postura de seguridad sólida. Se recomienda mantener auditorías periódicas y mejora continua.</span></div>`;
   const WMAP2={3:"EDR",4:"Ley",6:"MFA",7:"Capacitación",8:"Phishing",9:"Firewall",10:"SD-WAN",11:"Scaneo",12:"Patch",13:"Nube",14:"Monitoreo",15:"Deep",16:"Presupuesto",17:"Gobernanza de Protección",18:"Derechos de Titulares",19:"Contractuales",20:"Política Corporativa",21:"Tiempo Real para IA"};
   const solidAreas2=SECS.filter(s=>{
     if(!narr[s.qid]) return false;
-    return !projs.some(p=>WMAP2[s.qid]&&p.toLowerCase().includes(WMAP2[s.qid].toLowerCase()));
+    return !projs.some(p=>p.qid===s.qid);
   });
   const solid=solidAreas2.length;
   el.innerHTML=`
@@ -946,7 +946,7 @@ function renderReport(el) {
       17:"Ley 21.719",18:"Derechos",19:"Contratos",20:"Política IA",21:"Control IA"};
     const solidAreas = SECS.filter(s => {
       if (!narr[s.qid]) return false;
-      return !projs.some(p => WMAP[s.qid] && p.toLowerCase().includes(WMAP[s.qid].toLowerCase()));
+      return !projs.some(p => p.qid === s.qid);
     }).map(s => s.title);
 
     const solidEl = document.getElementById("solid-areas-list");
