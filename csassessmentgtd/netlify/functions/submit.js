@@ -1,4 +1,22 @@
-const { getStore } = require("@netlify/blobs");
+const crypto = require("crypto");
+
+function verifyToken(token, secret) {
+  const parts = token.split(".");
+  if (parts.length !== 3) return false;
+
+  const [timestamp, random, signature] = parts;
+  const data = `${timestamp}.${random}`;
+  const expected = crypto.createHmac("sha256", secret).update(data).digest("hex");
+
+  // Verificar firma
+  if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) return false;
+
+  // Verificar expiración (15 minutos)
+  const age = Date.now() - parseInt(timestamp);
+  if (age > 15 * 60 * 1000) return false;
+
+  return true;
+}
 
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
@@ -14,39 +32,20 @@ exports.handler = async (event) => {
 
   // Validar token CSRF
   const token = body.csrfToken;
-  if (!token) {
-    return { statusCode: 403, body: JSON.stringify({ error: "Token requerido" }) };
+  const secret = process.env.CSRF_SECRET;
+
+  if (!token || !secret || !verifyToken(token, secret)) {
+    return { statusCode: 403, body: JSON.stringify({ error: "Token inválido o expirado" }) };
   }
 
-  try {
-    const store = getStore("csrf-tokens");
-    const entry = await store.get(token);
-
-    if (!entry) {
-      return { statusCode: 403, body: JSON.stringify({ error: "Token inválido" }) };
-    }
-
-    const { expires } = JSON.parse(entry);
-    if (Date.now() > expires) {
-      await store.delete(token);
-      return { statusCode: 403, body: JSON.stringify({ error: "Token expirado" }) };
-    }
-
-    // Token válido — eliminar para que no se reutilice
-    await store.delete(token);
-
-  } catch (err) {
-    return { statusCode: 500, body: JSON.stringify({ error: "Error validando token" }) };
-  }
+  // Remover token del payload
+  delete body.csrfToken;
 
   // Enviar al Apps Script
   const SHEETS_URL = process.env.APPS_SCRIPT_URL;
   if (!SHEETS_URL) {
     return { statusCode: 500, body: JSON.stringify({ error: "Missing configuration" }) };
   }
-
-  // Remover el token del payload antes de enviar al Sheet
-  delete body.csrfToken;
 
   try {
     const response = await fetch(SHEETS_URL, {
