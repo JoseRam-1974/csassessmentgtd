@@ -394,7 +394,12 @@ const Q = [
   { id:13, text:"¿Cumple con controles base de Ciberseguridad en la nube?", type:"radio", opts:["Sí","No"] },
   { id:14, text:"¿Realiza monitoreo 24/7 de Alertas de Ciberseguridad?", type:"radio", opts:["Sí","No"] },
   { id:15, text:"¿Realiza monitoreo de inteligencia en la Deep Web y Dark Web sobre su marca?", type:"radio", opts:["Sí","No"] },
-  { id:16, text:"¿La Organización cuenta con un presupuesto asignado para invertir en Soluciones, Estructura, Herramientas o un Plan de Proyectos de Ciberseguridad?", type:"radio", opts:["No","Sí — Menor a USD 100,000 anual","Sí — Entre USD 100,001 y USD 300,000","Sí — Entre USD 300,001 y USD 500,000","Sí — Mayor a USD 500,000"] }
+  { id:16, text:"¿La Organización cuenta con un presupuesto asignado para invertir en Soluciones, Estructura, Herramientas o un Plan de Proyectos de Ciberseguridad?", type:"radio", opts:["No","Sí — Menor a USD 100,000 anual","Sí — Entre USD 100,001 y USD 300,000","Sí — Entre USD 300,001 y USD 500,000","Sí — Mayor a USD 500,000"] },
+  { id:17, text:"¿Su empresa cuenta con un responsable designado para la protección de datos personales y un registro documentado de qué datos se tratan, con qué fin y dónde se almacenan?", type:"radio", opts:["No existe un responsable designado ni registro de datos personales","Hay un responsable informal pero sin registro documentado de actividades de tratamiento","Existe un responsable designado y un registro parcial de datos tratados","Contamos con un DPO o responsable formal y un Registro de Actividades de Tratamiento completo y actualizado"] },
+  { id:18, text:"¿Existe un proceso definido para responder solicitudes de titulares (acceso, rectificación, eliminación) y un procedimiento para notificar brechas de datos dentro de 72 horas?", type:"radio", opts:["No existe proceso definido para ninguno de estos casos","Hay procedimientos informales pero sin plazos ni responsables definidos","Existe un proceso parcial para atender solicitudes, pero sin protocolo formal de notificación de brechas","Contamos con procesos documentados para responder solicitudes de titulares y notificar brechas dentro de 72 horas"] },
+  { id:19, text:"¿Los datos personales están protegidos con controles técnicos (cifrado, acceso por roles) y los contratos con proveedores incluyen cláusulas de protección de datos?", type:"radio", opts:["No hay controles técnicos ni cláusulas de protección en contratos con proveedores","Existen algunos controles técnicos básicos pero los contratos con terceros no contemplan protección de datos","Se aplican controles técnicos parciales y algunos contratos incluyen cláusulas de protección","Los datos están cifrados, el acceso es por roles y todos los contratos con proveedores incluyen cláusulas de protección de datos"] },
+  { id:20, text:"¿Ha definido una política de uso de IA que oriente el buen uso de estos servicios y no exponga la seguridad de la información de la compañía?", type:"radio", opts:["No existe ninguna política de uso de IA en la organización","Hay lineamientos informales pero no están documentados ni comunicados formalmente","Existe una política documentada pero su aplicación y comunicación es parcial","Contamos con una política formal de uso de IA, comunicada a todos los usuarios y con mecanismos de cumplimiento"] },
+  { id:21, text:"¿Ha implementado un control de seguridad que inspeccione en tiempo real la interacción de los usuarios en los diferentes prompts de IA generativa para evitar la fuga de archivos e información confidencial y propietaria?", type:"radio", opts:["No existe ningún control que supervise las interacciones con herramientas de IA generativa","Se aplican restricciones básicas de acceso pero sin inspección del contenido de los prompts","Existe monitoreo parcial de algunas herramientas de IA pero no cubre todas las plataformas utilizadas","Contamos con una solución que inspecciona en tiempo real los prompts de IA generativa, previniendo fuga de información confidencial en todas las plataformas"] }
 ];
 
 const INTROS = {
@@ -640,6 +645,66 @@ function getRecs(a) {
     if (a[16] === 0) addProj("Definir Presupuesto de Ciberseguridad y Plan de Proyectos", 2);
   }
 
+  // Q17 — Ley 21.719 Gobernanza
+  if (a[17] !== undefined && a[17] < 3) {
+    const textos17 = [
+      `La organización <strong>no cuenta con un responsable designado ni un registro de actividades de tratamiento</strong>. Con la entrada en vigencia de la Ley 21.719 en diciembre de 2026, esto representa un riesgo regulatorio inmediato. El primer paso es designar un responsable formal y levantar un inventario de datos personales tratados.`,
+      `Existe un responsable informal pero <strong>sin documentación formal</strong>. La Ley 21.719 exige trazabilidad y gobernanza documentada. Recomendamos formalizar el rol y construir el Registro de Actividades de Tratamiento (RAT).`,
+      `La gobernanza está <strong>parcialmente implementada</strong>. Se recomienda completar el RAT y formalizar el rol de responsable para alcanzar pleno cumplimiento antes de diciembre de 2026.`
+    ];
+    add(17, textos17[a[17]]);
+    if (a[17] <= 1) addProj("Implementar Gobernanza de Protección de Datos — Ley 21.719", 1);
+    else addProj("Completar Registro de Actividades de Tratamiento (RAT)", 2);
+  }
+
+  // Q18 — Ley 21.719 Derechos y Brechas
+  if (a[18] !== undefined && a[18] < 3) {
+    const textos18 = [
+      `<strong>No existen procesos para responder solicitudes de titulares ni para notificar brechas</strong>. La Ley 21.719 establece plazos específicos y sanciones por incumplimiento. Es urgente definir estos procedimientos antes de diciembre de 2026.`,
+      `Los procedimientos son <strong>informales y sin plazos definidos</strong>. La normativa exige respuestas dentro de plazos establecidos y notificación de brechas en 72 horas. Se recomienda formalizar y documentar estos procesos.`,
+      `Existe un proceso <strong>parcial para solicitudes de titulares pero sin protocolo de brechas</strong>. La notificación en 72 horas es uno de los requisitos más críticos de la Ley 21.719. Recomendamos completar este protocolo con urgencia.`
+    ];
+    add(18, textos18[a[18]]);
+    if (a[18] <= 1) addProj("Definir Procedimientos de Derechos de Titulares y Notificación de Brechas", 1);
+    else addProj("Implementar Protocolo de Notificación de Brechas (72 horas)", 2);
+  }
+
+  // Q19 — Ley 21.719 Controles Técnicos
+  if (a[19] !== undefined && a[19] < 3) {
+    const textos19 = [
+      `<strong>No existen controles técnicos ni cláusulas contractuales</strong> de protección de datos con proveedores. Esto expone a la organización a riesgos legales y de seguridad significativos bajo la Ley 21.719.`,
+      `Hay controles técnicos básicos pero <strong>los contratos con terceros no incluyen protección de datos</strong>. Los proveedores que procesan datos personales deben firmar acuerdos de tratamiento (DPA) para cumplir con la normativa.`,
+      `Los controles son <strong>parciales</strong>. Se recomienda completar la implementación técnica (cifrado, acceso por roles) y revisar todos los contratos con proveedores que procesan datos personales.`
+    ];
+    add(19, textos19[a[19]]);
+    if (a[19] <= 1) addProj("Implementar Controles Técnicos y Contractuales — Protección de Datos", 1);
+    else addProj("Completar Acuerdos de Tratamiento de Datos (DPA) con Proveedores", 2);
+  }
+
+  // Q20 — Política de uso de IA
+  if (a[20] !== undefined && a[20] < 3) {
+    const textos20 = [
+      `La organización <strong>no cuenta con ninguna política de uso de IA</strong>. El uso no regulado de herramientas de IA generativa representa un riesgo real de fuga de información confidencial y propiedad intelectual. Es urgente definir lineamientos formales.`,
+      `Existen lineamientos informales pero <strong>no documentados ni comunicados formalmente</strong>. Sin una política oficial, los colaboradores toman decisiones individuales que pueden comprometer la seguridad de la información.`,
+      `La política existe pero su <strong>aplicación es parcial</strong>. Se recomienda fortalecer los mecanismos de comunicación y cumplimiento para asegurar que todos los usuarios la conozcan y apliquen.`
+    ];
+    add(20, textos20[a[20]]);
+    if (a[20] <= 1) addProj("Definir e Implementar Política Corporativa de Uso de IA Generativa", 1);
+    else addProj("Reforzar Comunicación y Cumplimiento de Política de IA", 2);
+  }
+
+  // Q21 — Control de seguridad IA en tiempo real
+  if (a[21] !== undefined && a[21] < 3) {
+    const textos21 = [
+      `<strong>No existe ningún control de seguridad</strong> que supervise las interacciones con herramientas de IA generativa. Los colaboradores pueden compartir información confidencial, código propietario o datos de clientes sin ningún mecanismo de detección o bloqueo.`,
+      `Se aplican <strong>restricciones básicas de acceso</strong> pero sin inspección del contenido. Bloquear el acceso a herramientas de IA no es suficiente — los colaboradores buscan alternativas. La inspección de contenido en tiempo real es la protección efectiva.`,
+      `El monitoreo es <strong>parcial y no cubre todas las plataformas</strong>. Las brechas de cobertura representan vectores de riesgo activos. Se recomienda implementar una solución que cubra todas las herramientas de IA generativa utilizadas en la organización.`
+    ];
+    add(21, textos21[a[21]]);
+    if (a[21] <= 1) addProj("Implementar Control de Seguridad en Tiempo Real para IA Generativa", 1);
+    else addProj("Ampliar Cobertura de Monitoreo a Todas las Plataformas de IA", 2);
+  }
+
   // Sort projects by priority (1=critical, 2=high, 3=medium, 4=low)
   projs.sort((a, b) => a.priority - b.priority);
   const projTexts = projs.map(p => p.text);
@@ -668,13 +733,27 @@ function getMaturity(answers, projs) {
   if (answers[5] && answers[5].includes(0) && answers[5].includes(1) && answers[5].includes(2)) score += 1; // Respaldos completos
   if (answers[15] === 0) score += 1; // CiberInteligencia VIP
 
+  // Ley 21.719 — Protección de Datos (peso medio)
+  if (answers[17] === 3) score += 2; // Gobernanza completa
+  else if (answers[17] === 2) score += 1;
+  if (answers[18] === 3) score += 2; // Derechos titulares + brechas
+  else if (answers[18] === 2) score += 1;
+  if (answers[19] === 3) score += 2; // Controles técnicos + contratos
+  else if (answers[19] === 2) score += 1;
+
+  // Seguridad IA (peso medio)
+  if (answers[20] === 3) score += 2; // Política IA formal
+  else if (answers[20] === 2) score += 1;
+  if (answers[21] === 3) score += 2; // Control tiempo real
+  else if (answers[21] === 2) score += 1;
+
   // Penalización por cantidad de proyectos críticos (prioridad 1)
   const criticalProjs = projs.filter ? 0 : 0; // projs ya son strings aquí
   const projPenalty = Math.min(projs.length * 0.5, 8);
   score = Math.max(0, score - projPenalty);
 
   // Max teórico ~25 puntos
-  const pct = Math.round((score / 25) * 100);
+  const pct = Math.round((score / 35) * 100);
 
   if (pct >= 70) return {
     nivel: "Avanzado",
@@ -753,7 +832,7 @@ function renderReport(el) {
   const {narr,projs}=getRecs(answers);
   document.getElementById("topbarStatus").textContent="Diagnóstico completado";
   const answered=Q.filter((_,i)=>isAnswered(i)).length;
-  const SECS=[{qid:2,title:"Acceso Remoto"},{qid:3,title:"Protección de Endpoints (EDR/XDR)"},{qid:4,title:"Cumplimiento Legal — Ley Marco de Ciberseguridad"},{qid:5,title:"Continuidad Operativa y Respaldos de Datos Críticos"},{qid:6,title:"Autenticación Segura (MFA)"},{qid:7,title:"Plan de Cultura de Ciberseguridad"},{qid:8,title:"Phishing y Concientización"},{qid:9,title:"Seguridad en Firewall Perimetral"},{qid:10,title:"Conectividad SD-WAN"},{qid:11,title:"Scaneo de Vulnerabilidades"},{qid:12,title:"Gestión y Mitigación de Vulnerabilidades"},{qid:13,title:"Controles Base de Ciberseguridad en la Nube"},{qid:14,title:"Monitoreo 24/7 de Alertas"},{qid:15,title:"Monitoreo Deep Web / Dark Web — Marca"},{qid:16,title:"Presupuesto de Ciberseguridad"}];
+  const SECS=[{qid:2,title:"Acceso Remoto"},{qid:3,title:"Protección de Endpoints (EDR/XDR)"},{qid:4,title:"Cumplimiento Legal — Ley Marco de Ciberseguridad"},{qid:5,title:"Continuidad Operativa y Respaldos de Datos Críticos"},{qid:6,title:"Autenticación Segura (MFA)"},{qid:7,title:"Plan de Cultura de Ciberseguridad"},{qid:8,title:"Phishing y Concientización"},{qid:9,title:"Seguridad en Firewall Perimetral"},{qid:10,title:"Conectividad SD-WAN"},{qid:11,title:"Scaneo de Vulnerabilidades"},{qid:12,title:"Gestión y Mitigación de Vulnerabilidades"},{qid:13,title:"Controles Base de Ciberseguridad en la Nube"},{qid:14,title:"Monitoreo 24/7 de Alertas"},{qid:15,title:"Monitoreo Deep Web / Dark Web — Marca"},{qid:16,title:"Presupuesto de Ciberseguridad"},{qid:17,title:"Ley 21.719 — Gobernanza y Trazabilidad"},{qid:18,title:"Ley 21.719 — Derechos de Titulares y Brechas"},{qid:19,title:"Ley 21.719 — Controles Técnicos y Terceros"},{qid:20,title:"Seguridad IA — Política de Uso"},{qid:21,title:"Seguridad IA — Control en Tiempo Real"}];
   const WMAP={3:"EDR",4:"Ley",6:"MFA",7:"Capacitación",8:"Phishing",9:"Firewall",10:"SD-WAN",11:"Scaneo",12:"Patch",13:"Nube",14:"Monitoreo",15:"Deep",16:"Presupuesto"};
   let secsHtml="";
   SECS.forEach(s=>{const txt=narr[s.qid];if(!txt)return;const isW=projs.some(p=>WMAP[s.qid]&&p.toLowerCase().includes(WMAP[s.qid].toLowerCase()));secsHtml+=`<div class="area-block"><div class="area-heading">${s.title}</div><div class="rec-box ${isW?"rec-warn":"rec-ok"}">${txt}</div></div>`;});
@@ -838,10 +917,13 @@ function renderReport(el) {
       {qid:8,title:"Phishing"},{qid:9,title:"Firewall"},{qid:10,title:"SD-WAN"},
       {qid:11,title:"Scaneo de Vulnerabilidades"},{qid:12,title:"Gestión de Vulnerabilidades"},
       {qid:13,title:"Controles Base Nube"},{qid:14,title:"Monitoreo 24/7 Alertas"},
-      {qid:15,title:"Deep Web / Dark Web"},{qid:16,title:"Presupuesto"}
+      {qid:15,title:"Deep Web / Dark Web"},{qid:16,title:"Presupuesto"},
+      {qid:17,title:"Ley 21.719 — Gobernanza"},{qid:18,title:"Ley 21.719 — Derechos y Brechas"},
+      {qid:19,title:"Ley 21.719 — Controles"},{qid:20,title:"IA — Política de Uso"},{qid:21,title:"IA — Control Tiempo Real"}
     ];
     const WMAP = {3:"EDR",4:"Ley",6:"MFA",7:"Capacitación",8:"Phishing",9:"Firewall",16:"Presupuesto",
-      10:"SD-WAN",11:"Scaneo",12:"Patch",13:"Nube",14:"Monitoreo",15:"Deep"};
+      10:"SD-WAN",11:"Scaneo",12:"Patch",13:"Nube",14:"Monitoreo",15:"Deep",
+      17:"Ley 21.719",18:"Derechos",19:"Contratos",20:"Política IA",21:"Control IA"};
     const solidAreas = SECS.filter(s => {
       if (!narr[s.qid]) return false;
       return !projs.some(p => WMAP[s.qid] && p.toLowerCase().includes(WMAP[s.qid].toLowerCase()));
@@ -904,6 +986,11 @@ async function submitContact(){
     p14: getOptLabel(14, answers[14]),
     p15: getOptLabel(15, answers[15]),
     p16: getOptLabel(16, answers[16]),
+    p17: getOptLabel(17, answers[17]),
+    p18: getOptLabel(18, answers[18]),
+    p19: getOptLabel(19, answers[19]),
+    p20: getOptLabel(20, answers[20]),
+    p21: getOptLabel(21, answers[21]),
     proyectos: projs.join(" | "),
 
   };
