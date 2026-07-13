@@ -646,63 +646,83 @@ function getRecs(a) {
   }
 
   // Q17 — Ley 21.719 Gobernanza
-  if (a[17] !== undefined && a[17] < 3) {
-    const textos17 = [
-      `La organización <strong>no cuenta con un responsable designado ni un registro de actividades de tratamiento</strong>. Con la entrada en vigencia de la Ley 21.719 en diciembre de 2026, esto representa un riesgo regulatorio inmediato. El primer paso es designar un responsable formal y levantar un inventario de datos personales tratados.`,
-      `Existe un responsable informal pero <strong>sin documentación formal</strong>. La Ley 21.719 exige trazabilidad y gobernanza documentada. Recomendamos formalizar el rol y construir el Registro de Actividades de Tratamiento (RAT).`,
-      `La gobernanza está <strong>parcialmente implementada</strong>. Se recomienda completar el RAT y formalizar el rol de responsable para alcanzar pleno cumplimiento antes de diciembre de 2026.`
-    ];
-    add(17, textos17[a[17]]);
-    if (a[17] <= 1) addProj("Implementar Gobernanza de Protección de Datos — Ley 21.719", 1);
-    else addProj("Completar Registro de Actividades de Tratamiento (RAT)", 2);
+  if (a[17] !== undefined) {
+    if (a[17] < 3) {
+      const textos17 = [
+        `La organización <strong>no cuenta con un responsable designado ni un registro de actividades de tratamiento</strong>. Con la entrada en vigencia de la Ley 21.719 en diciembre de 2026, esto representa un riesgo regulatorio inmediato. El primer paso es designar un responsable formal y levantar un inventario de datos personales tratados.`,
+        `Existe un responsable informal pero <strong>sin documentación formal</strong>. La Ley 21.719 exige trazabilidad y gobernanza documentada. Recomendamos formalizar el rol y construir el Registro de Actividades de Tratamiento (RAT).`,
+        `La gobernanza está <strong>parcialmente implementada</strong>. Se recomienda completar el RAT y formalizar el rol de responsable para alcanzar pleno cumplimiento antes de diciembre de 2026.`
+      ];
+      add(17, textos17[a[17]]);
+      if (a[17] <= 1) addProj("Implementar Gobernanza de Protección de Datos — Ley 21.719", 1);
+      else addProj("Completar Registro de Actividades de Tratamiento (RAT)", 2);
+    } else {
+      add(17, `La organización cuenta con un <strong>DPO o responsable formal y un Registro de Actividades de Tratamiento completo y actualizado</strong>. Excelente nivel de gobernanza en protección de datos, alineado con los requisitos de la Ley 21.719.`);
+    }
   }
 
   // Q18 — Ley 21.719 Derechos y Brechas
-  if (a[18] !== undefined && a[18] < 3) {
-    const textos18 = [
-      `<strong>No existen procesos para responder solicitudes de titulares ni para notificar brechas</strong>. La Ley 21.719 establece plazos específicos y sanciones por incumplimiento. Es urgente definir estos procedimientos antes de diciembre de 2026.`,
-      `Los procedimientos son <strong>informales y sin plazos definidos</strong>. La normativa exige respuestas dentro de plazos establecidos y notificación de brechas en 72 horas. Se recomienda formalizar y documentar estos procesos.`,
-      `Existe un proceso <strong>parcial para solicitudes de titulares pero sin protocolo de brechas</strong>. La notificación en 72 horas es uno de los requisitos más críticos de la Ley 21.719. Recomendamos completar este protocolo con urgencia.`
-    ];
-    add(18, textos18[a[18]]);
-    if (a[18] <= 1) addProj("Definir Procedimientos de Derechos de Titulares y Notificación de Brechas", 1);
-    else addProj("Implementar Protocolo de Notificación de Brechas (72 horas)", 2);
+  if (a[18] !== undefined) {
+    if (a[18] < 3) {
+      const textos18 = [
+        `<strong>No existen procesos para responder solicitudes de titulares ni para notificar brechas</strong>. La Ley 21.719 establece plazos específicos y sanciones por incumplimiento. Es urgente definir estos procedimientos antes de diciembre de 2026.`,
+        `Los procedimientos son <strong>informales y sin plazos definidos</strong>. La normativa exige respuestas dentro de plazos establecidos y notificación de brechas en 72 horas. Se recomienda formalizar y documentar estos procesos.`,
+        `Existe un proceso <strong>parcial para solicitudes de titulares pero sin protocolo de brechas</strong>. La notificación en 72 horas es uno de los requisitos más críticos de la Ley 21.719. Recomendamos completar este protocolo con urgencia.`
+      ];
+      add(18, textos18[a[18]]);
+      if (a[18] <= 1) addProj("Definir Procedimientos de Derechos de Titulares y Notificación de Brechas", 1);
+      else addProj("Implementar Protocolo de Notificación de Brechas (72 horas)", 2);
+    } else {
+      add(18, `La organización cuenta con <strong>procesos documentados para responder solicitudes de titulares y notificar brechas dentro de 72 horas</strong>. Cumplimiento sólido con los requisitos de la Ley 21.719.`);
+    }
   }
 
   // Q19 — Ley 21.719 Controles Técnicos
-  if (a[19] !== undefined && a[19] < 3) {
-    const textos19 = [
-      `<strong>No existen controles técnicos ni cláusulas contractuales</strong> de protección de datos con proveedores. Esto expone a la organización a riesgos legales y de seguridad significativos bajo la Ley 21.719.`,
-      `Hay controles técnicos básicos pero <strong>los contratos con terceros no incluyen protección de datos</strong>. Los proveedores que procesan datos personales deben firmar acuerdos de tratamiento (DPA) para cumplir con la normativa.`,
-      `Los controles son <strong>parciales</strong>. Se recomienda completar la implementación técnica (cifrado, acceso por roles) y revisar todos los contratos con proveedores que procesan datos personales.`
-    ];
-    add(19, textos19[a[19]]);
-    if (a[19] <= 1) addProj("Implementar Controles Técnicos y Contractuales — Protección de Datos", 1);
-    else addProj("Completar Acuerdos de Tratamiento de Datos (DPA) con Proveedores", 2);
+  if (a[19] !== undefined) {
+    if (a[19] < 3) {
+      const textos19 = [
+        `<strong>No existen controles técnicos ni cláusulas contractuales</strong> de protección de datos con proveedores. Esto expone a la organización a riesgos legales y de seguridad significativos bajo la Ley 21.719.`,
+        `Hay controles técnicos básicos pero <strong>los contratos con terceros no incluyen protección de datos</strong>. Los proveedores que procesan datos personales deben firmar acuerdos de tratamiento (DPA) para cumplir con la normativa.`,
+        `Los controles son <strong>parciales</strong>. Se recomienda completar la implementación técnica (cifrado, acceso por roles) y revisar todos los contratos con proveedores que procesan datos personales.`
+      ];
+      add(19, textos19[a[19]]);
+      if (a[19] <= 1) addProj("Implementar Controles Técnicos y Contractuales — Protección de Datos", 1);
+      else addProj("Completar Acuerdos de Tratamiento de Datos (DPA) con Proveedores", 2);
+    } else {
+      add(19, `Los datos están <strong>cifrados, el acceso es por roles y todos los contratos con proveedores incluyen cláusulas de protección de datos</strong>. Nivel de controles técnicos y contractuales alineado con la Ley 21.719.`);
+    }
   }
 
   // Q20 — Política de uso de IA
-  if (a[20] !== undefined && a[20] < 3) {
-    const textos20 = [
-      `La organización <strong>no cuenta con ninguna política de uso de IA</strong>. El uso no regulado de herramientas de IA generativa representa un riesgo real de fuga de información confidencial y propiedad intelectual. Es urgente definir lineamientos formales.`,
-      `Existen lineamientos informales pero <strong>no documentados ni comunicados formalmente</strong>. Sin una política oficial, los colaboradores toman decisiones individuales que pueden comprometer la seguridad de la información.`,
-      `La política existe pero su <strong>aplicación es parcial</strong>. Se recomienda fortalecer los mecanismos de comunicación y cumplimiento para asegurar que todos los usuarios la conozcan y apliquen.`
-    ];
-    add(20, textos20[a[20]]);
-    if (a[20] <= 1) addProj("Definir e Implementar Política Corporativa de Uso de IA Generativa", 1);
-    else addProj("Reforzar Comunicación y Cumplimiento de Política de IA", 2);
+  if (a[20] !== undefined) {
+    if (a[20] < 3) {
+      const textos20 = [
+        `La organización <strong>no cuenta con ninguna política de uso de IA</strong>. El uso no regulado de herramientas de IA generativa representa un riesgo real de fuga de información confidencial y propiedad intelectual. Es urgente definir lineamientos formales.`,
+        `Existen lineamientos informales pero <strong>no documentados ni comunicados formalmente</strong>. Sin una política oficial, los colaboradores toman decisiones individuales que pueden comprometer la seguridad de la información.`,
+        `La política existe pero su <strong>aplicación es parcial</strong>. Se recomienda fortalecer los mecanismos de comunicación y cumplimiento para asegurar que todos los usuarios la conozcan y apliquen.`
+      ];
+      add(20, textos20[a[20]]);
+      if (a[20] <= 1) addProj("Definir e Implementar Política Corporativa de Uso de IA Generativa", 1);
+      else addProj("Reforzar Comunicación y Cumplimiento de Política de IA", 2);
+    } else {
+      add(20, `La organización cuenta con una <strong>política formal de uso de IA, comunicada a todos los usuarios y con mecanismos de cumplimiento</strong>. Govern­anza de IA madura y alineada con las mejores prácticas de seguridad.`);
+    }
   }
 
   // Q21 — Control de seguridad IA en tiempo real
-  if (a[21] !== undefined && a[21] < 3) {
-    const textos21 = [
-      `<strong>No existe ningún control de seguridad</strong> que supervise las interacciones con herramientas de IA generativa. Los colaboradores pueden compartir información confidencial, código propietario o datos de clientes sin ningún mecanismo de detección o bloqueo.`,
-      `Se aplican <strong>restricciones básicas de acceso</strong> pero sin inspección del contenido. Bloquear el acceso a herramientas de IA no es suficiente — los colaboradores buscan alternativas. La inspección de contenido en tiempo real es la protección efectiva.`,
-      `El monitoreo es <strong>parcial y no cubre todas las plataformas</strong>. Las brechas de cobertura representan vectores de riesgo activos. Se recomienda implementar una solución que cubra todas las herramientas de IA generativa utilizadas en la organización.`
-    ];
-    add(21, textos21[a[21]]);
-    if (a[21] <= 1) addProj("Implementar Control de Seguridad en Tiempo Real para IA Generativa", 1);
-    else addProj("Ampliar Cobertura de Monitoreo a Todas las Plataformas de IA", 2);
+  if (a[21] !== undefined) {
+    if (a[21] < 3) {
+      const textos21 = [
+        `<strong>No existe ningún control de seguridad</strong> que supervise las interacciones con herramientas de IA generativa. Los colaboradores pueden compartir información confidencial, código propietario o datos de clientes sin ningún mecanismo de detección o bloqueo.`,
+        `Se aplican <strong>restricciones básicas de acceso</strong> pero sin inspección del contenido. Bloquear el acceso a herramientas de IA no es suficiente — los colaboradores buscan alternativas. La inspección de contenido en tiempo real es la protección efectiva.`,
+        `El monitoreo es <strong>parcial y no cubre todas las plataformas</strong>. Las brechas de cobertura representan vectores de riesgo activos. Se recomienda implementar una solución que cubra todas las herramientas de IA generativa utilizadas en la organización.`
+      ];
+      add(21, textos21[a[21]]);
+      if (a[21] <= 1) addProj("Implementar Control de Seguridad en Tiempo Real para IA Generativa", 1);
+      else addProj("Ampliar Cobertura de Monitoreo a Todas las Plataformas de IA", 2);
+    } else {
+      add(21, `La organización cuenta con una <strong>solución que inspecciona en tiempo real los prompts de IA generativa</strong>, previniendo fuga de información confidencial en todas las plataformas. Control de seguridad IA de nivel avanzado.`);
+    }
   }
 
   // Sort projects by priority (1=critical, 2=high, 3=medium, 4=low)
