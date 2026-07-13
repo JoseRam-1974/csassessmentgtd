@@ -837,7 +837,7 @@ function renderReport(el) {
   let secsHtml="";
   SECS.forEach(s=>{const txt=narr[s.qid];if(!txt)return;const isW=projs.some(p=>WMAP[s.qid]&&p.toLowerCase().includes(WMAP[s.qid].toLowerCase()));secsHtml+=`<div class="area-block"><div class="area-heading">${s.title}</div><div class="rec-box ${isW?"rec-warn":"rec-ok"}">${txt}</div></div>`;});
   const projsHtml=projs.length>0?projs.map((p,i)=>`<div class="proj-item"><span class="proj-num">${String(i+1).padStart(2,"0")}</span><span>${p}</span></div>`).join(""):`<div class="proj-item"><span class="proj-num" style="background:var(--success)">✓</span><span>La organización muestra una postura de seguridad sólida. Se recomienda mantener auditorías periódicas y mejora continua.</span></div>`;
-  const WMAP2={3:"EDR",4:"Ley",6:"MFA",7:"Capacitación",8:"Phishing",9:"Firewall",10:"SD-WAN",11:"Scaneo",12:"Patch",13:"Nube",14:"Monitoreo",15:"Deep",16:"Presupuesto"};
+  const WMAP2={3:"EDR",4:"Ley",6:"MFA",7:"Capacitación",8:"Phishing",9:"Firewall",10:"SD-WAN",11:"Scaneo",12:"Patch",13:"Nube",14:"Monitoreo",15:"Deep",16:"Presupuesto",17:"Gobernanza",18:"Derechos",19:"Contratos",20:"Política IA",21:"Control IA"};
   const solidAreas2=SECS.filter(s=>{
     if(!narr[s.qid]) return false;
     return !projs.some(p=>WMAP2[s.qid]&&p.toLowerCase().includes(WMAP2[s.qid].toLowerCase()));
