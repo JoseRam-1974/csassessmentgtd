@@ -1,45 +1,66 @@
-exports.handler = async (event) => {
-  console.log("Method:", event.httpMethod);
-  console.log("Origin:", event.headers.origin);
+const { getStore } = require("@netlify/blobs");
 
+exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
 
-  const origin = event.headers.origin || "";
-  const allowed = [
-    "https://csassessmentgtd.netlify.app",
-    "https://csdiagnosticogtd.netlify.app",
-    "https://assessment.gtd.cl"
-  ];
-  if (!allowed.includes(origin)) {
-    console.log("Forbidden origin:", origin);
-    return { statusCode: 403, body: "Forbidden" };
+  let body;
+  try {
+    body = JSON.parse(event.body);
+  } catch {
+    return { statusCode: 400, body: "Invalid JSON" };
   }
 
+  // Validar token CSRF
+  const token = body.csrfToken;
+  if (!token) {
+    return { statusCode: 403, body: JSON.stringify({ error: "Token requerido" }) };
+  }
+
+  try {
+    const store = getStore("csrf-tokens");
+    const entry = await store.get(token);
+
+    if (!entry) {
+      return { statusCode: 403, body: JSON.stringify({ error: "Token inválido" }) };
+    }
+
+    const { expires } = JSON.parse(entry);
+    if (Date.now() > expires) {
+      await store.delete(token);
+      return { statusCode: 403, body: JSON.stringify({ error: "Token expirado" }) };
+    }
+
+    // Token válido — eliminar para que no se reutilice
+    await store.delete(token);
+
+  } catch (err) {
+    return { statusCode: 500, body: JSON.stringify({ error: "Error validando token" }) };
+  }
+
+  // Enviar al Apps Script
   const SHEETS_URL = process.env.APPS_SCRIPT_URL;
   if (!SHEETS_URL) {
-    console.log("Missing APPS_SCRIPT_URL");
-    return { statusCode: 500, body: "Missing configuration" };
+    return { statusCode: 500, body: JSON.stringify({ error: "Missing configuration" }) };
   }
 
-  console.log("Sending to Apps Script...");
+  // Remover el token del payload antes de enviar al Sheet
+  delete body.csrfToken;
+
   try {
     const response = await fetch(SHEETS_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: event.body
+      body: JSON.stringify(body)
     });
-    console.log("Apps Script response status:", response.status);
     const data = await response.json();
-    console.log("Apps Script response:", JSON.stringify(data));
     return {
       statusCode: 200,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
     };
   } catch (err) {
-    console.log("Error:", err.message);
     return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
   }
 };
