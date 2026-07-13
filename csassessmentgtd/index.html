@@ -774,6 +774,7 @@ function getMaturity(answers, projs) {
 
   // Max teórico ~25 puntos
   const pct = Math.round((score / 35) * 100);
+  console.log("Score:", score, "Pct:", pct, "Projs:", projs.length);
 
   if (pct >= 70) return {
     nivel: "Avanzado",
