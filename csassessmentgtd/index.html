@@ -342,8 +342,8 @@
   }
 }
 </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -870,7 +870,7 @@ function getOptLabel(qid, val) {
   return (val || []).map(i => q.opts[i]).filter(Boolean).join(", ");
 }
 
-function submitContact(){
+async function submitContact(){
   const btn = document.querySelector(".contact-card .btn-gtd");
   if (btn && btn.disabled) return; // prevent double submit
   if (btn) { btn.disabled = true; btn.textContent = "Enviando..."; }
@@ -910,18 +910,22 @@ function submitContact(){
 
   const SHEETS_URL="/.netlify/functions/submit";
 
-  fetch(SHEETS_URL,{
-    method:"POST",
-    mode:"no-cors",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify(payload)
-  }).then(()=>{
-    document.getElementById("contactSent").style.display="block";
-    document.querySelector(".contact-card .btn-gtd").style.display="none";
-  }).catch(()=>{
-    document.getElementById("contactSent").style.display="block";
-    document.querySelector(".contact-card .btn-gtd").style.display="none";
-  });
+  try {
+    const tokenRes = await fetch("/.netlify/functions/token");
+    const tokenData = await tokenRes.json();
+    payload.csrfToken = tokenData.token;
+
+    await fetch(SHEETS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+  } catch(e) {
+    console.warn("Error enviando formulario:", e);
+  }
+
+  document.getElementById("contactSent").style.display="block";
+  document.querySelector(".contact-card .btn-gtd").style.display="none";
 }
 </script>
 
