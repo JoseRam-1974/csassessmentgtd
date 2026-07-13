@@ -727,9 +727,11 @@ function getRecs(a) {
 
   // Sort projects by priority (1=critical, 2=high, 3=medium, 4=low)
   projs.sort((a, b) => a.priority - b.priority);
-  const projTexts = projs.map(p => p.text);
+  // Deduplicar preservando objetos completos
+  const seen = new Set();
+  const projsDedup = projs.filter(p => { if (seen.has(p.text)) return false; seen.add(p.text); return true; });
 
-  return { narr, projs: [...new Set(projTexts)] };
+  return { narr, projs: projsDedup };
 }
 
 
@@ -850,12 +852,12 @@ function renderReport(el) {
   const SECS=[{qid:2,title:"Acceso Remoto"},{qid:3,title:"Protección de Endpoints (EDR/XDR)"},{qid:4,title:"Cumplimiento Legal — Ley Marco de Ciberseguridad"},{qid:5,title:"Continuidad Operativa y Respaldos de Datos Críticos"},{qid:6,title:"Autenticación Segura (MFA)"},{qid:7,title:"Plan de Cultura de Ciberseguridad"},{qid:8,title:"Phishing y Concientización"},{qid:9,title:"Seguridad en Firewall Perimetral"},{qid:10,title:"Conectividad SD-WAN"},{qid:11,title:"Scaneo de Vulnerabilidades"},{qid:12,title:"Gestión y Mitigación de Vulnerabilidades"},{qid:13,title:"Controles Base de Ciberseguridad en la Nube"},{qid:14,title:"Monitoreo 24/7 de Alertas"},{qid:15,title:"Monitoreo Deep Web / Dark Web — Marca"},{qid:16,title:"Presupuesto de Ciberseguridad"},{qid:17,title:"Ley 21.719 — Gobernanza y Trazabilidad"},{qid:18,title:"Ley 21.719 — Derechos de Titulares y Brechas"},{qid:19,title:"Ley 21.719 — Controles Técnicos y Terceros"},{qid:20,title:"Seguridad IA — Política de Uso"},{qid:21,title:"Seguridad IA — Control en Tiempo Real"}];
   const WMAP={3:"EDR",4:"Ley",6:"MFA",7:"Capacitación",8:"Phishing",9:"Firewall",10:"SD-WAN",11:"Scaneo",12:"Patch",13:"Nube",14:"Monitoreo",15:"Deep",16:"Presupuesto",17:"Gobernanza de Protección",18:"Derechos de Titulares",19:"Contractuales",20:"Política Corporativa",21:"Tiempo Real para IA"};
   let secsHtml="";
-  SECS.forEach(s=>{const txt=narr[s.qid];if(!txt)return;const isW=projs.some(p=>p.qid===s.qid);secsHtml+=`<div class="area-block"><div class="area-heading">${s.title}</div><div class="rec-box ${isW?"rec-warn":"rec-ok"}">${txt}</div></div>`;});
-  const projsHtml=projs.length>0?projs.map((p,i)=>`<div class="proj-item"><span class="proj-num">${String(i+1).padStart(2,"0")}</span><span>${p}</span></div>`).join(""):`<div class="proj-item"><span class="proj-num" style="background:var(--success)">✓</span><span>La organización muestra una postura de seguridad sólida. Se recomienda mantener auditorías periódicas y mejora continua.</span></div>`;
+  SECS.forEach(s=>{const txt=narr[s.qid];if(!txt)return;const isW=projs.some(p=>p.qid!==undefined?p.qid===s.qid:(WMAP[s.qid]&&p.text&&p.text.toLowerCase().includes(WMAP[s.qid].toLowerCase())));secsHtml+=`<div class="area-block"><div class="area-heading">${s.title}</div><div class="rec-box ${isW?"rec-warn":"rec-ok"}">${txt}</div></div>`;});
+  const projsHtml=projs.length>0?projs.map((p,i)=>`<div class="proj-item"><span class="proj-num">${String(i+1).padStart(2,"0")}</span><span>${p.text||p}</span></div>`).join(""):`<div class="proj-item"><span class="proj-num" style="background:var(--success)">✓</span><span>La organización muestra una postura de seguridad sólida. Se recomienda mantener auditorías periódicas y mejora continua.</span></div>`;
   const WMAP2={3:"EDR",4:"Ley",6:"MFA",7:"Capacitación",8:"Phishing",9:"Firewall",10:"SD-WAN",11:"Scaneo",12:"Patch",13:"Nube",14:"Monitoreo",15:"Deep",16:"Presupuesto",17:"Gobernanza de Protección",18:"Derechos de Titulares",19:"Contractuales",20:"Política Corporativa",21:"Tiempo Real para IA"};
   const solidAreas2=SECS.filter(s=>{
     if(!narr[s.qid]) return false;
-    return !projs.some(p=>p.qid===s.qid);
+    return !projs.some(p=>p.qid!==undefined?p.qid===s.qid:(WMAP2[s.qid]&&p.text&&p.text.toLowerCase().includes(WMAP2[s.qid].toLowerCase())));
   });
   const solid=solidAreas2.length;
   el.innerHTML=`
@@ -941,7 +943,7 @@ function renderReport(el) {
       17:"Ley 21.719",18:"Derechos",19:"Contratos",20:"Política IA",21:"Control IA"};
     const solidAreas = SECS.filter(s => {
       if (!narr[s.qid]) return false;
-      return !projs.some(p => p.qid === s.qid);
+      return !projs.some(p => p.qid!==undefined?p.qid===s.qid:(WMAP[s.qid]&&p.text&&p.text.toLowerCase().includes(WMAP[s.qid].toLowerCase())));
     }).map(s => s.title);
 
     const solidEl = document.getElementById("solid-areas-list");
@@ -1006,7 +1008,7 @@ async function submitContact(){
     p19: getOptLabel(19, answers[19]),
     p20: getOptLabel(20, answers[20]),
     p21: getOptLabel(21, answers[21]),
-    proyectos: projs.join(" | "),
+    proyectos: projs.map(p=>p.text||p).join(" | "),
 
   };
 
