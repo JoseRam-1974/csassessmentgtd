@@ -767,12 +767,7 @@ function getMaturity(answers, projs) {
   if (answers[21] === 3) score += 2; // Control tiempo real
   else if (answers[21] === 2) score += 1;
 
-  // Penalización por cantidad de proyectos críticos (prioridad 1)
-  const criticalProjs = projs.filter ? 0 : 0; // projs ya son strings aquí
-  const projPenalty = Math.min(projs.length * 0.5, 8);
-  score = Math.max(0, score - projPenalty);
-
-  // Max teórico ~25 puntos
+  // Sin penalización por proyectos — el score refleja solo madurez real
   const pct = Math.round((score / 35) * 100);
   console.log("Score:", score, "Pct:", pct, "Projs:", projs.length);
 
