@@ -346,6 +346,22 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous"></script>
 </head>
 <body>
+<!-- Formulario estático oculto SOLO para que Netlify Forms lo detecte en build. No se muestra ni se usa directamente; el envío real se hace por JS via fetch a "/" -->
+<form name="assessment" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input type="text" name="nombre" />
+  <input type="email" name="email" />
+  <input type="text" name="empresa" />
+  <input type="tel" name="telefono" />
+  <input type="text" name="p1" /><input type="text" name="p2" /><input type="text" name="p3" />
+  <input type="text" name="p4" /><input type="text" name="p5" /><input type="text" name="p6" />
+  <input type="text" name="p7" /><input type="text" name="p8" /><input type="text" name="p9" />
+  <input type="text" name="p10" /><input type="text" name="p11" /><input type="text" name="p12" />
+  <input type="text" name="p13" /><input type="text" name="p14" /><input type="text" name="p15" />
+  <input type="text" name="p16" /><input type="text" name="p17" /><input type="text" name="p18" />
+  <input type="text" name="p19" /><input type="text" name="p20" /><input type="text" name="p21" />
+  <textarea name="proyectos"></textarea>
+  <input name="bot-field" />
+</form>
 
 <!-- LOCK -->
 <div id="lockScreen">
@@ -1025,7 +1041,20 @@ async function submitContact(){
       body: JSON.stringify(payload)
     });
   } catch(e) {
-    console.warn("Error enviando formulario:", e);
+    console.warn("Error enviando formulario (Sheets):", e);
+  }
+
+  // Envío paralelo a Netlify Forms (notificación por correo con el detalle completo)
+  try {
+    const nfBody = new URLSearchParams({ "form-name": "assessment", ...payload });
+    nfBody.delete("csrfToken"); // no es un campo del form estático, se descarta
+    await fetch("/", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: nfBody.toString()
+    });
+  } catch(e) {
+    console.warn("Error enviando formulario (Netlify Forms):", e);
   }
 
   document.getElementById("contactSent").style.display="block";
