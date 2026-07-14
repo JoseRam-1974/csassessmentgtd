@@ -413,7 +413,7 @@ const Q = [
   { id:14, text:"¿Realiza monitoreo 24/7 de Alertas de Ciberseguridad?", type:"radio", opts:["Sí","No"] },
   { id:15, text:"¿Realiza monitoreo de inteligencia en la Deep Web y Dark Web sobre su marca?", type:"radio", opts:["Sí","No"] },
   { id:16, text:"¿La Organización cuenta con un presupuesto asignado para invertir en Soluciones, Estructura, Herramientas o un Plan de Proyectos de Ciberseguridad?", type:"radio", opts:["No","Sí — Menor a USD 100,000 anual","Sí — Entre USD 100,001 y USD 300,000","Sí — Entre USD 300,001 y USD 500,000","Sí — Mayor a USD 500,000"] },
-  { id:17, text:"¿Su empresa cuenta con un responsable designado para la protección de datos personales y un registro documentado de qué datos se tratan, con qué fin y dónde se almacenan?", type:"radio", opts:["No existe un responsable designado ni registro de datos personales","Hay un responsable informal pero sin registro documentado de actividades de tratamiento","Existe un responsable designado y un registro parcial de datos tratados","Contamos con un DPO o responsable formal y un Registro de Actividades de Tratamiento completo y actualizado"] },
+  { id:17, text:"¿Su empresa cuenta con un responsable designado para la protección de datos personales y un registro documentado de qué datos se tratan, con qué fin y dónde se almacenan?", type:"radio", opts:["No existe un responsable designado ni registro de datos personales","Hay un responsable informal pero sin registro documentado de actividades de tratamiento","Existe un responsable designado y un registro parcial de datos tratados","Contamos con un DPO o responsable formal y un Registro de Actividades de Tratamiento completo y actualizado"], warning:"La Ley 21.719 de Protección de Datos Personales entra en plena vigencia el 1 de diciembre de 2026 y aplica a toda organización que trate datos personales en Chile. Exige contar con un Registro de Actividades de Tratamiento y notificar brechas de seguridad a la nueva Agencia de Protección de Datos Personales. El incumplimiento puede derivar en <strong>multas de hasta 20.000 UTM</strong>, o hasta un 4% de los ingresos anuales en caso de reincidencia, además de la publicación de la sanción en un registro público." },
   { id:18, text:"¿Existe un proceso definido para responder solicitudes de titulares (acceso, rectificación, eliminación) y un procedimiento para notificar brechas de datos dentro de 72 horas?", type:"radio", opts:["No existe proceso definido para ninguno de estos casos","Hay procedimientos informales pero sin plazos ni responsables definidos","Existe un proceso parcial para atender solicitudes, pero sin protocolo formal de notificación de brechas","Contamos con procesos documentados para responder solicitudes de titulares y notificar brechas dentro de 72 horas"] },
   { id:19, text:"¿Los datos personales están protegidos con controles técnicos (cifrado, acceso por roles) y los contratos con proveedores incluyen cláusulas de protección de datos?", type:"radio", opts:["No hay controles técnicos ni cláusulas de protección en contratos con proveedores","Existen algunos controles técnicos básicos pero los contratos con terceros no contemplan protección de datos","Se aplican controles técnicos parciales y algunos contratos incluyen cláusulas de protección","Los datos están cifrados, el acceso es por roles y todos los contratos con proveedores incluyen cláusulas de protección de datos"] },
   { id:20, text:"¿Ha definido una política de uso de IA que oriente el buen uso de estos servicios y no exponga la seguridad de la información de la compañía?", type:"radio", opts:["No existe ninguna política de uso de IA en la organización","Hay lineamientos informales pero no están documentados ni comunicados formalmente","Existe una política documentada pero su aplicación y comunicación es parcial","Contamos con una política formal de uso de IA, comunicada a todos los usuarios y con mecanismos de cumplimiento"] },
@@ -863,6 +863,61 @@ function renderQuiz(el) {
     <div class="gtd-footer">GTD · Diagnóstico de Ciberseguridad · Confidencial</div>`;
 }
 
+function buildRadarData(SECS, projs, narr, WMAP) {
+  const GROUPS = [
+    { label:"Accesos y Endpoints", qids:[2,3,6] },
+    { label:"Continuidad y Nube", qids:[5,13] },
+    { label:"Cumplimiento Legal", qids:[4,17,18,19] },
+    { label:"Cultura y Concientización", qids:[7,8] },
+    { label:"Red y Perímetro", qids:[9,10] },
+    { label:"Vulnerabilidades y Monitoreo", qids:[11,12,14,15] },
+    { label:"Seguridad IA", qids:[20,21] }
+  ];
+  const isWeak = (qid) => projs.some(p => p.qid!==undefined ? p.qid===qid : (WMAP[qid] && p.text && p.text.toLowerCase().includes(WMAP[qid].toLowerCase())));
+  return GROUPS.map(g => {
+    const relevant = g.qids.filter(qid => narr[qid] !== undefined);
+    if (!relevant.length) return { label:g.label, score:null };
+    const strong = relevant.filter(qid => !isWeak(qid)).length;
+    return { label:g.label, score: Math.round((strong/relevant.length)*100) };
+  }).filter(d => d.score !== null);
+}
+
+function renderRadarSVG(data) {
+  const size = 460, cx = size/2, cy = size/2 - 10, radius = 150;
+  const n = data.length;
+  const angleFor = (i) => (Math.PI*2*i/n) - Math.PI/2;
+  const ringLevels = [0.25, 0.5, 0.75, 1];
+  let rings = "";
+  ringLevels.forEach(lv => {
+    let pts = [];
+    for (let i=0;i<n;i++){ const a=angleFor(i); pts.push(`${cx+Math.cos(a)*radius*lv},${cy+Math.sin(a)*radius*lv}`); }
+    rings += `<polygon points="${pts.join(" ")}" fill="none" stroke="#E2E8F0" stroke-width="1"/>`;
+  });
+  let spokes = "", labels = "";
+  data.forEach((d,i) => {
+    const a = angleFor(i);
+    const x2 = cx+Math.cos(a)*radius, y2 = cy+Math.sin(a)*radius;
+    spokes += `<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="#E2E8F0" stroke-width="1"/>`;
+    const lx = cx+Math.cos(a)*(radius+38), ly = cy+Math.sin(a)*(radius+38);
+    const anchor = Math.abs(Math.cos(a))<0.15 ? "middle" : (Math.cos(a)>0 ? "start" : "end");
+    const words = d.label.split(" ");
+    let tspans = "";
+    let line = "";
+    words.forEach((w,wi)=>{
+      line += (line?" ":"")+w;
+      if (line.length>14 || wi===words.length-1) { tspans += `<tspan x="${lx}" dy="${tspans?"12":"0"}">${line}</tspan>`; line=""; }
+    });
+    labels += `<text x="${lx}" y="${ly}" text-anchor="${anchor}" font-size="11" font-weight="700" fill="#64748B" font-family="-apple-system, sans-serif">${tspans}</text>`;
+  });
+  let dataPts = data.map((d,i) => { const a=angleFor(i); const r=radius*(d.score/100); return `${cx+Math.cos(a)*r},${cy+Math.sin(a)*r}`; }).join(" ");
+  let dots = data.map((d,i) => { const a=angleFor(i); const r=radius*(d.score/100); return `<circle cx="${cx+Math.cos(a)*r}" cy="${cy+Math.sin(a)*r}" r="3.5" fill="#3D5AA3"/>`; }).join("");
+  return `<svg viewBox="0 0 ${size} ${size}" width="100%" style="max-width:460px;display:block;margin:0 auto;">
+    ${rings}${spokes}
+    <polygon points="${dataPts}" fill="#3D5AA3" fill-opacity="0.18" stroke="#3D5AA3" stroke-width="2"/>
+    ${dots}${labels}
+  </svg>`;
+}
+
 function renderReport(el) {
   const {narr,projs}=getRecs(answers);
   document.getElementById("topbarStatus").textContent="Diagnóstico completado";
@@ -899,6 +954,10 @@ function renderReport(el) {
     <div id="solid-areas-wrap" style="display:none;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:12px 16px;margin-bottom:1.5rem;">
       <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#16A34A;margin-bottom:8px;">Áreas con buena cobertura</div>
       <div id="solid-areas-list"></div>
+    </div>
+    <div id="radar-wrap" style="background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:16px 12px;margin-bottom:1.5rem;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B;margin-bottom:8px;text-align:center;">Madurez por Dominio</div>
+      ${renderRadarSVG(buildRadarData(SECS, projs, narr, WMAP))}
     </div>
     <div class="section-title">Áreas con oportunidades de mejora</div>${secsHtml}
     <hr class="divider">
@@ -1131,6 +1190,12 @@ async function downloadPDF() {
     const solidEl = document.getElementById("solid-areas-wrap");
     if (solidEl && solidEl.style.display !== "none") {
       await addCanvasToPDF(await captureBlock(solidEl), false);
+    }
+
+    // 2b. Capturar radar chart
+    const radarEl = document.getElementById("radar-wrap");
+    if (radarEl) {
+      await addCanvasToPDF(await captureBlock(radarEl), false);
     }
 
     // 3. Capturar cada area-block individualmente
