@@ -75,6 +75,8 @@
   .pdf-render .area-heading { font-size: 10px !important; margin-bottom: 3px !important; }
   .pdf-render .rec-box { font-size: 11px !important; padding: 8px 12px !important; line-height: 1.5 !important; }
   .pdf-render .proj-item { padding: 5px 10px !important; font-size: 10px !important; gap: 6px !important; }
+  .pdf-render .proj-list { gap: 4px !important; }
+  .pdf-render#pdf-content-proyectos { padding: 8px 0 4px !important; }
   .pdf-render .proj-num { min-width: 24px !important; height: 24px !important; font-size: 10px !important; }
   .pdf-render .gtd-footer { font-size: 10px !important; margin-top: 1rem !important; }
   .pdf-render #pdf-client-info { font-size: 11px !important; padding: 5px 10px !important; }
@@ -1153,29 +1155,22 @@ async function downloadPDF() {
       await addCanvasToPDF(await captureBlock(block), false);
     }
 
-    // 4. Proyectos en nueva página
+    // 4. Proyectos en nueva página — todo el bloque como una sola imagen, escalada para caber en una hoja
     const projContainer = document.getElementById("pdf-content-proyectos");
     if (projContainer) {
       pdf.addPage();
       currentY = margin;
-      const projItems = projContainer.querySelectorAll(".proj-item");
-      // Título
-      const titleCanvas2 = document.createElement("canvas");
-      titleCanvas2.width = 860 * 1.8;
-      titleCanvas2.height = 40 * 1.8;
-      const tctx2 = titleCanvas2.getContext("2d");
-      tctx2.fillStyle = "#ffffff";
-      tctx2.fillRect(0, 0, titleCanvas2.width, titleCanvas2.height);
-      tctx2.fillStyle = "#64748B";
-      tctx2.font = `bold ${13 * 1.8}px -apple-system, sans-serif`;
-      tctx2.fillText("PROYECTOS RECOMENDADOS", 0, 28 * 1.8);
-      await addCanvasToPDF(titleCanvas2, false);
-      for (const item of projItems) {
-        await addCanvasToPDF(await captureBlock(item), false);
+      const availableHeight = pageHeight - margin * 2;
+      const projCanvas = await captureBlock(projContainer);
+      let projImgWidth = imgWidth;
+      let projImgHeight = (projCanvas.height * projImgWidth) / projCanvas.width;
+      if (projImgHeight > availableHeight) {
+        const scaleFactor = availableHeight / projImgHeight;
+        projImgHeight = availableHeight;
+        projImgWidth = projImgWidth * scaleFactor;
       }
-      // Footer
-      const footerEl = projContainer.querySelector(".gtd-footer");
-      if (footerEl) await addCanvasToPDF(await captureBlock(footerEl), false);
+      const xOffset = margin + (imgWidth - projImgWidth) / 2;
+      pdf.addImage(projCanvas.toDataURL("image/jpeg", 0.92), "JPEG", xOffset, currentY, projImgWidth, projImgHeight);
     }
 
     const fechaHoy = new Date().toISOString().slice(0, 10);
