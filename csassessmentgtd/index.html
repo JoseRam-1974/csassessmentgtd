@@ -1024,7 +1024,10 @@ async function submitContact(){
     p19: getOptLabel(19, answers[19]),
     p20: getOptLabel(20, answers[20]),
     p21: getOptLabel(21, answers[21]),
-    proyectos: projs.map(p=>p.text||p).join(" | "),
+    proyectos: projs.length
+      ? "Con base en las respuestas del diagnóstico, se recomienda avanzar en los siguientes proyectos:\n" +
+        projs.map((p,i)=>`${i+1}. ${p.text||p}.`).join("\n")
+      : "No se identificaron proyectos prioritarios adicionales en esta evaluación.",
 
   };
 
