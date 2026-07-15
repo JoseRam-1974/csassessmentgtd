@@ -887,9 +887,9 @@ function scoreForQid(qid) {
 function buildRadarData() {
   const GROUPS = [
     { label:"Accesos y Endpoints", qids:[3,6] },
-    { label:"Continuidad y Nube", qids:[5,13] },
-    { label:"Cumplimiento Legal", qids:[17,18,19] },
-    { label:"Cultura y Concientización", qids:[7,8] },
+    { label:"Continuidad y Seguridad Cloud", qids:[5,13] },
+    { label:"Protección de Datos (Ley 21.719)", qids:[17,18,19] },
+    { label:"Cultura de Ciberseguridad", qids:[7,8] },
     { label:"Red y Perímetro", qids:[9,10] },
     { label:"Vulnerabilidades y Monitoreo", qids:[11,12,14,15] },
     { label:"Seguridad IA", qids:[20,21] }
@@ -903,7 +903,7 @@ function buildRadarData() {
 }
 
 function renderRadarSVG(data) {
-  const size = 640, cx = size/2, cy = size/2, radius = 175;
+  const size = 700, cx = size/2, cy = size/2, radius = 170;
   const n = data.length;
   const angleFor = (i) => (Math.PI*2*i/n) - Math.PI/2;
   const ringLevels = [0.25, 0.5, 0.75, 1];
@@ -918,21 +918,24 @@ function renderRadarSVG(data) {
     const a = angleFor(i);
     const x2 = cx+Math.cos(a)*radius, y2 = cy+Math.sin(a)*radius;
     spokes += `<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="#E2E8F0" stroke-width="1"/>`;
-    const lx = cx+Math.cos(a)*(radius+45), ly = cy+Math.sin(a)*(radius+45);
+    const lx = cx+Math.cos(a)*(radius+55), ly = cy+Math.sin(a)*(radius+55);
     const anchor = Math.abs(Math.cos(a))<0.15 ? "middle" : (Math.cos(a)>0 ? "start" : "end");
-    // Ajuste de texto: máximo 2 palabras por línea para evitar cortes
+    // Ajuste de texto por longitud real de línea (máx. ~16 caracteres por línea)
     const words = d.label.split(" ");
-    let lines = [];
-    for (let wi=0; wi<words.length; wi+=2) {
-      lines.push(words.slice(wi, wi+2).join(" "));
-    }
-    const lineOffset = (lines.length - 1) * -6; // centra verticalmente el bloque de texto
-    const tspans = lines.map((line, li) => `<tspan x="${lx}" dy="${li===0 ? lineOffset : 13}">${line}</tspan>`).join("");
+    let lines = [], line = "";
+    words.forEach((w,wi) => {
+      const candidate = line ? line + " " + w : w;
+      if (candidate.length > 16 && line) { lines.push(line); line = w; }
+      else { line = candidate; }
+      if (wi === words.length-1) lines.push(line);
+    });
+    const lineOffset = (lines.length - 1) * -6.5;
+    const tspans = lines.map((l, li) => `<tspan x="${lx}" dy="${li===0 ? lineOffset : 13}">${l}</tspan>`).join("");
     labels += `<text x="${lx}" y="${ly}" text-anchor="${anchor}" font-size="12" font-weight="700" fill="#64748B" font-family="-apple-system, sans-serif">${tspans}</text>`;
   });
   let dataPts = data.map((d,i) => { const a=angleFor(i); const r=radius*(d.score/100); return `${cx+Math.cos(a)*r},${cy+Math.sin(a)*r}`; }).join(" ");
   let dots = data.map((d,i) => { const a=angleFor(i); const r=radius*(d.score/100); return `<circle cx="${cx+Math.cos(a)*r}" cy="${cy+Math.sin(a)*r}" r="3.5" fill="#3D5AA3"/>`; }).join("");
-  return `<svg viewBox="0 0 ${size} ${size}" width="100%" style="max-width:560px;display:block;margin:0 auto;">
+  return `<svg viewBox="0 0 ${size} ${size}" width="100%" style="max-width:600px;display:block;margin:0 auto;">
     ${rings}${spokes}
     <polygon points="${dataPts}" fill="#3D5AA3" fill-opacity="0.18" stroke="#3D5AA3" stroke-width="2"/>
     ${dots}${labels}
