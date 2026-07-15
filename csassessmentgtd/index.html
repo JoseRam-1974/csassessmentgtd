@@ -416,7 +416,7 @@ const Q = [
   { id:17, text:"¿Su empresa cuenta con un responsable designado para la protección de datos personales y un registro documentado de qué datos se tratan, con qué fin y dónde se almacenan?", type:"radio", opts:["No existe un responsable designado ni registro de datos personales","Hay un responsable informal pero sin registro documentado de actividades de tratamiento","Existe un responsable designado y un registro parcial de datos tratados","Contamos con un DPO o responsable formal y un Registro de Actividades de Tratamiento completo y actualizado"], warning:"La Ley 21.719 de Protección de Datos Personales entra en plena vigencia el 1 de diciembre de 2026 y aplica a toda organización que trate datos personales en Chile. Exige contar con un Registro de Actividades de Tratamiento y notificar brechas de seguridad a la nueva Agencia de Protección de Datos Personales. El incumplimiento puede derivar en <strong>multas de hasta 20.000 UTM</strong>, o hasta un 4% de los ingresos anuales en caso de reincidencia, además de la publicación de la sanción en un registro público." },
   { id:18, text:"¿Existe un proceso definido para responder solicitudes de titulares (acceso, rectificación, eliminación) y un procedimiento para notificar brechas de datos dentro de 72 horas?", type:"radio", opts:["No existe proceso definido para ninguno de estos casos","Hay procedimientos informales pero sin plazos ni responsables definidos","Existe un proceso parcial para atender solicitudes, pero sin protocolo formal de notificación de brechas","Contamos con procesos documentados para responder solicitudes de titulares y notificar brechas dentro de 72 horas"] },
   { id:19, text:"¿Los datos personales están protegidos con controles técnicos (cifrado, acceso por roles) y los contratos con proveedores incluyen cláusulas de protección de datos?", type:"radio", opts:["No hay controles técnicos ni cláusulas de protección en contratos con proveedores","Existen algunos controles técnicos básicos pero los contratos con terceros no contemplan protección de datos","Se aplican controles técnicos parciales y algunos contratos incluyen cláusulas de protección","Los datos están cifrados, el acceso es por roles y todos los contratos con proveedores incluyen cláusulas de protección de datos"] },
-  { id:20, text:"¿Ha definido una política de uso de IA que oriente el buen uso de estos servicios y no exponga la seguridad de la información de la compañía?", type:"radio", opts:["No existe ninguna política de uso de IA en la organización","Hay lineamientos informales pero no están documentados ni comunicados formalmente","Existe una política documentada pero su aplicación y comunicación es parcial","Contamos con una política formal de uso de IA, comunicada a todos los usuarios y con mecanismos de cumplimiento"] },
+  { id:20, text:"¿Ha definido una política de uso de IA que oriente el buen uso de estos servicios y no exponga la seguridad de la información de la compañía?", type:"radio", opts:["No existe ninguna política de uso de IA en la organización","Hay lineamientos informales pero no están documentados ni comunicados formalmente","Existe una política documentada pero su aplicación y comunicación es parcial","Contamos con una política formal de uso de IA, comunicada a todos los usuarios y con mecanismos de cumplimiento"], warning:"Chile tramita actualmente un proyecto de ley que regulará el uso de sistemas de Inteligencia Artificial (Boletín 16821-19), aprobado por la Cámara de Diputados en octubre de 2025 y en segundo trámite en el Senado. Clasificará los usos de IA por nivel de riesgo y exigirá supervisión humana, seguridad técnica y trazabilidad en los sistemas de alto riesgo. Aunque aún no es ley vigente, contar con una política interna de uso de IA es clave para prevenir fuga de información y anticipar el cumplimiento normativo." },
   { id:21, text:"¿Ha implementado un control de seguridad que inspeccione en tiempo real la interacción de los usuarios en los diferentes prompts de IA generativa para evitar la fuga de archivos e información confidencial y propietaria?", type:"radio", opts:["No existe ningún control que supervise las interacciones con herramientas de IA generativa","Se aplican restricciones básicas de acceso pero sin inspección del contenido de los prompts","Existe monitoreo parcial de algunas herramientas de IA pero no cubre todas las plataformas utilizadas","Contamos con una solución que inspecciona en tiempo real los prompts de IA generativa, previniendo fuga de información confidencial en todas las plataformas"] }
 ];
 
@@ -863,22 +863,42 @@ function renderQuiz(el) {
     <div class="gtd-footer">GTD · Diagnóstico de Ciberseguridad · Confidencial</div>`;
 }
 
-function buildRadarData(SECS, projs, narr, WMAP) {
+function scoreForQid(qid) {
+  const a = answers[qid];
+  if (a === undefined) return null;
+  switch (qid) {
+    case 3:  return a === 0 ? 1 : 0; // EDR/XDR: Sí=mejor
+    case 5:  return Math.min((Array.isArray(a)?a.length:0), 3) / 3; // Respaldos: más ubicaciones = mejor
+    case 6:  return (Array.isArray(a) ? a.filter(i => i !== 4).length : 0) / 4; // MFA en sistemas (excluye "Lo desconozco")
+    case 7:  return a === 0 ? 1 : 0; // Plan de cultura: Sí=mejor
+    case 8:  return a === 0 ? 1 : 0; // Pruebas phishing: Sí=mejor
+    case 9:  return (Array.isArray(a) ? a.filter(i => i !== 5).length : 0) / 5; // Firewall (excluye "Lo desconozco")
+    case 10: return a === 0 ? 1 : 0; // SD-WAN: Sí=mejor
+    case 11: return a === 0 ? 1 : 0; // Scaneo vulnerabilidades: Sí=mejor
+    case 12: return Array.isArray(a) ? (a.includes(2) ? 1 : (a.includes(1) ? 0.5 : 0)) : 0; // Remediación
+    case 13: return a === 0 ? 1 : 0; // Controles nube: Sí=mejor
+    case 14: return a === 0 ? 1 : 0; // Monitoreo 24/7: Sí=mejor
+    case 15: return a === 0 ? 1 : 0; // Deep/Dark web: Sí=mejor
+    case 17: case 18: case 19: case 20: case 21: return a / 3; // Escalas progresivas de 4 opciones (0-3)
+    default: return null;
+  }
+}
+
+function buildRadarData() {
   const GROUPS = [
-    { label:"Accesos y Endpoints", qids:[2,3,6] },
+    { label:"Accesos y Endpoints", qids:[3,6] },
     { label:"Continuidad y Nube", qids:[5,13] },
-    { label:"Cumplimiento Legal", qids:[4,17,18,19] },
+    { label:"Cumplimiento Legal", qids:[17,18,19] },
     { label:"Cultura y Concientización", qids:[7,8] },
     { label:"Red y Perímetro", qids:[9,10] },
     { label:"Vulnerabilidades y Monitoreo", qids:[11,12,14,15] },
     { label:"Seguridad IA", qids:[20,21] }
   ];
-  const isWeak = (qid) => projs.some(p => p.qid!==undefined ? p.qid===qid : (WMAP[qid] && p.text && p.text.toLowerCase().includes(WMAP[qid].toLowerCase())));
   return GROUPS.map(g => {
-    const relevant = g.qids.filter(qid => narr[qid] !== undefined);
-    if (!relevant.length) return { label:g.label, score:null };
-    const strong = relevant.filter(qid => !isWeak(qid)).length;
-    return { label:g.label, score: Math.round((strong/relevant.length)*100) };
+    const scores = g.qids.map(scoreForQid).filter(s => s !== null);
+    if (!scores.length) return { label:g.label, score:null };
+    const avg = scores.reduce((s,v)=>s+v,0) / scores.length;
+    return { label:g.label, score: Math.round(avg*100) };
   }).filter(d => d.score !== null);
 }
 
@@ -957,7 +977,7 @@ function renderReport(el) {
     </div>
     <div id="radar-wrap" style="background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:16px 12px;margin-bottom:1.5rem;">
       <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B;margin-bottom:8px;text-align:center;">Madurez por Dominio</div>
-      ${renderRadarSVG(buildRadarData(SECS, projs, narr, WMAP))}
+      ${renderRadarSVG(buildRadarData())}
     </div>
     <div class="section-title">Áreas con oportunidades de mejora</div>${secsHtml}
     <hr class="divider">
