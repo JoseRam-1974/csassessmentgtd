@@ -997,6 +997,7 @@ function renderReport(el) {
       <h3>¿Podemos ayudarte a implementar estas recomendaciones?</h3>
       <p>Déjanos tus datos y un especialista GTD se pondrá en contacto contigo.</p>
       <div class="contact-sent" id="contactSent">✓ Tus datos fueron enviados. Un especialista GTD te contactará pronto.</div>
+      <div class="contact-error" id="contactError" style="display:none;background:#FEF2F2;border:1px solid #FECACA;color:#B91C1C;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;">⚠️ Hubo un problema al enviar tus datos. Por favor reintenta, o escríbenos directo a <strong>joseandres.ramirez@grupogtd.com</strong> si el problema persiste.</div>
       <div class="form-grid">
         <div class="form-field"><label>Nombre</label><input type="text" id="cNombre" placeholder="Tu nombre"></div>
         <div class="form-field"><label>Correo</label><input type="email" id="cEmail" placeholder="correo@empresa.cl"></div>
@@ -1118,6 +1119,7 @@ async function submitContact(){
 
   const SHEETS_URL="/.netlify/functions/submit";
 
+  // Canal Sheets/Apps Script: best-effort, no bloquea el flujo (sabemos que puede estar caído por política de TI pendiente)
   try {
     const tokenRes = await fetch("/.netlify/functions/token");
     const tokenData = await tokenRes.json();
@@ -1132,21 +1134,30 @@ async function submitContact(){
     console.warn("Error enviando formulario (Sheets):", e);
   }
 
-  // Envío paralelo a Netlify Forms (notificación por correo con el detalle completo)
+  // Canal Netlify Forms: es el canal crítico real (notificación por correo). Su éxito determina el mensaje al usuario.
+  let netlifyFormsOk = false;
   try {
     const nfBody = new URLSearchParams({ "form-name": "assessment", ...payload });
     nfBody.delete("csrfToken"); // no es un campo del form estático, se descarta
-    await fetch("/", {
+    const nfRes = await fetch("/", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: nfBody.toString()
     });
+    netlifyFormsOk = nfRes.ok;
   } catch(e) {
     console.warn("Error enviando formulario (Netlify Forms):", e);
+    netlifyFormsOk = false;
   }
 
-  document.getElementById("contactSent").style.display="block";
-  document.querySelector(".contact-card .btn-gtd").style.display="none";
+  if (netlifyFormsOk) {
+    document.getElementById("contactError").style.display = "none";
+    document.getElementById("contactSent").style.display = "block";
+    document.querySelector(".contact-card .btn-gtd").style.display = "none";
+  } else {
+    document.getElementById("contactError").style.display = "block";
+    if (btn) { btn.disabled = false; btn.textContent = "Reintentar envío"; }
+  }
 }
 </script>
 
