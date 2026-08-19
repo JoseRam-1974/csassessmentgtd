@@ -354,6 +354,7 @@
   <input type="email" name="email" />
   <input type="text" name="empresa" />
   <input type="tel" name="telefono" />
+  <input type="number" name="servidores" /><input type="number" name="endpoints" />
   <input type="text" name="p1" /><input type="text" name="p2" /><input type="text" name="p3" />
   <input type="text" name="p4" /><input type="text" name="p5" /><input type="text" name="p6" />
   <input type="text" name="p7" /><input type="text" name="p8" /><input type="text" name="p9" />
@@ -1003,6 +1004,8 @@ function renderReport(el) {
         <div class="form-field"><label>Correo</label><input type="email" id="cEmail" placeholder="correo@empresa.cl"></div>
         <div class="form-field"><label>Empresa</label><input type="text" id="cEmpresa" placeholder="Nombre de tu empresa"></div>
         <div class="form-field"><label>Teléfono</label><input type="tel" id="cTel" placeholder="+56 9 XXXX XXXX"></div>
+        <div class="form-field"><label>Número de Servidores</label><input type="number" min="0" id="cServidores" placeholder="Ej: 10"></div>
+        <div class="form-field"><label>Número de Endpoints</label><input type="number" min="0" id="cEndpoints" placeholder="Ej: 50"></div>
       </div>
 
       <button class="btn-gtd" onclick="submitContact()">Solicitar contacto con GTD →</button>
@@ -1079,6 +1082,8 @@ async function submitContact(){
   const e=document.getElementById("cEmail")?.value||"";
   const emp=document.getElementById("cEmpresa")?.value||"";
   const tel=document.getElementById("cTel")?.value||"";
+  const serv=document.getElementById("cServidores")?.value||"";
+  const endp=document.getElementById("cEndpoints")?.value||"";
 
   if(!n&&!e){ 
     alert("Por favor ingresa al menos tu nombre y correo."); 
@@ -1088,7 +1093,7 @@ async function submitContact(){
   const {projs}=getRecs(answers);
 
   const payload={
-    nombre:n, email:e, empresa:emp, telefono:tel,
+    nombre:n, email:e, empresa:emp, telefono:tel, servidores:serv, endpoints:endp,
     p1:  getOptLabel(1,  answers[1]),
     p2:  getOptLabel(2,  answers[2]),
     p3:  getOptLabel(3,  answers[3]),
