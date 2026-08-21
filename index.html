@@ -1248,6 +1248,38 @@ function getRecsDC(a) {
   return { narr, projs };
 }
 
+// ═══════════════ ROADMAP DE EVOLUCIÓN — DATA CENTER ═══════════════
+// Convierte la prioridad de cada proyecto disparado (1-4) en horizonte de tiempo:
+// priority 1 → 0-90 días (urgente/crítico)
+// priority 2 → 3-12 meses (corto-mediano plazo)
+// priority 3-4 → 12-36 meses (mediano-largo plazo, optimización/estrategia)
+function buildRoadmapDC(projs) {
+  const dedup = [...new Map(projs.map(p => [p.text, p])).values()]; // evita duplicar si dos reglas sugieren lo mismo
+  const buckets = {
+    corto: dedup.filter(p => p.priority === 1),
+    medio: dedup.filter(p => p.priority === 2),
+    largo: dedup.filter(p => p.priority >= 3)
+  };
+  return [
+    { label:"0–90 días", sub:"Acción inmediata", items: buckets.corto.map(p=>p.text) },
+    { label:"3–12 meses", sub:"Corto y mediano plazo", items: buckets.medio.map(p=>p.text) },
+    { label:"12–36 meses", sub:"Mediano y largo plazo", items: buckets.largo.map(p=>p.text) }
+  ].filter(b => b.items.length > 0);
+}
+
+function renderRoadmapDC(roadmap) {
+  if (!roadmap.length) return "";
+  const cols = roadmap.map(b => `
+    <div style="flex:1;min-width:160px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:14px;">
+      <div style="font-size:13px;font-weight:700;color:#3E4C59;margin-bottom:2px;">${b.label}</div>
+      <div style="font-size:10px;color:#94A3B8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">${b.sub}</div>
+      <ul style="margin:0;padding-left:16px;font-size:12px;color:#334155;line-height:1.6;">
+        ${b.items.map(i => `<li style="margin-bottom:6px;">${i}</li>`).join("")}
+      </ul>
+    </div>`).join("");
+  return `<div style="display:flex;gap:14px;flex-wrap:wrap;">${cols}</div>`;
+}
+
 
 function renderRadarSVG(data) {
   const size = 700, cx = size/2, cy = size/2, radius = 170;
