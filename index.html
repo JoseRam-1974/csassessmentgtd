@@ -1149,6 +1149,105 @@ function renderDomainBarsDC(data) {
   return `<div>${rows}</div>`;
 }
 
+// ═══════════════ MOTOR DE RECOMENDACIÓN — DATA CENTER ═══════════════
+// Capa 1: reglas disparadoras (condiciones sobre respuestas específicas, no solo score)
+// Capa 2: la priorización final por score se aplica en renderReport al ordenar `projs`
+function getRecsDC(a) {
+  const narr = {}, projs = [];
+  const addProj = (proj, priority, qid) => projs.push({text: proj, priority: priority, qid: qid});
+  const add = (qid, txt) => { narr[qid] = txt; };
+
+  const sinEnergiaBase = !(a[9] && a[9].includes(0) && a[9].includes(1)); // sin doble acometida + UPS
+  const sinControlAcceso = !(a[7] && a[7].includes(0));                    // sin control de acceso
+
+  // 1. Housing / Colocation
+  if (a[4] === 0 && (sinEnergiaBase || sinControlAcceso)) {
+    add(4, `La infraestructura opera actualmente en <strong>oficina o sala técnica no diseñada como Data Center</strong>, sin los controles físicos mínimos de resiliencia energética y/o seguridad de acceso. Este es el riesgo más crítico identificado: cualquier falla eléctrica, incendio o intrusión física puede comprometer la continuidad completa del negocio. Recomendamos evaluar migración a un <strong>Data Center certificado (Housing/Colocation)</strong> como prioridad inmediata.`);
+    addProj("Housing / Colocation en Data Center certificado", 1, 4);
+  }
+
+  // 2. DRP como servicio (criticidad alta sin DRP)
+  if (a[16] !== undefined && a[16] !== 0 && (a[2] === 2 || a[2] === 3)) {
+    add(16, `La organización clasificó su infraestructura como de <strong>criticidad alta o crítica</strong>, pero no cuenta con un <strong>DRP formal</strong>. Esta combinación representa una exposición severa: ante un incidente, no existe un plan estructurado de recuperación. Recomendamos priorizar la implementación de un servicio de DRP gestionado.`);
+    addProj("DRP como Servicio (Disaster Recovery Plan)", 1, 16);
+  }
+
+  // 3. Replicación / Backup avanzado (RPO exigente sin sitio alterno)
+  if (a[19] === 0 && a[17] === 2) {
+    add(19, `El RPO requerido es <strong>menor a 15 minutos</strong>, pero no existe sitio alterno. Un RPO tan exigente sin infraestructura de replicación es una meta que hoy no se puede cumplir. Recomendamos una solución de replicación continua de datos.`);
+    addProj("Replicación de datos en tiempo real / Backup avanzado", 2, 19);
+  }
+
+  // 4. Cloud Connect / conectividad privada
+  if (a[29] === 1) {
+    add(29, `Se identificó la necesidad de <strong>conectividad privada hacia nube pública</strong> sin contar con ella actualmente. Depender de internet público para tráfico crítico hacia la nube introduce latencia variable y riesgos de seguridad. Recomendamos una solución de Cloud Connect dedicada.`);
+    addProj("Cloud Connect — conectividad privada a nube pública", 3, 29);
+  }
+
+  // 5. Refresh tecnológico
+  if (a[21] === 3 && (a[23] === 3 || a[24] === 2)) {
+    add(21, `Los servidores tienen <strong>más de 7 años de antigüedad</strong> y se registra alta utilización de recursos o almacenamiento cercano al límite. Este escenario incrementa el riesgo de fallas y limita la capacidad de crecimiento. Recomendamos evaluar un proyecto de <strong>Refresh Tecnológico</strong>.`);
+    addProj(`Refresh Tecnológico de infraestructura${a[22]!==undefined && a[22]<5 ? " ("+["HPE","Dell","Lenovo","IBM"][a[22]]+")" : ""}`, 2, 21);
+  }
+
+  // 6. Nube pública
+  if (a[32] === 1 && (a[2] === 0 || a[2] === 1)) {
+    add(32, `Sin restricciones regulatorias de residencia de datos y con criticidad baja/media, la organización tiene un buen perfil para migrar cargas a <strong>nube pública</strong>, optimizando costos operativos.`);
+    addProj("Migración a Nube Pública", 4, 32);
+  }
+
+  // 7. Nube privada
+  if (a[32] === 0 && a[21] === 3) {
+    add(32, `Existen <strong>restricciones regulatorias o de residencia de datos</strong>, combinadas con infraestructura legada (>7 años). Recomendamos evaluar <strong>Nube Privada</strong> como alternativa que cumple los requisitos regulatorios sin renovar hardware propio.`);
+    addProj("Nube Privada", 3, 32);
+  }
+
+  // 8. Nube híbrida
+  if (a[31] === 1 && a[29] === 1) {
+    add(31, `La organización tiene cargas <strong>parciales en nube</strong> y requiere conectividad privada — perfil típico de arquitectura <strong>híbrida</strong>. Recomendamos diseñar una estrategia de nube híbrida con conectividad dedicada entre ambos entornos.`);
+    addProj("Estrategia de Nube Híbrida", 3, 31);
+  }
+
+  // 9. Data Center certificado (brechas físicas transversales, sitio no certificado aún)
+  const numControles = a[7] ? a[7].length : 0;
+  const numEnergia = a[9] ? a[9].length : 0;
+  if (numControles <= 2 && numEnergia <= 2 && a[4] !== 2) {
+    add(7, `Se identificaron brechas transversales en controles de seguridad física y resiliencia energética. Recomendamos evaluar la certificación del Data Center bajo estándares internacionales (Tier/TIA-942).`);
+    addProj("Certificación de Data Center (Tier / TIA-942)", 3, 7);
+  }
+
+  // 10. Cross Connect / interconexión con terceros
+  if (a[29] === 1 || a[28] === 2) {
+    addProj("Cross Connect — interconexión directa con proveedores y carriers", 4, 28);
+  }
+
+  // 11. DRaaS
+  if ((a[16] === 1 || a[16] === 2) && a[18] !== undefined && a[18] <= 2) {
+    add(18, `Se requiere un <strong>RTO exigente (24 horas o menos)</strong> pero el DRP está incompleto o ausente. Un servicio de <strong>DRaaS</strong> permite cumplir ese objetivo sin construir un sitio de respaldo propio.`);
+    addProj("DRaaS — Disaster Recovery as a Service", 2, 18);
+  }
+
+  // 12. BaaS
+  const cifradoOk = a[26] && a[26].includes(0) && a[26].includes(1);
+  if (!cifradoOk && a[20] !== 0) {
+    addProj("BaaS — Backup as a Service (cifrado e inmutable)", 3, 26);
+  }
+
+  // 13. Manos remotas / administración de sistemas
+  if ((a[13] === 1 || a[13] === 2) && a[4] === 3) {
+    addProj("Manos Remotas — administración de sistemas 24x7", 4, 13);
+  }
+
+  // 14. Servicios gestionados (paquete integral si 3+ proyectos operativos coinciden)
+  const operativos = ["Housing / Colocation en Data Center certificado","DRaaS — Disaster Recovery as a Service","BaaS — Backup as a Service (cifrado e inmutable)","Manos Remotas — administración de sistemas 24x7"];
+  const coincidencias = projs.filter(p => operativos.includes(p.text)).length;
+  if (coincidencias >= 3) {
+    addProj("Servicios Gestionados — paquete integral (Housing + DRaaS + BaaS + Manos Remotas)", 1, null);
+  }
+
+  return { narr, projs };
+}
+
 
 function renderRadarSVG(data) {
   const size = 700, cx = size/2, cy = size/2, radius = 170;
