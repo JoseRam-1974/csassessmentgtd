@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -469,13 +468,15 @@
 <script>
 // ── PREGUNTAS ─────────────────────────────────────────────────────────────────
 function startAssessment(kind){
-  if(kind==='dc'){
+  if(kind==='dc' && Q_DC.length===0){
     alert('El cuestionario de Data Center está en construcción. La pantalla de selección ya está lista — el siguiente paso es cargar las 32 preguntas y el motor de scoring.');
     return;
   }
+  assessmentType = kind;
+  answers = {}; cur = 0; view = "quiz";
   document.getElementById('lockScreen').style.display='none';
   document.getElementById('app').style.display='block';
-  document.querySelector('.topbar-label').textContent='Diagnóstico de Ciberseguridad';
+  document.querySelector('.topbar-label').textContent = kind==='dc' ? 'Diagnóstico Data Center' : 'Diagnóstico de Ciberseguridad';
   render();
 }
 
@@ -503,6 +504,9 @@ const Q = [
   { id:21, text:"¿Ha implementado un control de seguridad que inspeccione en tiempo real la interacción de los usuarios en los diferentes prompts de IA generativa para evitar la fuga de archivos e información confidencial y propietaria?", type:"radio", opts:["No existe ningún control que supervise las interacciones con herramientas de IA generativa","Se aplican restricciones básicas de acceso pero sin inspección del contenido de los prompts","Existe monitoreo parcial de algunas herramientas de IA pero no cubre todas las plataformas utilizadas","Contamos con una solución que inspecciona en tiempo real los prompts de IA generativa, previniendo fuga de información confidencial en todas las plataformas"] }
 ];
 
+// Cuestionario Data Center — 32 preguntas, 11 dominios (pendiente de carga, sesión siguiente)
+const Q_DC = [];
+
 const INTROS = {
   2:"La oficina ya no tiene paredes. Hoy, el trabajo viaja en una mochila, se conecta desde un aeropuerto o desde casa. La flexibilidad llegó para quedarse, pero con ella llegó también un nuevo desafío: ¿cómo acceden los usuarios a los servicios cuando están lejos de la red corporativa?",
   3:"Durante mucho tiempo, el antivirus fue el guardián de la puerta. Detectaba lo conocido, bloqueaba lo evidente. Pero los tiempos cambiaron. Hoy las amenazas son más sigilosas, más complejas, más persistentes.",
@@ -522,9 +526,11 @@ const INTROS = {
 };
 
 let answers = {}, cur = 0, view = "quiz";
+let assessmentType = "cyber"; // 'cyber' | 'dc' — controla qué array de preguntas y qué motor de scoring/recomendación se usa
+function activeQ() { return assessmentType === "dc" ? Q_DC : Q; }
 
 function isAnswered(i) {
-  const q = Q[i], a = answers[q.id];
+  const q = activeQ()[i], a = answers[q.id];
   if (a === undefined) return false;
   if (q.type === "check") return Array.isArray(a) && a.length > 0;
   return true;
@@ -917,8 +923,9 @@ function render() {
 }
 
 function renderQuiz(el) {
-  const q=Q[cur], pct=Math.round((cur/Q.length)*100), done=Q.filter((_,i)=>isAnswered(i)).length;
-  document.getElementById("topbarStatus").textContent=`Pregunta ${cur+1} de ${Q.length}`;
+  const QQ = activeQ();
+  const q=QQ[cur], pct=Math.round((cur/QQ.length)*100), done=QQ.filter((_,i)=>isAnswered(i)).length;
+  document.getElementById("topbarStatus").textContent=`Pregunta ${cur+1} de ${QQ.length}`;
   const intro = INTROS[q.id] ? `<div class="q-intro">${INTROS[q.id]}</div>` : "";
   const badge = q.type==="radio" ? `<span class="q-badge badge-single">Opción única</span>` : `<span class="q-badge badge-multi">Selección múltiple</span>`;
   let opts="";
@@ -932,7 +939,7 @@ function renderQuiz(el) {
   const warningHtml = q.warning ? `<div class="warning-box">⚠️ ${q.warning}</div>` : "";
   el.innerHTML=`
     <div class="progress-wrap">
-      <div class="progress-meta"><span class="progress-label">Progreso del diagnóstico</span><span class="progress-count">${done} / ${Q.length}</span></div>
+      <div class="progress-meta"><span class="progress-label">Progreso del diagnóstico</span><span class="progress-count">${done} / ${QQ.length}</span></div>
       <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
     </div>
     ${intro}
@@ -941,7 +948,7 @@ function renderQuiz(el) {
     <div class="nav-bar">
       <button class="btn-back" onclick="goBack()" ${cur===0?"disabled":""}>← Anterior</button>
       <div class="spacer"></div>
-      ${cur<Q.length-1?`<button class="btn-next" onclick="goNext()" ${!isAnswered(cur)?"disabled":""}>Siguiente →</button>`:`<button class="btn-next" onclick="showReport()" ${!isAnswered(cur)?"disabled":""}>Ver Diagnóstico →</button>`}
+      ${cur<QQ.length-1?`<button class="btn-next" onclick="goNext()" ${!isAnswered(cur)?"disabled":""}>Siguiente →</button>`:`<button class="btn-next" onclick="showReport()" ${!isAnswered(cur)?"disabled":""}>Ver Diagnóstico →</button>`}
     </div>
     <div class="gtd-footer">GTD · Diagnóstico de Ciberseguridad · Confidencial</div>`;
 }
@@ -1028,7 +1035,7 @@ function renderRadarSVG(data) {
 function renderReport(el) {
   const {narr,projs}=getRecs(answers);
   document.getElementById("topbarStatus").textContent="Diagnóstico completado";
-  const answered=Q.filter((_,i)=>isAnswered(i)).length;
+  const answered=activeQ().filter((_,i)=>isAnswered(i)).length;
   const SECS=[{qid:2,title:"Acceso Remoto"},{qid:3,title:"Protección de Endpoints (EDR/XDR)"},{qid:4,title:"Cumplimiento Legal — Ley Marco de Ciberseguridad"},{qid:5,title:"Continuidad Operativa y Respaldos de Datos Críticos"},{qid:6,title:"Autenticación Segura (MFA)"},{qid:7,title:"Plan de Cultura de Ciberseguridad"},{qid:8,title:"Phishing y Concientización"},{qid:9,title:"Seguridad en Firewall Perimetral"},{qid:10,title:"Conectividad SD-WAN"},{qid:11,title:"Scaneo de Vulnerabilidades"},{qid:12,title:"Gestión y Mitigación de Vulnerabilidades"},{qid:13,title:"Controles Base de Ciberseguridad en la Nube"},{qid:14,title:"Monitoreo 24/7 de Alertas"},{qid:15,title:"Monitoreo Deep Web / Dark Web — Marca"},{qid:16,title:"Presupuesto de Ciberseguridad"},{qid:17,title:"Ley 21.719 — Gobernanza y Trazabilidad"},{qid:18,title:"Ley 21.719 — Derechos de Titulares y Brechas"},{qid:19,title:"Ley 21.719 — Controles Técnicos y Terceros"},{qid:20,title:"Seguridad IA — Política de Uso"},{qid:21,title:"Seguridad IA — Control en Tiempo Real"}];
   const WMAP={3:"EDR",4:"Ley",6:"MFA",7:"Capacitación",8:"Phishing",9:"Firewall",10:"SD-WAN",11:"Scaneo",12:"Patch",13:"Nube",14:"Monitoreo",15:"Deep",16:"Presupuesto",17:"Gobernanza de Protección",18:"Derechos de Titulares",19:"Contractuales",20:"Política Corporativa",21:"Tiempo Real para IA"};
   let secsHtml="";
@@ -1046,7 +1053,7 @@ function renderReport(el) {
       <div style="margin-bottom:1.25rem;"></div>
       <div id="pdf-client-info" style="display:none;font-size:13px;color:rgba(255,255,255,0.85);margin-bottom:1rem;padding:8px 12px;background:rgba(255,255,255,0.1);border-radius:6px;"></div>
       <div class="stats-row">
-        <div class="stat-box"><div class="stat-val stat-light">${Q.length}</div><div class="stat-lbl">Preguntas evaluadas</div></div>
+        <div class="stat-box"><div class="stat-val stat-light">${activeQ().length}</div><div class="stat-lbl">Preguntas evaluadas</div></div>
         <div class="stat-box"><div class="stat-val stat-yellow">${projs.length}</div><div class="stat-lbl">Proyectos sugeridos</div></div>
         <div class="stat-box"><div class="stat-val stat-green">${solid}</div><div class="stat-lbl">Áreas sólidas</div></div>
       </div>
@@ -1145,7 +1152,7 @@ function renderReport(el) {
 
 function selRadio(qid,idx){answers[qid]=idx;render();}
 function togCheck(qid,idx){if(!answers[qid])answers[qid]=[];const arr=answers[qid],i=arr.indexOf(idx);if(i>=0)arr.splice(i,1);else arr.push(idx);answers[qid]=[...arr];render();}
-function goNext(){if(cur<Q.length-1){cur++;render();}}
+function goNext(){if(cur<activeQ().length-1){cur++;render();}}
 function goBack(){if(cur>0){cur--;render();}}
 function showReport(){view="report";render();}
 function restart(){answers={};cur=0;view="quiz";render();}
@@ -1378,5 +1385,3 @@ async function downloadPDF() {
 </script>
 
 </html>
-
-
