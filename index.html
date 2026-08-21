@@ -1049,6 +1049,107 @@ function buildRadarData() {
   }).filter(d => d.score !== null);
 }
 
+// ═══════════════ MOTOR DE SCORING — DATA CENTER ═══════════════
+// Perfil y Criticidad (Q1-3) y Cloud Readiness Q32 quedan fuera del score:
+// son contexto/requisito, no madurez. Se usan solo en el motor de reglas (getRecsDC).
+function scoreForQidDC(qid) {
+  const a = answers[qid];
+  if (a === undefined) return null;
+  switch (qid) {
+    // Facility
+    case 4:  return [0, 0.4, 1, 0.8, 0.9, 0.5][a];               // tipo de sitio
+    case 5:  return a / 3;                                        // capacidad crecimiento
+    // (Q6 densidad rack = contexto, no score)
+
+    // Seguridad Física
+    case 7:  return Array.isArray(a) ? a.length / 4 : 0;         // controles marcados
+    case 8:  return a === 0 ? 1 : (a === 1 ? 0.5 : 0);            // identidad + NDA
+
+    // Energía y Climatización
+    case 9:  return Array.isArray(a) ? a.length / 4 : 0;         // resiliencia energética
+    case 10: return a / 4;                                        // autonomía sin energía
+    case 11: return a === 0 ? 1 : (a === 1 ? 0.5 : 0);            // monitoreo temp/humedad
+
+    // Protección contra Incendios
+    case 12: return [1, 0.66, 0.33, 0][a];                        // detección/extinción
+
+    // Operación y Soporte
+    case 13: return a === 0 ? 1 : (a === 1 ? 0.5 : 0);            // personal 24x7
+    case 14: return a === 0 ? 1 : (a === 1 ? 0.5 : 0);            // control de cambios
+    case 15: return a === 0 ? 1 : (a === 1 ? 0.5 : 0);            // monitoreo alarmas
+
+    // Continuidad y DRP
+    case 16: return a === 0 ? 1 : (a === 1 ? 0.5 : 0);            // DRP formal
+    case 17: return a === 0 ? 1 : (a === 1 ? 0.8 : 0);            // sitio alterno
+    case 18: return a === 4 ? 0 : 1;                              // RTO definido
+    case 19: return a === 4 ? 0 : 1;                              // RPO definido
+    case 20: return a === 0 ? 1 : (a === 1 ? 0.5 : 0);            // pruebas de recuperación
+
+    // Infraestructura Tecnológica
+    case 21: return [1, 0.66, 0.33, 0][a];                        // antigüedad servidores
+    case 23: return [0.5, 1, 0.5, 0, 0.3][a];                     // utilización CPU/RAM
+    case 24: return [1, 0.6, 0.2, 1, 0.7][a];                     // almacenamiento
+    case 25: return [1, 1, 0.8, 0][a];                            // plataforma backup
+    case 26: return Array.isArray(a) ? (a.filter(i=>i!==2).length/2) : 0; // cifrado/inmutabilidad
+    case 27: return a === 0 ? 0 : (a === 1 ? 0.5 : 1);            // problemas rendimiento
+
+    // Conectividad
+    case 28: return a === 0 ? 1 : (a === 1 ? 0.5 : 0);            // redundancia WAN
+    case 29: return a === 2 ? null : (a === 0 ? 1 : 0);           // conectividad privada (excl. "no aplica")
+
+    // Cloud Readiness
+    case 31: return [1, 0.66, 0.33, 0][a];                        // cargas en nube
+
+    default: return null; // Q1,2,3,6,22,30,32 = contexto, no maturity score
+  }
+}
+
+function buildDomainDataDC() {
+  const DOMAINS = [
+    { label:"Facility", weight:11, qids:[4,5] },
+    { label:"Seguridad Física", weight:9, qids:[7,8] },
+    { label:"Energía y Climatización", weight:14, qids:[9,10,11] },
+    { label:"Protección contra Incendios", weight:3, qids:[12] },
+    { label:"Operación y Soporte", weight:8, qids:[13,14,15] },
+    { label:"Continuidad y DRP", weight:23, qids:[16,17,18,19,20] },
+    { label:"Infraestructura Tecnológica", weight:17, qids:[21,23,24,25,26,27] },
+    { label:"Conectividad", weight:9, qids:[28,29] },
+    { label:"Cloud Readiness", weight:6, qids:[31] }
+  ];
+  return DOMAINS.map(d => {
+    const scores = d.qids.map(scoreForQidDC).filter(s => s !== null);
+    if (!scores.length) return { label:d.label, weight:d.weight, score:null };
+    const avg = scores.reduce((s,v)=>s+v,0) / scores.length;
+    return { label:d.label, weight:d.weight, score: Math.round(avg*100) };
+  }).filter(d => d.score !== null);
+}
+
+function computeDCMI(domainData) {
+  // Promedio ponderado usando solo los dominios con score disponible,
+  // renormalizando el peso total a 100 si algún dominio quedó sin responder.
+  const totalWeight = domainData.reduce((s,d)=>s+d.weight, 0);
+  if (!totalWeight) return 0;
+  const weighted = domainData.reduce((s,d)=>s + (d.score * d.weight), 0);
+  return Math.round(weighted / totalWeight);
+}
+
+function renderDomainBarsDC(data) {
+  const sorted = [...data].sort((a,b) => a.score - b.score); // peor score primero
+  const colorFor = (s) => s < 40 ? "#DC2626" : s < 70 ? "#D97706" : "#16A34A";
+  const rows = sorted.map(d => `
+    <div style="margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:#334155;margin-bottom:4px;">
+        <span>${d.label} <span style="font-weight:400;color:#94A3B8;">(peso ${d.weight}%)</span></span>
+        <span style="color:${colorFor(d.score)};font-weight:700;">${d.score}%</span>
+      </div>
+      <div style="background:#F1F5F9;border-radius:6px;height:10px;overflow:hidden;">
+        <div style="width:${d.score}%;height:100%;background:${colorFor(d.score)};border-radius:6px;"></div>
+      </div>
+    </div>`).join("");
+  return `<div>${rows}</div>`;
+}
+
+
 function renderRadarSVG(data) {
   const size = 700, cx = size/2, cy = size/2, radius = 170;
   const n = data.length;
