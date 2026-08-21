@@ -505,7 +505,64 @@ const Q = [
 ];
 
 // Cuestionario Data Center — 32 preguntas, 11 dominios (pendiente de carga, sesión siguiente)
-const Q_DC = [];
+// Cuestionario Data Center — 32 preguntas, 11 dominios
+const Q_DC = [
+  // Dominio 1 — Perfil y Criticidad (3)
+  { id:1, domain:"Perfil y Criticidad", text:"¿Cuál es la industria principal de la organización?", type:"radio", opts:["Financiero","Salud","Retail","Gobierno","Educación","Manufactura","Minería","Telecomunicaciones","Servicios profesionales","Otro"] },
+  { id:2, domain:"Perfil y Criticidad", text:"¿Cuál es el nivel de criticidad de la infraestructura evaluada?", type:"radio", opts:["Bajo (procesos administrativos)","Medio (procesos operacionales)","Alto (procesos productivos o core)","Crítico (atención a clientes o procesamiento transaccional)"] },
+  { id:3, domain:"Perfil y Criticidad", text:"¿Cuál es el objetivo de disponibilidad requerido?", type:"radio", opts:["99,5%","99,9%","99,95%","99,99%","Mayor a 99,99%"] },
+
+  // Dominio 2 — Data Center Actual y Facility (3)
+  { id:4, domain:"Facility", text:"¿Qué tipo de infraestructura aloja actualmente el Data Center?", type:"radio", opts:["Oficina o sala técnica (no diseñada como DC)","Data Center propio con diseño parcial","Data Center propio certificado","Data Center externo (Housing/Colocation)","Nube pública","Ambiente mixto"] },
+  { id:5, domain:"Facility", text:"¿Existe capacidad física disponible para crecimiento?", type:"radio", opts:["Nula","Limitada","Suficiente","Amplia"] },
+  { id:6, domain:"Facility", text:"¿Cuál es la densidad promedio por rack?", type:"radio", opts:["Menos de 2 kW","2 a 5 kW","5 a 10 kW","Más de 10 kW","No conocida"] },
+
+  // Dominio 3 — Seguridad Física (2)
+  { id:7, domain:"Seguridad Física", text:"¿Cuáles de estos controles de seguridad física posee?", type:"check", opts:["Control de acceso (tarjeta/biometría)","CCTV con grabación","Bitácora de ingreso de visitas","Segregación de áreas críticas"] },
+  { id:8, domain:"Seguridad Física", text:"¿Se valida identidad y se exige NDA para visitas externas?", type:"radio", opts:["Sí, ambos","Solo uno","No"] },
+
+  // Dominio 4 — Energía y Climatización (3)
+  { id:9, domain:"Energía y Climatización", text:"¿Cuáles de estos elementos de resiliencia energética posee?", type:"check", opts:["Doble acometida eléctrica","UPS redundante","Grupo generador","Climatización redundante (N+1)"] },
+  { id:10, domain:"Energía y Climatización", text:"¿Cuánto tiempo puede operar sin energía comercial?", type:"radio", opts:["Menos de 5 min","5 a 30 min","30 min a 4 horas","Más de 4 horas","Más de 24 horas"] },
+  { id:11, domain:"Energía y Climatización", text:"¿Se monitorean temperatura y humedad de forma continua?", type:"radio", opts:["Sí, 24x7","Sí, periódicamente","No"] },
+
+  // Dominio 5 — Protección contra Incendios (1)
+  { id:12, domain:"Protección contra Incendios", text:"¿Cuenta con detección temprana y/o extinción automática de incendios?", type:"radio", opts:["Ambos","Solo detección","Solo extinción","Ninguno"] },
+
+  // Dominio 6 — Operación y Soporte (3)
+  { id:13, domain:"Operación y Soporte", text:"¿Existe personal técnico en sitio 24x7?", type:"radio", opts:["Sí","Parcial","No"] },
+  { id:14, domain:"Operación y Soporte", text:"¿Existe procedimiento formal de control de cambios para intervención de infraestructura?", type:"radio", opts:["Sí","Parcial","No"] },
+  { id:15, domain:"Operación y Soporte", text:"¿Existe monitoreo de alarmas y atención de fallas?", type:"radio", opts:["Sí, 24x7","Sí, horario hábil","No"] },
+
+  // Dominio 7 — Continuidad y DRP (5)
+  { id:16, domain:"Continuidad y DRP", text:"¿Existe un plan de recuperación ante desastres (DRP) formal?", type:"radio", opts:["Sí","En desarrollo","No"], warning:"La continuidad operacional está directamente vinculada a las exigencias de la Ley Marco de Ciberseguridad para organizaciones que prestan Servicios Esenciales u OIV (Operadores de Importancia Vital) en Chile, que exige capacidad de recuperación ante incidentes." },
+  { id:17, domain:"Continuidad y DRP", text:"¿Existe sitio alterno?", type:"radio", opts:["Sí, propio","Sí, contratado","No"] },
+  { id:18, domain:"Continuidad y DRP", text:"¿Cuál es el RTO requerido?", type:"radio", opts:["Menos de 1 hora","1 a 4 horas","4 a 24 horas","Más de 24 horas","No definido"], glossary:"<strong>RTO (Recovery Time Objective):</strong> tiempo máximo aceptable para restablecer un sistema o servicio después de una interrupción." },
+  { id:19, domain:"Continuidad y DRP", text:"¿Cuál es el RPO requerido?", type:"radio", opts:["Menos de 15 min","15 min a 1 hora","1 a 4 horas","Más de 4 horas","No definido"], glossary:"<strong>RPO (Recovery Point Objective):</strong> cantidad máxima de datos, medida en tiempo, que la organización puede permitirse perder tras un incidente." },
+  { id:20, domain:"Continuidad y DRP", text:"¿Se realizan pruebas de recuperación con informes de resultado?", type:"radio", opts:["Sí, anual con informe","Sí, esporádicamente","No"] },
+
+  // Dominio 8 — Infraestructura Tecnológica (7)
+  { id:21, domain:"Infraestructura Tecnológica", text:"¿Cuál es la antigüedad promedio de los servidores?", type:"radio", opts:["Menos de 3 años","3 a 5 años","5 a 7 años","Más de 7 años"] },
+  { id:22, domain:"Infraestructura Tecnológica", text:"¿Cuál es el fabricante predominante?", type:"radio", opts:["HPE","Dell","Lenovo","IBM","Mixto","Otro"] },
+  { id:23, domain:"Infraestructura Tecnológica", text:"¿Cuál es la utilización promedio de CPU/RAM?", type:"radio", opts:["Menos de 30%","30-60%","60-80%","Más de 80%","No conocida"] },
+  { id:24, domain:"Infraestructura Tecnológica", text:"¿Qué tipo de almacenamiento utiliza y cuál es su capacidad utilizada?", type:"radio", opts:["SAN/NAS menor a 70%","SAN/NAS 70-85%","SAN/NAS mayor a 85%","HCI o Cloud Storage","Mixto"] },
+  { id:25, domain:"Infraestructura Tecnológica", text:"¿Qué plataforma de backup utiliza?", type:"radio", opts:["Solución dedicada on-premise","Backup en la nube","Mixto","No cuenta con plataforma formal"] },
+  { id:26, domain:"Infraestructura Tecnológica", text:"¿Los respaldos están cifrados y son inmutables?", type:"check", opts:["Cifrado","Inmutabilidad","No sabe"] },
+  { id:27, domain:"Infraestructura Tecnológica", text:"¿Presenta problemas recurrentes de rendimiento o capacidad?", type:"radio", opts:["Sí, frecuentemente","Ocasionalmente","No"] },
+
+  // Dominio 9 — Conectividad (3)
+  { id:28, domain:"Conectividad", text:"¿Cuenta con redundancia WAN y diversidad de carrier?", type:"radio", opts:["Sí, ambos","Solo redundancia","Ninguno"] },
+  { id:29, domain:"Conectividad", text:"¿Requiere o cuenta con conectividad privada hacia nube pública?", type:"radio", opts:["Sí, cuenta","Requiere, no cuenta","No aplica"] },
+  { id:30, domain:"Conectividad", text:"¿Cuál es la latencia máxima aceptable para aplicaciones críticas?", type:"radio", opts:["Menos de 5 ms","5-20 ms","20-50 ms","Más de 50 ms","No definida"] },
+
+  // Dominio 10 — Cloud Readiness (2)
+  { id:31, domain:"Cloud Readiness", text:"¿Tiene cargas actualmente en nube pública o considera migrar?", type:"radio", opts:["Sí, en producción","Parcial","Planea migrar","No"] },
+  { id:32, domain:"Cloud Readiness", text:"¿Existen restricciones regulatorias o de residencia de datos?", type:"radio", opts:["Sí","No","No sabe"] }
+];
+
+// NOTA: FinOps (modelo financiero + presupuesto) quedó fuera del conteo de 32 —
+// ver siguiente paso de sesión para decidir si se agrega como Q33-34 o se recoge
+// directamente en el formulario de contacto (igual que "proyectos" en Ciberseguridad).
 
 const INTROS = {
   2:"La oficina ya no tiene paredes. Hoy, el trabajo viaja en una mochila, se conecta desde un aeropuerto o desde casa. La flexibilidad llegó para quedarse, pero con ella llegó también un nuevo desafío: ¿cómo acceden los usuarios a los servicios cuando están lejos de la red corporativa?",
