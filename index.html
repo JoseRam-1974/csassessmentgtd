@@ -983,7 +983,7 @@ function renderQuiz(el) {
   const QQ = activeQ();
   const q=QQ[cur], pct=Math.round((cur/QQ.length)*100), done=QQ.filter((_,i)=>isAnswered(i)).length;
   document.getElementById("topbarStatus").textContent=`Pregunta ${cur+1} de ${QQ.length}`;
-  const intro = INTROS[q.id] ? `<div class="q-intro">${INTROS[q.id]}</div>` : "";
+  const intro = (assessmentType==="cyber" && INTROS[q.id]) ? `<div class="q-intro">${INTROS[q.id]}</div>` : "";
   const badge = q.type==="radio" ? `<span class="q-badge badge-single">Opción única</span>` : `<span class="q-badge badge-multi">Selección múltiple</span>`;
   let opts="";
   if(q.type==="radio"){
