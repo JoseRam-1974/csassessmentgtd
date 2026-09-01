@@ -288,12 +288,12 @@
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
   .form-field { display: flex; flex-direction: column; gap: 5px; }
   .form-field label { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.04em; }
-  .form-field input {
+  .form-field input, .form-field select {
     background: var(--bg); border: 1.5px solid var(--border);
     border-radius: var(--radius-sm); padding: 10px 12px;
     color: var(--text); font-size: 14px; outline: none; transition: border-color 0.15s;
   }
-  .form-field input:focus { border-color: var(--gtd-blue); }
+  .form-field input:focus, .form-field select:focus { border-color: var(--gtd-blue); }
   .contact-sent {
     background: var(--success-bg); border: 1px solid #BBF7D0;
     border-radius: var(--radius-sm); padding: 13px 16px;
@@ -403,6 +403,9 @@
   <input type="email" name="email" />
   <input type="text" name="empresa" />
   <input type="tel" name="telefono" />
+  <input type="text" name="pais" />
+  <input type="text" name="tipo" />
+  <input type="text" name="modelo_financiero" /><input type="text" name="presupuesto" />
   <input type="number" name="servidores" /><input type="number" name="endpoints" />
   <input type="text" name="p1" /><input type="text" name="p2" /><input type="text" name="p3" />
   <input type="text" name="p4" /><input type="text" name="p5" /><input type="text" name="p6" />
@@ -411,6 +414,10 @@
   <input type="text" name="p13" /><input type="text" name="p14" /><input type="text" name="p15" />
   <input type="text" name="p16" /><input type="text" name="p17" /><input type="text" name="p18" />
   <input type="text" name="p19" /><input type="text" name="p20" /><input type="text" name="p21" />
+  <input type="text" name="p22" /><input type="text" name="p23" /><input type="text" name="p24" />
+  <input type="text" name="p25" /><input type="text" name="p26" /><input type="text" name="p27" />
+  <input type="text" name="p28" /><input type="text" name="p29" /><input type="text" name="p30" />
+  <input type="text" name="p31" /><input type="text" name="p32" />
   <textarea name="proyectos"></textarea>
   <input name="bot-field" />
 </form>
@@ -899,6 +906,13 @@ function getRecs(a) {
 }
 
 
+function getMaturityDC(dcmi) {
+  if (dcmi >= 80) return { nivel:"Enterprise", desc:"Infraestructura de Data Center con controles robustos, continuidad probada y buena capacidad de escalamiento.", icon:"●●●●", color:"#166534", bg:"#F0FDF4", border:"#16A34A" };
+  if (dcmi >= 60) return { nivel:"Avanzado", desc:"Buena base de madurez, con brechas puntuales que conviene cerrar antes de escalar la infraestructura.", icon:"●●●○", color:"#854D0E", bg:"#FEFCE8", border:"#CA8A04" };
+  if (dcmi >= 35) return { nivel:"Intermedio", desc:"Existen controles básicos, pero hay brechas relevantes en continuidad, energía o seguridad física que representan riesgo real.", icon:"●●○○", color:"#9A3412", bg:"#FFF7ED", border:"#EA580C" };
+  return { nivel:"Básico", desc:"La infraestructura presenta brechas críticas transversales. Se recomienda priorizar acción inmediata sobre los hallazgos de mayor riesgo.", icon:"●○○○", color:"#991B1B", bg:"#FEF2F2", border:"#DC2626" };
+}
+
 function getMaturity(answers, projs) {
   let score = 0;
 
@@ -1280,6 +1294,114 @@ function renderRoadmapDC(roadmap) {
   return `<div style="display:flex;gap:14px;flex-wrap:wrap;">${cols}</div>`;
 }
 
+function renderReportDC(el) {
+  const domainData = buildDomainDataDC();
+  const dcmi = computeDCMI(domainData);
+  const { narr, projs } = getRecsDC(answers);
+  const roadmap = buildRoadmapDC(projs);
+  const mat = getMaturityDC(dcmi);
+  document.getElementById("topbarStatus").textContent = "Diagnóstico completado";
+
+  const answeredCount = activeQ().filter((_,i)=>isAnswered(i)).length;
+
+  const areasHtml = Object.keys(narr).map(qid => {
+    const q = Q_DC.find(x => x.id === Number(qid));
+    const title = q ? q.domain : "Hallazgo";
+    return `<div class="area-block"><div class="area-heading">${title}</div><div class="rec-box rec-warn">${narr[qid]}</div></div>`;
+  }).join("");
+
+  const projsHtml = projs.length > 0
+    ? projs.sort((a,b)=>a.priority-b.priority).map((p,i) => `<div class="proj-item"><span class="proj-num">${String(i+1).padStart(2,"0")}</span><span>${p.text}</span></div>`).join("")
+    : `<div class="proj-item"><span class="proj-num" style="background:var(--success)">✓</span><span>La infraestructura evaluada muestra una postura de madurez sólida. Se recomienda mantener revisiones periódicas.</span></div>`;
+
+  const roadmapHtml = renderRoadmapDC(roadmap);
+
+  el.innerHTML = `
+    <div id="pdf-content"><div class="report-hero">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"><div style="font-size:17px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.9);">Diagnóstico Data Center</div></div>
+      <div style="margin-bottom:1.25rem;"></div>
+      <div id="pdf-client-info" style="display:none;font-size:13px;color:rgba(255,255,255,0.85);margin-bottom:1rem;padding:8px 12px;background:rgba(255,255,255,0.1);border-radius:6px;"></div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-val stat-light">${answeredCount}</div><div class="stat-lbl">Preguntas evaluadas</div></div>
+        <div class="stat-box"><div class="stat-val stat-yellow">${projs.length}</div><div class="stat-lbl">Proyectos sugeridos</div></div>
+        <div class="stat-box"><div class="stat-val stat-green">${dcmi}%</div><div class="stat-lbl">Índice de Madurez (DCMI)</div></div>
+      </div>
+      <div id="maturity-badge" style="margin-top:1rem;padding:12px 16px;border-radius:8px;display:flex;align-items:center;gap:14px;background:${mat.bg};border-left:4px solid ${mat.border};">
+        <div id="maturity-icon" style="font-size:20px;letter-spacing:3px;color:${mat.color};">${mat.icon}</div>
+        <div>
+          <div id="maturity-label" style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;color:${mat.color};">Grado de madurez: ${mat.nivel}</div>
+          <div id="maturity-desc" style="font-size:13px;line-height:1.5;color:${mat.color};">${mat.desc}</div>
+        </div>
+      </div>
+    </div>
+    <div style="background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:16px 12px;margin-bottom:1.5rem;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B;margin-bottom:8px;">Madurez por Dominio</div>
+      ${renderDomainBarsDC(domainData)}
+    </div>
+    <div class="section-title">Áreas con oportunidades de mejora</div>${areasHtml}
+    <hr class="divider">
+    </div>
+    <div id="pdf-content-proyectos" style="background:#fff;padding:24px 0 8px;">
+    <div class="section-title">Proyectos Recomendados</div>
+    <div class="proj-list">${projsHtml}</div>
+    ${roadmap.length ? `<div class="section-title" style="margin-top:1.5rem;">Roadmap de Evolución</div>${roadmapHtml}` : ""}
+    <div class="gtd-footer" style="margin-top:2rem;padding-bottom:1rem;">GTD · Diagnóstico Data Center · © 2026 Todos los derechos reservados</div>
+    </div>
+    <hr class="divider">
+    <div class="contact-card">
+      <div class="contact-eyebrow">Siguiente paso</div>
+      <h3>¿Podemos ayudarte a implementar estas recomendaciones?</h3>
+      <p>Déjanos tus datos y un especialista GTD se pondrá en contacto contigo.</p>
+      <div class="contact-sent" id="contactSent">✓ Tus datos fueron enviados. Un especialista GTD te contactará pronto.</div>
+      <div class="contact-error" id="contactError" style="display:none;background:#FEF2F2;border:1px solid #FECACA;color:#B91C1C;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;">⚠️ Hubo un problema al enviar tus datos. Por favor reintenta, o escríbenos directo a <strong>joseandres.ramirez@grupogtd.com</strong> si el problema persiste.</div>
+      <div class="form-grid">
+        <div class="form-field"><label>Nombre</label><input type="text" id="cNombre" placeholder="Tu nombre"></div>
+        <div class="form-field"><label>Correo</label><input type="email" id="cEmail" placeholder="correo@empresa.cl"></div>
+        <div class="form-field"><label>Empresa</label><input type="text" id="cEmpresa" placeholder="Nombre de tu empresa"></div>
+        <div class="form-field"><label>Teléfono</label><input type="tel" id="cTel" placeholder="+56 9 XXXX XXXX"></div>
+        <div class="form-field"><label>País</label>
+          <select id="cPais">
+            <option value="">Selecciona tu país</option>
+            <option value="Chile">Chile</option>
+            <option value="Perú">Perú</option>
+            <option value="Colombia">Colombia</option>
+            <option value="Argentina">Argentina</option>
+            <option value="Ecuador">Ecuador</option>
+            <option value="México">México</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+        <div class="form-field"><label>Modelo financiero preferido</label>
+          <select id="cModeloFin">
+            <option value="">Selecciona una opción</option>
+            <option value="CAPEX">CAPEX</option>
+            <option value="OPEX">OPEX</option>
+            <option value="Mixto">Mixto</option>
+            <option value="No definido">No definido</option>
+          </select>
+        </div>
+        <div class="form-field"><label>¿Presupuesto aprobado?</label>
+          <select id="cPresupuesto">
+            <option value="">Selecciona una opción</option>
+            <option value="Sí">Sí</option>
+            <option value="En evaluación">En evaluación</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn-gtd btn-steel" onclick="submitContact()">Solicitar contacto con GTD →</button>
+    </div>
+    <hr class="divider">
+    <div style="margin-top:1rem;display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="restart-btn" onclick="restart()">← Reiniciar diagnóstico</button>
+      <button class="btn-next" onclick="downloadPDF()" style="display:flex;align-items:center;gap:8px;">
+        ↓ Descargar reporte PDF
+      </button>
+    </div>
+  `;
+}
+
 
 function renderRadarSVG(data) {
   const size = 700, cx = size/2, cy = size/2, radius = 170;
@@ -1322,6 +1444,7 @@ function renderRadarSVG(data) {
 }
 
 function renderReport(el) {
+  if (assessmentType === "dc") { renderReportDC(el); return; }
   const {narr,projs}=getRecs(answers);
   document.getElementById("topbarStatus").textContent="Diagnóstico completado";
   const answered=activeQ().filter((_,i)=>isAnswered(i)).length;
@@ -1382,6 +1505,18 @@ function renderReport(el) {
         <div class="form-field"><label>Correo</label><input type="email" id="cEmail" placeholder="correo@empresa.cl"></div>
         <div class="form-field"><label>Empresa</label><input type="text" id="cEmpresa" placeholder="Nombre de tu empresa"></div>
         <div class="form-field"><label>Teléfono</label><input type="tel" id="cTel" placeholder="+56 9 XXXX XXXX"></div>
+        <div class="form-field"><label>País</label>
+          <select id="cPais">
+            <option value="">Selecciona tu país</option>
+            <option value="Chile">Chile</option>
+            <option value="Perú">Perú</option>
+            <option value="Colombia">Colombia</option>
+            <option value="Argentina">Argentina</option>
+            <option value="Ecuador">Ecuador</option>
+            <option value="México">México</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
         <div class="form-field"><label>Número de Servidores</label><input type="number" min="0" id="cServidores" placeholder="Ej: 10"></div>
         <div class="form-field"><label>Número de Endpoints</label><input type="number" min="0" id="cEndpoints" placeholder="Ej: 50"></div>
       </div>
@@ -1446,7 +1581,7 @@ function goBack(){if(cur>0){cur--;render();}}
 function showReport(){view="report";render();}
 function restart(){answers={};cur=0;view="quiz";render();}
 function getOptLabel(qid, val) {
-  const q = Q.find(x => x.id === qid);
+  const q = activeQ().find(x => x.id === qid);
   if (!q || val === undefined) return "";
   if (q.type === "radio") return q.opts[val] || "";
   return (val || []).map(i => q.opts[i]).filter(Boolean).join(", ");
@@ -1460,6 +1595,7 @@ async function submitContact(){
   const e=document.getElementById("cEmail")?.value||"";
   const emp=document.getElementById("cEmpresa")?.value||"";
   const tel=document.getElementById("cTel")?.value||"";
+  const pais=document.getElementById("cPais")?.value||"";
   const serv=document.getElementById("cServidores")?.value||"";
   const endp=document.getElementById("cEndpoints")?.value||"";
 
@@ -1468,10 +1604,15 @@ async function submitContact(){
     if (btn) { btn.disabled = false; btn.textContent = "Solicitar contacto con GTD →"; }
     return; 
   }
-  const {projs}=getRecs(answers);
+  const isDC = assessmentType === "dc";
+  const modeloFin = document.getElementById("cModeloFin")?.value || "";
+  const presupuesto = document.getElementById("cPresupuesto")?.value || "";
+  const { projs } = isDC ? getRecsDC(answers) : getRecs(answers);
 
   const payload={
-    nombre:n, email:e, empresa:emp, telefono:tel, servidores:serv, endpoints:endp,
+    nombre:n, email:e, empresa:emp, telefono:tel, pais:pais, servidores:serv, endpoints:endp,
+    tipo: isDC ? "Data Center" : "Ciberseguridad",
+    modelo_financiero: modeloFin, presupuesto: presupuesto,
     p1:  getOptLabel(1,  answers[1]),
     p2:  getOptLabel(2,  answers[2]),
     p3:  getOptLabel(3,  answers[3]),
@@ -1493,6 +1634,17 @@ async function submitContact(){
     p19: getOptLabel(19, answers[19]),
     p20: getOptLabel(20, answers[20]),
     p21: getOptLabel(21, answers[21]),
+    p22: isDC ? getOptLabel(22, answers[22]) : "",
+    p23: isDC ? getOptLabel(23, answers[23]) : "",
+    p24: isDC ? getOptLabel(24, answers[24]) : "",
+    p25: isDC ? getOptLabel(25, answers[25]) : "",
+    p26: isDC ? getOptLabel(26, answers[26]) : "",
+    p27: isDC ? getOptLabel(27, answers[27]) : "",
+    p28: isDC ? getOptLabel(28, answers[28]) : "",
+    p29: isDC ? getOptLabel(29, answers[29]) : "",
+    p30: isDC ? getOptLabel(30, answers[30]) : "",
+    p31: isDC ? getOptLabel(31, answers[31]) : "",
+    p32: isDC ? getOptLabel(32, answers[32]) : "",
     proyectos: projs.length
       ? "Con base en las respuestas del diagnóstico, se recomienda avanzar en los siguientes proyectos:\n" +
         projs.map((p,i)=>`${i+1}. ${p.text||p}.`).join("\n")
