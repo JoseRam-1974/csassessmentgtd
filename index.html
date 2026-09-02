@@ -422,6 +422,29 @@
   <input name="bot-field" />
 </form>
 
+<!-- Formulario separado para Data Center: permite configurar destinatarios de notificación distintos en Netlify -->
+<form name="assessment-dc" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input type="text" name="nombre" />
+  <input type="email" name="email" />
+  <input type="text" name="empresa" />
+  <input type="tel" name="telefono" />
+  <input type="text" name="pais" />
+  <input type="text" name="modelo_financiero" /><input type="text" name="presupuesto" />
+  <input type="text" name="p1" /><input type="text" name="p2" /><input type="text" name="p3" />
+  <input type="text" name="p4" /><input type="text" name="p5" /><input type="text" name="p6" />
+  <input type="text" name="p7" /><input type="text" name="p8" /><input type="text" name="p9" />
+  <input type="text" name="p10" /><input type="text" name="p11" /><input type="text" name="p12" />
+  <input type="text" name="p13" /><input type="text" name="p14" /><input type="text" name="p15" />
+  <input type="text" name="p16" /><input type="text" name="p17" /><input type="text" name="p18" />
+  <input type="text" name="p19" /><input type="text" name="p20" /><input type="text" name="p21" />
+  <input type="text" name="p22" /><input type="text" name="p23" /><input type="text" name="p24" />
+  <input type="text" name="p25" /><input type="text" name="p26" /><input type="text" name="p27" />
+  <input type="text" name="p28" /><input type="text" name="p29" /><input type="text" name="p30" />
+  <input type="text" name="p31" /><input type="text" name="p32" />
+  <textarea name="proyectos"></textarea>
+  <input name="bot-field" />
+</form>
+
 <!-- LOCK -->
 <div id="lockScreen">
   <div class="lock-logo-wrap">
@@ -1672,7 +1695,8 @@ async function submitContact(){
   // Canal Netlify Forms: es el canal crítico real (notificación por correo). Su éxito determina el mensaje al usuario.
   let netlifyFormsOk = false;
   try {
-    const nfBody = new URLSearchParams({ "form-name": "assessment", ...payload });
+    const formName = isDC ? "assessment-dc" : "assessment";
+    const nfBody = new URLSearchParams({ "form-name": formName, ...payload });
     nfBody.delete("csrfToken"); // no es un campo del form estático, se descarta
     const nfRes = await fetch("/", {
       method: "POST",
