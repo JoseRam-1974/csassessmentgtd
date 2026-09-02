@@ -552,7 +552,7 @@ const Q_DC = [
   { id:21, domain:"Infraestructura Tecnológica", text:"¿Cuál es la antigüedad promedio de los servidores?", type:"radio", opts:["Menos de 3 años","3 a 5 años","5 a 7 años","Más de 7 años"] },
   { id:22, domain:"Infraestructura Tecnológica", text:"¿Cuál es el fabricante predominante?", type:"radio", opts:["HPE","Dell","Lenovo","IBM","Mixto","Otro"] },
   { id:23, domain:"Infraestructura Tecnológica", text:"¿Cuál es la utilización promedio de CPU/RAM?", type:"radio", opts:["Menos de 30%","30-60%","60-80%","Más de 80%","No conocida"] },
-  { id:24, domain:"Infraestructura Tecnológica", text:"¿Qué tipo de almacenamiento utiliza y cuál es su capacidad utilizada?", type:"radio", opts:["SAN/NAS menor a 70%","SAN/NAS 70-85%","SAN/NAS mayor a 85%","HCI o Cloud Storage","Mixto"] },
+  { id:24, domain:"Infraestructura Tecnológica", text:"¿Qué tipo de almacenamiento utiliza y cuál es su capacidad utilizada?", type:"radio", opts:["SAN/NAS menor a 70%","SAN/NAS 70-85%","SAN/NAS mayor a 85%","HCI o Cloud Storage","Mixto"], glossary:"<strong>SAN (Storage Area Network):</strong> red dedicada de almacenamiento en bloque, de alto rendimiento, típica en Data Centers empresariales.<br><br><strong>NAS (Network Attached Storage):</strong> almacenamiento en archivos accesible por red, más simple de administrar que una SAN.<br><br><strong>HCI (Hyper-Converged Infrastructure):</strong> arquitectura que integra cómputo, almacenamiento y virtualización en un solo clúster de nodos, simplificando la gestión.<br><br><strong>Cloud Storage:</strong> almacenamiento provisto por un proveedor de nube pública (ej. Amazon S3, Azure Blob), con capacidad elástica y pago por uso." },
   { id:25, domain:"Infraestructura Tecnológica", text:"¿Qué plataforma de backup utiliza?", type:"radio", opts:["Solución dedicada on-premise","Backup en la nube","Mixto","No cuenta con plataforma formal"] },
   { id:26, domain:"Infraestructura Tecnológica", text:"¿Los respaldos están cifrados y son inmutables?", type:"check", opts:["Cifrado","Inmutabilidad","No sabe"] },
   { id:27, domain:"Infraestructura Tecnológica", text:"¿Presenta problemas recurrentes de rendimiento o capacidad?", type:"radio", opts:["Sí, frecuentemente","Ocasionalmente","No"] },
@@ -1768,9 +1768,13 @@ async function downloadPDF() {
       await addCanvasToPDF(await captureBlock(radarEl), false);
     }
 
-    // 3. Capturar cada area-block individualmente
+    // 3. Capturar cada area-block individualmente (en página nueva, para que el reporte quede más ordenado)
     const areaBlocks = document.querySelectorAll("#pdf-content .area-block");
     let firstArea = true;
+    if (areaBlocks.length > 0) {
+      pdf.addPage();
+      currentY = margin;
+    }
     for (const block of areaBlocks) {
       if (firstArea) {
         // Agregar título de sección antes del primer bloque
