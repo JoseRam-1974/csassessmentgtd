@@ -1245,7 +1245,7 @@ function renderRadarDC(data) {
     return `<circle class="radar-dot" style="animation-delay:${fadeDelay}s, ${pulseDelay}s" cx="${x}" cy="${y}" r="3.5" fill="${colorFor(d.score)}"/>`;
   }).join("");
 
-  return `<svg viewBox="0 0 390 370" style="width:100%;max-width:460px;display:block;margin:0 auto;overflow:visible;">${rings}${axes}${shape}${dots}${labels}</svg>`;
+  return `<div style="display:flex;justify-content:center;width:100%;"><svg viewBox="0 0 390 370" width="390" height="370" style="width:100%;max-width:460px;height:auto;display:block;overflow:visible;">${rings}${axes}${shape}${dots}${labels}</svg></div>`;
 }
 
 
