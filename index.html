@@ -1103,7 +1103,7 @@ function buildRadarData() {
     const scores = g.qids.map(scoreForQid).filter(s => s !== null);
     if (!scores.length) return { label:g.label, score:null };
     const avg = scores.reduce((s,v)=>s+v,0) / scores.length;
-    return { label:g.label, score: Math.round(avg*100) };
+    return { label:g.label, score: Math.round(avg*100), qids: g.qids };
   }).filter(d => d.score !== null);
 }
 
@@ -1168,7 +1168,7 @@ function buildDomainDataDC() {
     const scores = d.qids.map(scoreForQidDC).filter(s => s !== null);
     if (!scores.length) return { label:d.label, weight:d.weight, score:null };
     const avg = scores.reduce((s,v)=>s+v,0) / scores.length;
-    return { label:d.label, weight:d.weight, score: Math.round(avg*100) };
+    return { label:d.label, weight:d.weight, score: Math.round(avg*100), qids: d.qids };
   }).filter(d => d.score !== null);
 }
 
@@ -1210,7 +1210,14 @@ function wrapRadarLabel(label) {
   return lines.slice(0, 3); // máx 3 líneas por seguridad
 }
 
-function renderRadarDC(data) {
+// Detecta dominios con score alto (verde) que igualmente contienen un hallazgo
+// de prioridad 1-2 en el Roadmap — evita que el promedio "esconda" una brecha puntual.
+function hasHiddenGap(domain, projs) {
+  if (!projs || domain.score < 70 || !domain.qids) return false;
+  return projs.some(p => p.qid != null && domain.qids.includes(p.qid) && p.priority <= 2);
+}
+
+function renderRadarDC(data, projs) {
   const cx = 195, cy = 185, r = 100;
   const n = data.length;
   const angle = (i) => (Math.PI * 2 * i) / n - Math.PI / 2;
@@ -1241,7 +1248,8 @@ function renderRadarDC(data) {
     const a=angle(i); const rr=r*(d.score/100); const x=cx+rr*Math.cos(a), y=cy+rr*Math.sin(a);
     const fadeDelay = (0.55+i*0.05).toFixed(2);
     const pulseDelay = (parseFloat(fadeDelay)+0.5).toFixed(2);
-    return `<circle class="radar-dot" style="animation-delay:${fadeDelay}s, ${pulseDelay}s" cx="${x}" cy="${y}" r="3.5" fill="${colorFor(d.score)}"/>`;
+    const warn = hasHiddenGap(d, projs) ? `<circle cx="${x}" cy="${y}" r="7" fill="none" stroke="#D97706" stroke-width="1.5" stroke-dasharray="2.5,2"/>` : "";
+    return `${warn}<circle class="radar-dot" style="animation-delay:${fadeDelay}s, ${pulseDelay}s" cx="${x}" cy="${y}" r="3.5" fill="${colorFor(d.score)}"/>`;
   }).join("");
 
   return `<div style="display:flex;justify-content:center;width:100%;"><svg viewBox="0 0 390 370" width="390" height="370" style="width:100%;max-width:460px;height:auto;display:block;overflow:visible;">${rings}${axes}${shape}${dots}${labels}</svg></div>`;
@@ -1381,6 +1389,13 @@ function renderRoadmapDC(roadmap) {
   return `<div style="display:flex;gap:14px;flex-wrap:wrap;">${cols}</div>`;
 }
 
+// Etiqueta visual de tipo de hallazgo, según prioridad asignada por el motor de recomendación
+function priorityBadge(priority) {
+  if (priority === 1) return `<span style="font-size:9px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA;margin-left:8px;white-space:nowrap;">Acción inmediata</span>`;
+  if (priority === 2) return `<span style="font-size:9px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#FFFBEB;color:#B45309;border:1px solid #FDE68A;margin-left:8px;white-space:nowrap;">Atención media</span>`;
+  return `<span style="font-size:9px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#F0FDF4;color:#15803D;border:1px solid #BBF7D0;margin-left:8px;white-space:nowrap;">Optimización</span>`;
+}
+
 function renderReportDC(el) {
   const domainData = buildDomainDataDC();
   const dcmi = computeDCMI(domainData);
@@ -1398,7 +1413,7 @@ function renderReportDC(el) {
   }).join("");
 
   const projsHtml = projs.length > 0
-    ? projs.sort((a,b)=>a.priority-b.priority).map((p,i) => `<div class="proj-item"><span class="proj-num">${String(i+1).padStart(2,"0")}</span><span>${p.text}</span></div>`).join("")
+    ? projs.sort((a,b)=>a.priority-b.priority).map((p,i) => `<div class="proj-item"><span class="proj-num">${String(i+1).padStart(2,"0")}</span><span>${p.text}${priorityBadge(p.priority)}</span></div>`).join("")
     : `<div class="proj-item"><span class="proj-num" style="background:var(--success)">✓</span><span>La infraestructura evaluada muestra una postura de madurez sólida. Se recomienda mantener revisiones periódicas.</span></div>`;
 
   const roadmapHtml = renderRoadmapDC(roadmap);
@@ -1422,8 +1437,9 @@ function renderReportDC(el) {
       </div>
     </div>
     <div id="radar-wrap" style="background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:16px 12px;margin-bottom:1.5rem;">
-      <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B;margin-bottom:8px;">Madurez por Dominio</div>
-      ${renderRadarDC(domainData)}
+      <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B;margin-bottom:4px;">Madurez por Dominio</div>
+      <div style="font-size:11px;color:#94A3B8;margin-bottom:8px;">El score de cada dominio es un promedio. Un punto verde con borde punteado ámbar indica que, aunque el dominio promedia bien, contiene un hallazgo puntual con prioridad alta — revisa "Proyectos Recomendados" para el detalle.</div>
+      ${renderRadarDC(domainData, projs)}
     </div>
     <div class="section-title">Áreas con oportunidades de mejora</div>${areasHtml}
     <hr class="divider">
@@ -1490,7 +1506,7 @@ function renderReportDC(el) {
 }
 
 
-function renderRadarSVG(data) {
+function renderRadarSVG(data, projs) {
   const size = 700, cx = size/2, cy = size/2, radius = 170;
   const n = data.length;
   const angleFor = (i) => (Math.PI*2*i/n) - Math.PI/2;
@@ -1526,7 +1542,9 @@ function renderRadarSVG(data) {
     const a=angleFor(i); const r=radius*(d.score/100);
     const fadeDelay = (0.55+i*0.05).toFixed(2);
     const pulseDelay = (parseFloat(fadeDelay)+0.5).toFixed(2);
-    return `<circle class="radar-dot" style="animation-delay:${fadeDelay}s, ${pulseDelay}s" cx="${cx+Math.cos(a)*r}" cy="${cy+Math.sin(a)*r}" r="3.5" fill="${d.score < 40 ? "#DC2626" : d.score < 70 ? "#D97706" : "#16A34A"}"/>`;
+    const cxd = cx+Math.cos(a)*r, cyd = cy+Math.sin(a)*r;
+    const warn = hasHiddenGap(d, projs) ? `<circle cx="${cxd}" cy="${cyd}" r="9" fill="none" stroke="#D97706" stroke-width="2" stroke-dasharray="3,2.5"/>` : "";
+    return `${warn}<circle class="radar-dot" style="animation-delay:${fadeDelay}s, ${pulseDelay}s" cx="${cxd}" cy="${cyd}" r="3.5" fill="${d.score < 40 ? "#DC2626" : d.score < 70 ? "#D97706" : "#16A34A"}"/>`;
   }).join("");
   return `<div style="display:flex;justify-content:center;width:100%;"><svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" style="width:100%;max-width:600px;height:auto;display:block;">
     ${rings}${spokes}
@@ -1544,7 +1562,7 @@ function renderReport(el) {
   const WMAP={3:"EDR",4:"Ley",6:"MFA",7:"Capacitación",8:"Phishing",9:"Firewall",10:"SD-WAN",11:"Scaneo",12:"Patch",13:"Nube",14:"Monitoreo",15:"Deep",16:"Presupuesto",17:"Gobernanza de Protección",18:"Derechos de Titulares",19:"Contractuales",20:"Política Corporativa",21:"Tiempo Real para IA"};
   let secsHtml="";
   SECS.forEach(s=>{const txt=narr[s.qid];if(!txt)return;const isW=projs.some(p=>p.qid!==undefined?p.qid===s.qid:(WMAP[s.qid]&&p.text&&p.text.toLowerCase().includes(WMAP[s.qid].toLowerCase())));secsHtml+=`<div class="area-block"><div class="area-heading">${s.title}</div><div class="rec-box ${isW?"rec-warn":"rec-ok"}">${txt}</div></div>`;});
-  const projsHtml=projs.length>0?projs.map((p,i)=>`<div class="proj-item"><span class="proj-num">${String(i+1).padStart(2,"0")}</span><span>${p.text||p}</span></div>`).join(""):`<div class="proj-item"><span class="proj-num" style="background:var(--success)">✓</span><span>La organización muestra una postura de seguridad sólida. Se recomienda mantener auditorías periódicas y mejora continua.</span></div>`;
+  const projsHtml=projs.length>0?projs.slice().sort((a,b)=>(a.priority||9)-(b.priority||9)).map((p,i)=>`<div class="proj-item"><span class="proj-num">${String(i+1).padStart(2,"0")}</span><span>${p.text||p}${p.priority?priorityBadge(p.priority):""}</span></div>`).join(""):`<div class="proj-item"><span class="proj-num" style="background:var(--success)">✓</span><span>La organización muestra una postura de seguridad sólida. Se recomienda mantener auditorías periódicas y mejora continua.</span></div>`;
   const WMAP2={3:"EDR",4:"Ley",6:"MFA",7:"Capacitación",8:"Phishing",9:"Firewall",10:"SD-WAN",11:"Scaneo",12:"Patch",13:"Nube",14:"Monitoreo",15:"Deep",16:"Presupuesto",17:"Gobernanza de Protección",18:"Derechos de Titulares",19:"Contractuales",20:"Política Corporativa",21:"Tiempo Real para IA"};
   const solidAreas2=SECS.filter(s=>{
     if(!narr[s.qid]) return false;
@@ -1574,8 +1592,9 @@ function renderReport(el) {
       <div id="solid-areas-list"></div>
     </div>
     <div id="radar-wrap" style="background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:16px 12px;margin-bottom:1.5rem;">
-      <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B;margin-bottom:8px;text-align:center;">Madurez por Dominio</div>
-      ${renderRadarSVG(buildRadarData())}
+      <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B;margin-bottom:4px;text-align:center;">Madurez por Dominio</div>
+      <div style="font-size:11px;color:#94A3B8;margin-bottom:8px;text-align:center;max-width:520px;margin-left:auto;margin-right:auto;">El score de cada dominio es un promedio. Un punto verde con borde punteado ámbar indica que, aunque el dominio promedia bien, contiene un hallazgo puntual con prioridad alta — revisa "Proyectos Recomendados" para el detalle.</div>
+      ${renderRadarSVG(buildRadarData(), projs)}
     </div>
     <div class="section-title">Áreas con oportunidades de mejora</div>${secsHtml}
     <hr class="divider">
