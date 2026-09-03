@@ -506,9 +506,9 @@
         <div class="lock-eyebrow dc-eyebrow" style="margin-bottom:0">Data Center</div>
       </div>
       <h1>Diagnóstico Data Center</h1>
-      <p>Evalúa la madurez de tu infraestructura de Data Center, conectividad y cloud readiness en 32 preguntas: Facility, Continuidad y DRP, Infraestructura Tecnológica, Conectividad y Estrategia Cloud.</p>
+      <p>Evalúa la madurez de tu infraestructura de Data Center, conectividad y cloud readiness en 23 preguntas: Facility, Seguridad Física, Energía y Continuidad, Infraestructura Tecnológica y Estrategia Cloud.</p>
       <button class="btn-gtd btn-steel" onclick="startAssessment('dc')">Comenzar diagnóstico →</button>
-      <div class="lock-card-meta"><span class="lock-tag dc">32 preguntas</span><span class="lock-tag dc">11 dominios</span></div>
+      <div class="lock-card-meta"><span class="lock-tag dc">23 preguntas</span><span class="lock-tag dc">9 dominios</span></div>
     </div>
   </div>
   <div class="lock-footer">Uso exclusivo · Solo personal autorizado por GTD</div>
@@ -533,7 +533,7 @@
 // ── PREGUNTAS ─────────────────────────────────────────────────────────────────
 function startAssessment(kind){
   if(kind==='dc' && Q_DC.length===0){
-    alert('El cuestionario de Data Center está en construcción. La pantalla de selección ya está lista — el siguiente paso es cargar las 32 preguntas y el motor de scoring.');
+    alert('El cuestionario de Data Center está en construcción. La pantalla de selección ya está lista — el siguiente paso es cargar las 23 preguntas y el motor de scoring.');
     return;
   }
   assessmentType = kind;
@@ -568,8 +568,7 @@ const Q = [
   { id:21, text:"¿Ha implementado un control de seguridad que inspeccione en tiempo real la interacción de los usuarios en los diferentes prompts de IA generativa para evitar la fuga de archivos e información confidencial y propietaria?", type:"radio", opts:["No existe ningún control que supervise las interacciones con herramientas de IA generativa","Se aplican restricciones básicas de acceso pero sin inspección del contenido de los prompts","Existe monitoreo parcial de algunas herramientas de IA pero no cubre todas las plataformas utilizadas","Contamos con una solución que inspecciona en tiempo real los prompts de IA generativa, previniendo fuga de información confidencial en todas las plataformas"] }
 ];
 
-// Cuestionario Data Center — 32 preguntas, 11 dominios (pendiente de carga, sesión siguiente)
-// Cuestionario Data Center — 32 preguntas, 11 dominios
+// Cuestionario Data Center — 23 preguntas, 9 dominios
 const Q_DC = [
   // Dominio 1 — Perfil y Criticidad (3)
   { id:1, domain:"Perfil y Criticidad", text:"¿Cuál es la industria principal de la organización?", type:"radio", opts:["Financiero","Salud","Retail","Gobierno","Educación","Manufactura","Minería","Telecomunicaciones","Servicios profesionales","Otro"] },
@@ -1527,7 +1526,7 @@ function renderRadarSVG(data) {
     const a=angleFor(i); const r=radius*(d.score/100);
     const fadeDelay = (0.55+i*0.05).toFixed(2);
     const pulseDelay = (parseFloat(fadeDelay)+0.5).toFixed(2);
-    return `<circle class="radar-dot" style="animation-delay:${fadeDelay}s, ${pulseDelay}s" cx="${cx+Math.cos(a)*r}" cy="${cy+Math.sin(a)*r}" r="3.5" fill="#3D5AA3"/>`;
+    return `<circle class="radar-dot" style="animation-delay:${fadeDelay}s, ${pulseDelay}s" cx="${cx+Math.cos(a)*r}" cy="${cy+Math.sin(a)*r}" r="3.5" fill="${d.score < 40 ? "#DC2626" : d.score < 70 ? "#D97706" : "#16A34A"}"/>`;
   }).join("");
   return `<div style="display:flex;justify-content:center;width:100%;"><svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" style="width:100%;max-width:600px;height:auto;display:block;">
     ${rings}${spokes}
