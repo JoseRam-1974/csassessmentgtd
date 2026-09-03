@@ -88,8 +88,11 @@
   }
   .radar-dot {
     transform-box: fill-box; transform-origin: center;
-    animation: dotFadeIn 0.5s ease-out both;
-    animation-delay: 0.6s;
+    animation-name: dotFadeIn, dotPulse;
+    animation-duration: 0.5s, 1.7s;
+    animation-timing-function: ease-out, ease-in-out;
+    animation-iteration-count: 1, infinite;
+    animation-fill-mode: both, none;
   }
   .radar-ring {
     animation: ringFadeIn 0.4s ease-out both;
@@ -101,6 +104,10 @@
   @keyframes dotFadeIn {
     0% { transform: scale(0); opacity: 0; }
     100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes dotPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.45); opacity: 0.55; }
   }
   @keyframes ringFadeIn {
     0% { opacity: 0; }
@@ -1191,8 +1198,21 @@ function renderDomainBarsDC(data) {
   return `<div>${rows}</div>`;
 }
 
+function wrapRadarLabel(label) {
+  const words = label.split(" ");
+  const lines = [];
+  let current = "";
+  words.forEach(w => {
+    const test = current ? current + " " + w : w;
+    if (test.length > 13 && current) { lines.push(current); current = w; }
+    else { current = test; }
+  });
+  if (current) lines.push(current);
+  return lines.slice(0, 3); // máx 3 líneas por seguridad
+}
+
 function renderRadarDC(data) {
-  const cx = 175, cy = 175, r = 108;
+  const cx = 195, cy = 185, r = 100;
   const n = data.length;
   const angle = (i) => (Math.PI * 2 * i) / n - Math.PI / 2;
   const colorFor = (s) => s < 40 ? "#DC2626" : s < 70 ? "#D97706" : "#16A34A";
@@ -1208,16 +1228,24 @@ function renderRadarDC(data) {
     const a = angle(i);
     const x2 = cx+r*Math.cos(a), y2 = cy+r*Math.sin(a);
     axes += `<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="#E2E8F0" stroke-width="1"/>`;
-    const lx = cx+(r+38)*Math.cos(a), ly = cy+(r+38)*Math.sin(a);
-    labels += `<text x="${lx}" y="${ly-4}" font-size="10" fill="#334155" text-anchor="middle" font-weight="600">${d.label}</text>`;
-    labels += `<text x="${lx}" y="${ly+9}" font-size="9" fill="#94A3B8" text-anchor="middle">peso ${d.weight}%</text>`;
+    const lx = cx+(r+42)*Math.cos(a), ly = cy+(r+42)*Math.sin(a);
+    const lines = wrapRadarLabel(d.label);
+    const startDy = -(lines.length - 1) * 6 - 4;
+    let tspans = lines.map((ln, li) => `<tspan x="${lx}" dy="${li===0 ? startDy : 12}">${ln}</tspan>`).join("");
+    labels += `<text y="${ly}" font-size="10" fill="#334155" text-anchor="middle" font-weight="600">${tspans}</text>`;
+    labels += `<text x="${lx}" y="${ly + 12 * lines.length - 1}" font-size="9" fill="#94A3B8" text-anchor="middle">peso ${d.weight}%</text>`;
   });
 
   const dataPts = data.map((d,i) => { const a=angle(i); const rr=r*(d.score/100); return (cx+rr*Math.cos(a))+","+(cy+rr*Math.sin(a)); }).join(" ");
   const shape = `<polygon class="radar-shape" points="${dataPts}" fill="#378ADD" fill-opacity="0.18" stroke="#378ADD" stroke-width="2"/>`;
-  const dots = data.map((d,i) => { const a=angle(i); const rr=r*(d.score/100); const x=cx+rr*Math.cos(a), y=cy+rr*Math.sin(a); return `<circle class="radar-dot" style="animation-delay:${0.55+i*0.05}s" cx="${x}" cy="${y}" r="3.5" fill="${colorFor(d.score)}"/>`; }).join("");
+  const dots = data.map((d,i) => {
+    const a=angle(i); const rr=r*(d.score/100); const x=cx+rr*Math.cos(a), y=cy+rr*Math.sin(a);
+    const fadeDelay = (0.55+i*0.05).toFixed(2);
+    const pulseDelay = (parseFloat(fadeDelay)+0.5).toFixed(2);
+    return `<circle class="radar-dot" style="animation-delay:${fadeDelay}s, ${pulseDelay}s" cx="${x}" cy="${y}" r="3.5" fill="${colorFor(d.score)}"/>`;
+  }).join("");
 
-  return `<svg viewBox="0 0 350 350" style="width:100%;max-width:420px;display:block;margin:0 auto;">${rings}${axes}${shape}${dots}${labels}</svg>`;
+  return `<svg viewBox="0 0 390 370" style="width:100%;max-width:460px;display:block;margin:0 auto;overflow:visible;">${rings}${axes}${shape}${dots}${labels}</svg>`;
 }
 
 
