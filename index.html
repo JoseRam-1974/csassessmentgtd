@@ -1497,10 +1497,10 @@ function renderRadarSVG(data) {
   const angleFor = (i) => (Math.PI*2*i/n) - Math.PI/2;
   const ringLevels = [0.25, 0.5, 0.75, 1];
   let rings = "";
-  ringLevels.forEach(lv => {
+  ringLevels.forEach((lv,ri) => {
     let pts = [];
     for (let i=0;i<n;i++){ const a=angleFor(i); pts.push(`${cx+Math.cos(a)*radius*lv},${cy+Math.sin(a)*radius*lv}`); }
-    rings += `<polygon points="${pts.join(" ")}" fill="none" stroke="#E2E8F0" stroke-width="1"/>`;
+    rings += `<polygon class="radar-ring" style="animation-delay:${ri*0.06}s" points="${pts.join(" ")}" fill="none" stroke="#E2E8F0" stroke-width="1"/>`;
   });
   let spokes = "", labels = "";
   data.forEach((d,i) => {
@@ -1523,12 +1523,17 @@ function renderRadarSVG(data) {
     labels += `<text x="${lx}" y="${ly}" text-anchor="${anchor}" font-size="12" font-weight="700" fill="#64748B" font-family="-apple-system, sans-serif">${tspans}</text>`;
   });
   let dataPts = data.map((d,i) => { const a=angleFor(i); const r=radius*(d.score/100); return `${cx+Math.cos(a)*r},${cy+Math.sin(a)*r}`; }).join(" ");
-  let dots = data.map((d,i) => { const a=angleFor(i); const r=radius*(d.score/100); return `<circle cx="${cx+Math.cos(a)*r}" cy="${cy+Math.sin(a)*r}" r="3.5" fill="#3D5AA3"/>`; }).join("");
-  return `<svg viewBox="0 0 ${size} ${size}" width="100%" style="max-width:600px;display:block;margin:0 auto;">
+  let dots = data.map((d,i) => {
+    const a=angleFor(i); const r=radius*(d.score/100);
+    const fadeDelay = (0.55+i*0.05).toFixed(2);
+    const pulseDelay = (parseFloat(fadeDelay)+0.5).toFixed(2);
+    return `<circle class="radar-dot" style="animation-delay:${fadeDelay}s, ${pulseDelay}s" cx="${cx+Math.cos(a)*r}" cy="${cy+Math.sin(a)*r}" r="3.5" fill="#3D5AA3"/>`;
+  }).join("");
+  return `<div style="display:flex;justify-content:center;width:100%;"><svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" style="width:100%;max-width:600px;height:auto;display:block;">
     ${rings}${spokes}
-    <polygon points="${dataPts}" fill="#3D5AA3" fill-opacity="0.18" stroke="#3D5AA3" stroke-width="2"/>
+    <polygon class="radar-shape" points="${dataPts}" fill="#3D5AA3" fill-opacity="0.18" stroke="#3D5AA3" stroke-width="2"/>
     ${dots}${labels}
-  </svg>`;
+  </svg></div>`;
 }
 
 function renderReport(el) {
