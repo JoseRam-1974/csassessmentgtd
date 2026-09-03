@@ -82,6 +82,33 @@
     0%, 40% { left: -60%; }
     60%, 100% { left: 130%; }
   }
+  .radar-shape {
+    transform-box: fill-box; transform-origin: center;
+    animation: radarGrow 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .radar-dot {
+    transform-box: fill-box; transform-origin: center;
+    animation: dotFadeIn 0.5s ease-out both;
+    animation-delay: 0.6s;
+  }
+  .radar-ring {
+    animation: ringFadeIn 0.4s ease-out both;
+  }
+  @keyframes radarGrow {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes dotFadeIn {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes ringFadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  @media print {
+    .radar-shape, .radar-dot, .radar-ring { animation: none !important; opacity: 1 !important; transform: none !important; }
+  }
   @media (max-width: 720px) {
     .lock-cards-wrap { flex-direction: column; max-width: 400px; gap: 24px; }
   }
@@ -540,59 +567,47 @@ const Q_DC = [
   // Dominio 1 — Perfil y Criticidad (3)
   { id:1, domain:"Perfil y Criticidad", text:"¿Cuál es la industria principal de la organización?", type:"radio", opts:["Financiero","Salud","Retail","Gobierno","Educación","Manufactura","Minería","Telecomunicaciones","Servicios profesionales","Otro"] },
   { id:2, domain:"Perfil y Criticidad", text:"¿Cuál es el nivel de criticidad de la infraestructura evaluada?", type:"radio", opts:["Bajo (procesos administrativos)","Medio (procesos operacionales)","Alto (procesos productivos o core)","Crítico (atención a clientes o procesamiento transaccional)"] },
-  { id:3, domain:"Perfil y Criticidad", text:"¿Cuál es el objetivo de disponibilidad requerido?", type:"radio", opts:["99,5%","99,9%","99,95%","99,99%","Mayor a 99,99%"] },
+  { id:3, domain:"Perfil y Criticidad", text:"¿Cuál es el objetivo de disponibilidad requerido?", type:"radio", opts:["99,50%","99,90%","99,95%","99,99%","Mayor a 99,99%"] },
 
-  // Dominio 2 — Data Center Actual y Facility (3)
+  // Dominio 2 — Facility (2)
   { id:4, domain:"Facility", text:"¿Qué tipo de infraestructura aloja actualmente el Data Center?", type:"radio", opts:["Oficina o sala técnica (no diseñada como DC)","Data Center propio con diseño parcial","Data Center propio certificado","Data Center externo (Housing/Colocation)","Nube pública","Ambiente mixto"] },
   { id:5, domain:"Facility", text:"¿Existe capacidad física disponible para crecimiento?", type:"radio", opts:["Nula","Limitada","Suficiente","Amplia"] },
-  { id:6, domain:"Facility", text:"¿Cuál es la densidad promedio por rack?", type:"radio", opts:["Menos de 2 kW","2 a 5 kW","5 a 10 kW","Más de 10 kW","No conocida"] },
 
-  // Dominio 3 — Seguridad Física (2)
-  { id:7, domain:"Seguridad Física", text:"¿Cuáles de estos controles de seguridad física posee?", type:"check", opts:["Control de acceso (tarjeta/biometría)","CCTV con grabación","Bitácora de ingreso de visitas","Segregación de áreas críticas"] },
-  { id:8, domain:"Seguridad Física", text:"¿Se valida identidad y se exige NDA para visitas externas?", type:"radio", opts:["Sí, ambos","Solo uno","No"] },
+  // Dominio 3 — Seguridad Física (1, consolidada)
+  { id:6, domain:"Seguridad Física", text:"¿Cuáles de estos controles de seguridad física posee?", type:"check", opts:["Control de acceso (tarjeta/biometría)","CCTV con grabación","Bitácora de ingreso de visitas","Segregación de áreas críticas","Validación de identidad y NDA para visitas externas"] },
 
-  // Dominio 4 — Energía y Climatización (3)
-  { id:9, domain:"Energía y Climatización", text:"¿Cuáles de estos elementos de resiliencia energética posee?", type:"check", opts:["Doble acometida eléctrica","UPS redundante","Grupo generador","Climatización redundante (N+1)"] },
-  { id:10, domain:"Energía y Climatización", text:"¿Cuánto tiempo puede operar sin energía comercial?", type:"radio", opts:["Menos de 5 min","5 a 30 min","30 min a 4 horas","Más de 4 horas","Más de 24 horas"] },
-  { id:11, domain:"Energía y Climatización", text:"¿Se monitorean temperatura y humedad de forma continua?", type:"radio", opts:["Sí, 24x7","Sí, periódicamente","No"] },
+  // Dominio 4 — Energía, Climatización e Incendios (2, consolidada)
+  { id:7, domain:"Energía, Climatización e Incendios", text:"¿Cuáles de estos elementos de resiliencia posee?", type:"check", opts:["Doble acometida eléctrica","UPS redundante","Grupo generador","Climatización redundante (N+1)","Monitoreo continuo de temperatura/humedad","Detección y extinción automática de incendios"] },
+  { id:8, domain:"Energía, Climatización e Incendios", text:"¿Cuánto tiempo puede operar sin energía comercial?", type:"radio", opts:["Menos de 5 min","5 a 30 min","30 min a 4 horas","Más de 4 horas","Más de 24 horas"] },
 
-  // Dominio 5 — Protección contra Incendios (1)
-  { id:12, domain:"Protección contra Incendios", text:"¿Cuenta con detección temprana y/o extinción automática de incendios?", type:"radio", opts:["Ambos","Solo detección","Solo extinción","Ninguno"] },
+  // Dominio 5 — Operación y Soporte (1, consolidada)
+  { id:9, domain:"Operación y Soporte", text:"¿Cuáles de estas prácticas operacionales tiene implementadas?", type:"check", opts:["Personal técnico en sitio 24x7","Procedimiento formal de control de cambios","Monitoreo de alarmas y atención de fallas"] },
 
-  // Dominio 6 — Operación y Soporte (3)
-  { id:13, domain:"Operación y Soporte", text:"¿Existe personal técnico en sitio 24x7?", type:"radio", opts:["Sí","Parcial","No"] },
-  { id:14, domain:"Operación y Soporte", text:"¿Existe procedimiento formal de control de cambios para intervención de infraestructura?", type:"radio", opts:["Sí","Parcial","No"] },
-  { id:15, domain:"Operación y Soporte", text:"¿Existe monitoreo de alarmas y atención de fallas?", type:"radio", opts:["Sí, 24x7","Sí, horario hábil","No"] },
+  // Dominio 6 — Continuidad y DRP (5, sin cambios)
+  { id:10, domain:"Continuidad y DRP", text:"¿Existe un plan de recuperación ante desastres (DRP) formal?", type:"radio", opts:["Sí","En desarrollo","No"], warning:"La continuidad operacional está directamente vinculada a las exigencias de la Ley Marco de Ciberseguridad para organizaciones que prestan Servicios Esenciales u OIV (Operadores de Importancia Vital) en Chile, que exige capacidad de recuperación ante incidentes." },
+  { id:11, domain:"Continuidad y DRP", text:"¿Existe sitio alterno?", type:"radio", opts:["Sí, propio","Sí, contratado","No"] },
+  { id:12, domain:"Continuidad y DRP", text:"¿Cuál es el RTO requerido?", type:"radio", opts:["Menos de 1 hora","1 a 4 horas","4 a 24 horas","Más de 24 horas","No definido"], glossary:"<strong>RTO (Recovery Time Objective):</strong> tiempo máximo aceptable para restablecer un sistema o servicio después de una interrupción." },
+  { id:13, domain:"Continuidad y DRP", text:"¿Cuál es el RPO requerido?", type:"radio", opts:["Menos de 15 min","15 min a 1 hora","1 a 4 horas","Más de 4 horas","No definido"], glossary:"<strong>RPO (Recovery Point Objective):</strong> cantidad máxima de datos, medida en tiempo, que la organización puede permitirse perder tras un incidente." },
+  { id:14, domain:"Continuidad y DRP", text:"¿Se realizan pruebas de recuperación con informes de resultado?", type:"radio", opts:["Sí, anual con informe","Sí, esporádicamente","No"] },
 
-  // Dominio 7 — Continuidad y DRP (5)
-  { id:16, domain:"Continuidad y DRP", text:"¿Existe un plan de recuperación ante desastres (DRP) formal?", type:"radio", opts:["Sí","En desarrollo","No"], warning:"La continuidad operacional está directamente vinculada a las exigencias de la Ley Marco de Ciberseguridad para organizaciones que prestan Servicios Esenciales u OIV (Operadores de Importancia Vital) en Chile, que exige capacidad de recuperación ante incidentes." },
-  { id:17, domain:"Continuidad y DRP", text:"¿Existe sitio alterno?", type:"radio", opts:["Sí, propio","Sí, contratado","No"] },
-  { id:18, domain:"Continuidad y DRP", text:"¿Cuál es el RTO requerido?", type:"radio", opts:["Menos de 1 hora","1 a 4 horas","4 a 24 horas","Más de 24 horas","No definido"], glossary:"<strong>RTO (Recovery Time Objective):</strong> tiempo máximo aceptable para restablecer un sistema o servicio después de una interrupción." },
-  { id:19, domain:"Continuidad y DRP", text:"¿Cuál es el RPO requerido?", type:"radio", opts:["Menos de 15 min","15 min a 1 hora","1 a 4 horas","Más de 4 horas","No definido"], glossary:"<strong>RPO (Recovery Point Objective):</strong> cantidad máxima de datos, medida en tiempo, que la organización puede permitirse perder tras un incidente." },
-  { id:20, domain:"Continuidad y DRP", text:"¿Se realizan pruebas de recuperación con informes de resultado?", type:"radio", opts:["Sí, anual con informe","Sí, esporádicamente","No"] },
+  // Dominio 7 — Infraestructura Tecnológica (5)
+  { id:15, domain:"Infraestructura Tecnológica", text:"¿Cuál es la antigüedad promedio de los servidores?", type:"radio", opts:["Menos de 3 años","3 a 5 años","5 a 7 años","Más de 7 años"] },
+  { id:16, domain:"Infraestructura Tecnológica", text:"¿Cuál es la utilización promedio de CPU/RAM?", type:"radio", opts:["Menos de 30%","30-60%","60-80%","Más de 80%","No conocida"] },
+  { id:17, domain:"Infraestructura Tecnológica", text:"¿Qué tipo de almacenamiento utiliza y cuál es su capacidad utilizada?", type:"radio", opts:["SAN/NAS menor a 70%","SAN/NAS 70-85%","SAN/NAS mayor a 85%","HCI o Cloud Storage","Mixto"], glossary:"<strong>SAN (Storage Area Network):</strong> red dedicada de almacenamiento en bloque, de alto rendimiento, típica en Data Centers empresariales.<br><br><strong>NAS (Network Attached Storage):</strong> almacenamiento en archivos accesible por red, más simple de administrar que una SAN.<br><br><strong>HCI (Hyper-Converged Infrastructure):</strong> arquitectura que integra cómputo, almacenamiento y virtualización en un solo clúster de nodos, simplificando la gestión.<br><br><strong>Cloud Storage:</strong> almacenamiento provisto por un proveedor de nube pública (ej. Amazon S3, Azure Blob), con capacidad elástica y pago por uso." },
+  { id:18, domain:"Infraestructura Tecnológica", text:"¿Cuáles de estas prácticas de backup tiene implementadas?", type:"check", opts:["Backup en plataforma dedicada (on-premise o nube)","Cifrado de respaldos","Inmutabilidad de respaldos"] },
+  { id:19, domain:"Infraestructura Tecnológica", text:"¿Presenta problemas recurrentes de rendimiento o capacidad?", type:"radio", opts:["Sí, frecuentemente","Ocasionalmente","No"] },
 
-  // Dominio 8 — Infraestructura Tecnológica (7)
-  { id:21, domain:"Infraestructura Tecnológica", text:"¿Cuál es la antigüedad promedio de los servidores?", type:"radio", opts:["Menos de 3 años","3 a 5 años","5 a 7 años","Más de 7 años"] },
-  { id:22, domain:"Infraestructura Tecnológica", text:"¿Cuál es el fabricante predominante?", type:"radio", opts:["HPE","Dell","Lenovo","IBM","Mixto","Otro"] },
-  { id:23, domain:"Infraestructura Tecnológica", text:"¿Cuál es la utilización promedio de CPU/RAM?", type:"radio", opts:["Menos de 30%","30-60%","60-80%","Más de 80%","No conocida"] },
-  { id:24, domain:"Infraestructura Tecnológica", text:"¿Qué tipo de almacenamiento utiliza y cuál es su capacidad utilizada?", type:"radio", opts:["SAN/NAS menor a 70%","SAN/NAS 70-85%","SAN/NAS mayor a 85%","HCI o Cloud Storage","Mixto"], glossary:"<strong>SAN (Storage Area Network):</strong> red dedicada de almacenamiento en bloque, de alto rendimiento, típica en Data Centers empresariales.<br><br><strong>NAS (Network Attached Storage):</strong> almacenamiento en archivos accesible por red, más simple de administrar que una SAN.<br><br><strong>HCI (Hyper-Converged Infrastructure):</strong> arquitectura que integra cómputo, almacenamiento y virtualización en un solo clúster de nodos, simplificando la gestión.<br><br><strong>Cloud Storage:</strong> almacenamiento provisto por un proveedor de nube pública (ej. Amazon S3, Azure Blob), con capacidad elástica y pago por uso." },
-  { id:25, domain:"Infraestructura Tecnológica", text:"¿Qué plataforma de backup utiliza?", type:"radio", opts:["Solución dedicada on-premise","Backup en la nube","Mixto","No cuenta con plataforma formal"] },
-  { id:26, domain:"Infraestructura Tecnológica", text:"¿Los respaldos están cifrados y son inmutables?", type:"check", opts:["Cifrado","Inmutabilidad","No sabe"] },
-  { id:27, domain:"Infraestructura Tecnológica", text:"¿Presenta problemas recurrentes de rendimiento o capacidad?", type:"radio", opts:["Sí, frecuentemente","Ocasionalmente","No"] },
+  // Dominio 8 — Conectividad (2)
+  { id:20, domain:"Conectividad", text:"¿Cuenta con redundancia WAN y diversidad de carrier?", type:"radio", opts:["Sí, ambos","Solo redundancia","Ninguno"] },
+  { id:21, domain:"Conectividad", text:"¿Requiere o cuenta con conectividad privada hacia nube pública?", type:"radio", opts:["Sí, cuenta","Requiere, no cuenta","No aplica"] },
 
-  // Dominio 9 — Conectividad (3)
-  { id:28, domain:"Conectividad", text:"¿Cuenta con redundancia WAN y diversidad de carrier?", type:"radio", opts:["Sí, ambos","Solo redundancia","Ninguno"] },
-  { id:29, domain:"Conectividad", text:"¿Requiere o cuenta con conectividad privada hacia nube pública?", type:"radio", opts:["Sí, cuenta","Requiere, no cuenta","No aplica"] },
-  { id:30, domain:"Conectividad", text:"¿Cuál es la latencia máxima aceptable para aplicaciones críticas?", type:"radio", opts:["Menos de 5 ms","5-20 ms","20-50 ms","Más de 50 ms","No definida"] },
-
-  // Dominio 10 — Cloud Readiness (2)
-  { id:31, domain:"Cloud Readiness", text:"¿Tiene cargas actualmente en nube pública o considera migrar?", type:"radio", opts:["Sí, en producción","Parcial","Planea migrar","No"] },
-  { id:32, domain:"Cloud Readiness", text:"¿Existen restricciones regulatorias o de residencia de datos?", type:"radio", opts:["Sí","No","No sabe"] }
+  // Dominio 9 — Cloud Readiness (2)
+  { id:22, domain:"Cloud Readiness", text:"¿Tiene cargas actualmente en nube pública o considera migrar?", type:"radio", opts:["Sí, en producción","Parcial","Planea migrar","No"] },
+  { id:23, domain:"Cloud Readiness", text:"¿Existen restricciones regulatorias o de residencia de datos?", type:"radio", opts:["Sí","No","No sabe"] }
 ];
 
-// NOTA: FinOps (modelo financiero + presupuesto) quedó fuera del conteo de 32 —
-// ver siguiente paso de sesión para decidir si se agrega como Q33-34 o se recoge
-// directamente en el formulario de contacto (igual que "proyectos" en Ciberseguridad).
+// NOTA: FinOps (modelo financiero + presupuesto) y fabricante de servidores se
+// recogen en el formulario de contacto, no como preguntas del quiz.
 
 const INTROS = {
   2:"La oficina ya no tiene paredes. Hoy, el trabajo viaja en una mochila, se conecta desde un aeropuerto o desde casa. La flexibilidad llegó para quedarse, pero con ella llegó también un nuevo desafío: ¿cómo acceden los usuarios a los servicios cuando están lejos de la red corporativa?",
@@ -1096,62 +1111,52 @@ function scoreForQidDC(qid) {
     // Facility
     case 4:  return [0, 0.4, 1, 0.8, 0.9, 0.5][a];               // tipo de sitio
     case 5:  return a / 3;                                        // capacidad crecimiento
-    // (Q6 densidad rack = contexto, no score)
 
-    // Seguridad Física
-    case 7:  return Array.isArray(a) ? a.length / 4 : 0;         // controles marcados
-    case 8:  return a === 0 ? 1 : (a === 1 ? 0.5 : 0);            // identidad + NDA
+    // Seguridad Física (consolidada, 5 controles posibles)
+    case 6:  return Array.isArray(a) ? a.length / 5 : 0;
 
-    // Energía y Climatización
-    case 9:  return Array.isArray(a) ? a.length / 4 : 0;         // resiliencia energética
-    case 10: return a / 4;                                        // autonomía sin energía
-    case 11: return a === 0 ? 1 : (a === 1 ? 0.5 : 0);            // monitoreo temp/humedad
+    // Energía, Climatización e Incendios (consolidada, 6 elementos posibles)
+    case 7:  return Array.isArray(a) ? a.length / 6 : 0;
+    case 8:  return a / 4;                                        // autonomía sin energía
 
-    // Protección contra Incendios
-    case 12: return [1, 0.66, 0.33, 0][a];                        // detección/extinción
-
-    // Operación y Soporte
-    case 13: return a === 0 ? 1 : (a === 1 ? 0.5 : 0);            // personal 24x7
-    case 14: return a === 0 ? 1 : (a === 1 ? 0.5 : 0);            // control de cambios
-    case 15: return a === 0 ? 1 : (a === 1 ? 0.5 : 0);            // monitoreo alarmas
+    // Operación y Soporte (consolidada, 3 prácticas posibles)
+    case 9:  return Array.isArray(a) ? a.length / 3 : 0;
 
     // Continuidad y DRP
-    case 16: return a === 0 ? 1 : (a === 1 ? 0.5 : 0);            // DRP formal
-    case 17: return a === 0 ? 1 : (a === 1 ? 0.8 : 0);            // sitio alterno
-    case 18: return a === 4 ? 0 : 1;                              // RTO definido
-    case 19: return a === 4 ? 0 : 1;                              // RPO definido
-    case 20: return a === 0 ? 1 : (a === 1 ? 0.5 : 0);            // pruebas de recuperación
+    case 10: return a === 0 ? 1 : (a === 1 ? 0.5 : 0);            // DRP formal
+    case 11: return a === 0 ? 1 : (a === 1 ? 0.8 : 0);            // sitio alterno
+    case 12: return a === 4 ? 0 : 1;                              // RTO definido
+    case 13: return a === 4 ? 0 : 1;                              // RPO definido
+    case 14: return a === 0 ? 1 : (a === 1 ? 0.5 : 0);            // pruebas de recuperación
 
     // Infraestructura Tecnológica
-    case 21: return [1, 0.66, 0.33, 0][a];                        // antigüedad servidores
-    case 23: return [0.5, 1, 0.5, 0, 0.3][a];                     // utilización CPU/RAM
-    case 24: return [1, 0.6, 0.2, 1, 0.7][a];                     // almacenamiento
-    case 25: return [1, 1, 0.8, 0][a];                            // plataforma backup
-    case 26: return Array.isArray(a) ? (a.filter(i=>i!==2).length/2) : 0; // cifrado/inmutabilidad
-    case 27: return a === 0 ? 0 : (a === 1 ? 0.5 : 1);            // problemas rendimiento
+    case 15: return [1, 0.66, 0.33, 0][a];                        // antigüedad servidores
+    case 16: return [0.5, 1, 0.5, 0, 0.3][a];                     // utilización CPU/RAM
+    case 17: return [1, 0.6, 0.2, 1, 0.7][a];                     // almacenamiento
+    case 18: return Array.isArray(a) ? a.length / 3 : 0;          // backup consolidado (plataforma+cifrado+inmutabilidad)
+    case 19: return a === 0 ? 0 : (a === 1 ? 0.5 : 1);            // problemas rendimiento
 
     // Conectividad
-    case 28: return a === 0 ? 1 : (a === 1 ? 0.5 : 0);            // redundancia WAN
-    case 29: return a === 2 ? null : (a === 0 ? 1 : 0);           // conectividad privada (excl. "no aplica")
+    case 20: return a === 0 ? 1 : (a === 1 ? 0.5 : 0);            // redundancia WAN
+    case 21: return a === 2 ? null : (a === 0 ? 1 : 0);           // conectividad privada (excl. "no aplica")
 
     // Cloud Readiness
-    case 31: return [1, 0.66, 0.33, 0][a];                        // cargas en nube
+    case 22: return [1, 0.66, 0.33, 0][a];                        // cargas en nube
 
-    default: return null; // Q1,2,3,6,22,30,32 = contexto, no maturity score
+    default: return null; // Q1,2,3,23 = contexto, no maturity score
   }
 }
 
 function buildDomainDataDC() {
   const DOMAINS = [
     { label:"Facility", weight:11, qids:[4,5] },
-    { label:"Seguridad Física", weight:9, qids:[7,8] },
-    { label:"Energía y Climatización", weight:14, qids:[9,10,11] },
-    { label:"Protección contra Incendios", weight:3, qids:[12] },
-    { label:"Operación y Soporte", weight:8, qids:[13,14,15] },
-    { label:"Continuidad y DRP", weight:23, qids:[16,17,18,19,20] },
-    { label:"Infraestructura Tecnológica", weight:17, qids:[21,23,24,25,26,27] },
-    { label:"Conectividad", weight:9, qids:[28,29] },
-    { label:"Cloud Readiness", weight:6, qids:[31] }
+    { label:"Seguridad Física", weight:9, qids:[6] },
+    { label:"Energía, Climatización e Incendios", weight:17, qids:[7,8] },
+    { label:"Operación y Soporte", weight:8, qids:[9] },
+    { label:"Continuidad y DRP", weight:23, qids:[10,11,12,13,14] },
+    { label:"Infraestructura Tecnológica", weight:17, qids:[15,16,17,18,19] },
+    { label:"Conectividad", weight:9, qids:[20,21] },
+    { label:"Cloud Readiness", weight:6, qids:[22] }
   ];
   return DOMAINS.map(d => {
     const scores = d.qids.map(scoreForQidDC).filter(s => s !== null);
@@ -1186,6 +1191,36 @@ function renderDomainBarsDC(data) {
   return `<div>${rows}</div>`;
 }
 
+function renderRadarDC(data) {
+  const cx = 175, cy = 175, r = 108;
+  const n = data.length;
+  const angle = (i) => (Math.PI * 2 * i) / n - Math.PI / 2;
+  const colorFor = (s) => s < 40 ? "#DC2626" : s < 70 ? "#D97706" : "#16A34A";
+
+  let rings = "";
+  [0.25, 0.5, 0.75, 1].forEach((f,ri) => {
+    const pts = data.map((d,i) => { const a=angle(i); return (cx+r*f*Math.cos(a))+","+(cy+r*f*Math.sin(a)); }).join(" ");
+    rings += `<polygon class="radar-ring" style="animation-delay:${ri*0.06}s" points="${pts}" fill="none" stroke="#E2E8F0" stroke-width="1"/>`;
+  });
+
+  let axes = "", labels = "";
+  data.forEach((d,i) => {
+    const a = angle(i);
+    const x2 = cx+r*Math.cos(a), y2 = cy+r*Math.sin(a);
+    axes += `<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="#E2E8F0" stroke-width="1"/>`;
+    const lx = cx+(r+38)*Math.cos(a), ly = cy+(r+38)*Math.sin(a);
+    labels += `<text x="${lx}" y="${ly-4}" font-size="10" fill="#334155" text-anchor="middle" font-weight="600">${d.label}</text>`;
+    labels += `<text x="${lx}" y="${ly+9}" font-size="9" fill="#94A3B8" text-anchor="middle">peso ${d.weight}%</text>`;
+  });
+
+  const dataPts = data.map((d,i) => { const a=angle(i); const rr=r*(d.score/100); return (cx+rr*Math.cos(a))+","+(cy+rr*Math.sin(a)); }).join(" ");
+  const shape = `<polygon class="radar-shape" points="${dataPts}" fill="#378ADD" fill-opacity="0.18" stroke="#378ADD" stroke-width="2"/>`;
+  const dots = data.map((d,i) => { const a=angle(i); const rr=r*(d.score/100); const x=cx+rr*Math.cos(a), y=cy+rr*Math.sin(a); return `<circle class="radar-dot" style="animation-delay:${0.55+i*0.05}s" cx="${x}" cy="${y}" r="3.5" fill="${colorFor(d.score)}"/>`; }).join("");
+
+  return `<svg viewBox="0 0 350 350" style="width:100%;max-width:420px;display:block;margin:0 auto;">${rings}${axes}${shape}${dots}${labels}</svg>`;
+}
+
+
 // ═══════════════ MOTOR DE RECOMENDACIÓN — DATA CENTER ═══════════════
 // Capa 1: reglas disparadoras (condiciones sobre respuestas específicas, no solo score)
 // Capa 2: la priorización final por score se aplica en renderReport al ordenar `projs`
@@ -1194,8 +1229,8 @@ function getRecsDC(a) {
   const addProj = (proj, priority, qid) => projs.push({text: proj, priority: priority, qid: qid});
   const add = (qid, txt) => { narr[qid] = txt; };
 
-  const sinEnergiaBase = !(a[9] && a[9].includes(0) && a[9].includes(1)); // sin doble acometida + UPS
-  const sinControlAcceso = !(a[7] && a[7].includes(0));                    // sin control de acceso
+  const sinEnergiaBase = !(a[7] && a[7].includes(0) && a[7].includes(1)); // sin doble acometida + UPS
+  const sinControlAcceso = !(a[6] && a[6].includes(0));                    // sin control de acceso
 
   // 1. Housing / Colocation
   if (a[4] === 0 && (sinEnergiaBase || sinControlAcceso)) {
@@ -1204,75 +1239,76 @@ function getRecsDC(a) {
   }
 
   // 2. DRP como servicio (criticidad alta sin DRP)
-  if (a[16] !== undefined && a[16] !== 0 && (a[2] === 2 || a[2] === 3)) {
-    add(16, `La organización clasificó su infraestructura como de <strong>criticidad alta o crítica</strong>, pero no cuenta con un <strong>DRP formal</strong>. Esta combinación representa una exposición severa: ante un incidente, no existe un plan estructurado de recuperación. Recomendamos priorizar la implementación de un servicio de DRP gestionado.`);
-    addProj("DRP como Servicio (Disaster Recovery Plan)", 1, 16);
+  if (a[10] !== undefined && a[10] !== 0 && (a[2] === 2 || a[2] === 3)) {
+    add(10, `La organización clasificó su infraestructura como de <strong>criticidad alta o crítica</strong>, pero no cuenta con un <strong>DRP formal</strong>. Esta combinación representa una exposición severa: ante un incidente, no existe un plan estructurado de recuperación. Recomendamos priorizar la implementación de un servicio de DRP gestionado.`);
+    addProj("DRP como Servicio (Disaster Recovery Plan)", 1, 10);
   }
 
   // 3. Replicación / Backup avanzado (RPO exigente sin sitio alterno)
-  if (a[19] === 0 && a[17] === 2) {
-    add(19, `El RPO requerido es <strong>menor a 15 minutos</strong>, pero no existe sitio alterno. Un RPO tan exigente sin infraestructura de replicación es una meta que hoy no se puede cumplir. Recomendamos una solución de replicación continua de datos.`);
-    addProj("Replicación de datos en tiempo real / Backup avanzado", 2, 19);
+  if (a[13] === 0 && a[11] === 2) {
+    add(13, `El RPO requerido es <strong>menor a 15 minutos</strong>, pero no existe sitio alterno. Un RPO tan exigente sin infraestructura de replicación es una meta que hoy no se puede cumplir. Recomendamos una solución de replicación continua de datos.`);
+    addProj("Replicación de datos en tiempo real / Backup avanzado", 2, 13);
   }
 
   // 4. Cloud Connect / conectividad privada
-  if (a[29] === 1) {
-    add(29, `Se identificó la necesidad de <strong>conectividad privada hacia nube pública</strong> sin contar con ella actualmente. Depender de internet público para tráfico crítico hacia la nube introduce latencia variable y riesgos de seguridad. Recomendamos una solución de Cloud Connect dedicada.`);
-    addProj("Cloud Connect — conectividad privada a nube pública", 3, 29);
+  if (a[21] === 1) {
+    add(21, `Se identificó la necesidad de <strong>conectividad privada hacia nube pública</strong> sin contar con ella actualmente. Depender de internet público para tráfico crítico hacia la nube introduce latencia variable y riesgos de seguridad. Recomendamos una solución de Cloud Connect dedicada.`);
+    addProj("Cloud Connect — conectividad privada a nube pública", 3, 21);
   }
 
   // 5. Refresh tecnológico
-  if (a[21] === 3 && (a[23] === 3 || a[24] === 2)) {
-    add(21, `Los servidores tienen <strong>más de 7 años de antigüedad</strong> y se registra alta utilización de recursos o almacenamiento cercano al límite. Este escenario incrementa el riesgo de fallas y limita la capacidad de crecimiento. Recomendamos evaluar un proyecto de <strong>Refresh Tecnológico</strong>.`);
-    addProj(`Refresh Tecnológico de infraestructura${a[22]!==undefined && a[22]<5 ? " ("+["HPE","Dell","Lenovo","IBM"][a[22]]+")" : ""}`, 2, 21);
+  if (a[15] === 3 && (a[16] === 3 || a[17] === 2)) {
+    add(15, `Los servidores tienen <strong>más de 7 años de antigüedad</strong> y se registra alta utilización de recursos o almacenamiento cercano al límite. Este escenario incrementa el riesgo de fallas y limita la capacidad de crecimiento. Recomendamos evaluar un proyecto de <strong>Refresh Tecnológico</strong>.`);
+    addProj("Refresh Tecnológico de infraestructura", 2, 15);
   }
 
   // 6. Nube pública
-  if (a[32] === 1 && (a[2] === 0 || a[2] === 1)) {
-    add(32, `Sin restricciones regulatorias de residencia de datos y con criticidad baja/media, la organización tiene un buen perfil para migrar cargas a <strong>nube pública</strong>, optimizando costos operativos.`);
-    addProj("Migración a Nube Pública", 4, 32);
+  if (a[23] === 1 && (a[2] === 0 || a[2] === 1)) {
+    add(23, `Sin restricciones regulatorias de residencia de datos y con criticidad baja/media, la organización tiene un buen perfil para migrar cargas a <strong>nube pública</strong>, optimizando costos operativos.`);
+    addProj("Migración a Nube Pública", 4, 23);
   }
 
   // 7. Nube privada
-  if (a[32] === 0 && a[21] === 3) {
-    add(32, `Existen <strong>restricciones regulatorias o de residencia de datos</strong>, combinadas con infraestructura legada (>7 años). Recomendamos evaluar <strong>Nube Privada</strong> como alternativa que cumple los requisitos regulatorios sin renovar hardware propio.`);
-    addProj("Nube Privada", 3, 32);
+  if (a[23] === 0 && a[15] === 3) {
+    add(23, `Existen <strong>restricciones regulatorias o de residencia de datos</strong>, combinadas con infraestructura legada (>7 años). Recomendamos evaluar <strong>Nube Privada</strong> como alternativa que cumple los requisitos regulatorios sin renovar hardware propio.`);
+    addProj("Nube Privada", 3, 23);
   }
 
   // 8. Nube híbrida
-  if (a[31] === 1 && a[29] === 1) {
-    add(31, `La organización tiene cargas <strong>parciales en nube</strong> y requiere conectividad privada — perfil típico de arquitectura <strong>híbrida</strong>. Recomendamos diseñar una estrategia de nube híbrida con conectividad dedicada entre ambos entornos.`);
-    addProj("Estrategia de Nube Híbrida", 3, 31);
+  if (a[22] === 1 && a[21] === 1) {
+    add(22, `La organización tiene cargas <strong>parciales en nube</strong> y requiere conectividad privada — perfil típico de arquitectura <strong>híbrida</strong>. Recomendamos diseñar una estrategia de nube híbrida con conectividad dedicada entre ambos entornos.`);
+    addProj("Estrategia de Nube Híbrida", 3, 22);
   }
 
   // 9. Data Center certificado (brechas físicas transversales, sitio no certificado aún)
-  const numControles = a[7] ? a[7].length : 0;
-  const numEnergia = a[9] ? a[9].length : 0;
-  if (numControles <= 2 && numEnergia <= 2 && a[4] !== 2) {
-    add(7, `Se identificaron brechas transversales en controles de seguridad física y resiliencia energética. Recomendamos evaluar la certificación del Data Center bajo estándares internacionales (Tier/TIA-942).`);
-    addProj("Certificación de Data Center (Tier / TIA-942)", 3, 7);
+  const numControles = a[6] ? a[6].length : 0;
+  const numResiliencia = a[7] ? a[7].length : 0;
+  if (numControles <= 2 && numResiliencia <= 2 && a[4] !== 2) {
+    add(6, `Se identificaron brechas transversales en controles de seguridad física y resiliencia energética. Recomendamos evaluar la certificación del Data Center bajo estándares internacionales (Tier/TIA-942).`);
+    addProj("Certificación de Data Center (Tier / TIA-942)", 3, 6);
   }
 
   // 10. Cross Connect / interconexión con terceros
-  if (a[29] === 1 || a[28] === 2) {
-    addProj("Cross Connect — interconexión directa con proveedores y carriers", 4, 28);
+  if (a[21] === 1 || a[20] === 2) {
+    addProj("Cross Connect — interconexión directa con proveedores y carriers", 4, 20);
   }
 
   // 11. DRaaS
-  if ((a[16] === 1 || a[16] === 2) && a[18] !== undefined && a[18] <= 2) {
-    add(18, `Se requiere un <strong>RTO exigente (24 horas o menos)</strong> pero el DRP está incompleto o ausente. Un servicio de <strong>DRaaS</strong> permite cumplir ese objetivo sin construir un sitio de respaldo propio.`);
-    addProj("DRaaS — Disaster Recovery as a Service", 2, 18);
+  if ((a[10] === 1 || a[10] === 2) && a[12] !== undefined && a[12] <= 2) {
+    add(12, `Se requiere un <strong>RTO exigente (24 horas o menos)</strong> pero el DRP está incompleto o ausente. Un servicio de <strong>DRaaS</strong> permite cumplir ese objetivo sin construir un sitio de respaldo propio.`);
+    addProj("DRaaS — Disaster Recovery as a Service", 2, 12);
   }
 
-  // 12. BaaS
-  const cifradoOk = a[26] && a[26].includes(0) && a[26].includes(1);
-  if (!cifradoOk && a[20] !== 0) {
-    addProj("BaaS — Backup as a Service (cifrado e inmutable)", 3, 26);
+  // 12. BaaS (backup sin cifrado/inmutabilidad)
+  const backupCompleto = a[18] && a[18].includes(1) && a[18].includes(2);
+  if (!backupCompleto && a[14] !== 0) {
+    addProj("BaaS — Backup as a Service (cifrado e inmutable)", 3, 18);
   }
 
   // 13. Manos remotas / administración de sistemas
-  if ((a[13] === 1 || a[13] === 2) && a[4] === 3) {
-    addProj("Manos Remotas — administración de sistemas 24x7", 4, 13);
+  const sinPersonal24x7 = !(a[9] && a[9].includes(0));
+  if (sinPersonal24x7 && a[4] === 3) {
+    addProj("Manos Remotas — administración de sistemas 24x7", 4, 9);
   }
 
   // 14. Servicios gestionados (paquete integral si 3+ proyectos operativos coinciden)
@@ -1284,6 +1320,7 @@ function getRecsDC(a) {
 
   return { narr, projs };
 }
+
 
 // ═══════════════ ROADMAP DE EVOLUCIÓN — DATA CENTER ═══════════════
 // Convierte la prioridad de cada proyecto disparado (1-4) en horizonte de tiempo:
@@ -1359,7 +1396,7 @@ function renderReportDC(el) {
     </div>
     <div id="radar-wrap" style="background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:16px 12px;margin-bottom:1.5rem;">
       <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B;margin-bottom:8px;">Madurez por Dominio</div>
-      ${renderDomainBarsDC(domainData)}
+      ${renderRadarDC(domainData)}
     </div>
     <div class="section-title">Áreas con oportunidades de mejora</div>${areasHtml}
     <hr class="divider">
@@ -1514,6 +1551,7 @@ function renderReport(el) {
     <div id="pdf-content-proyectos" style="background:#fff;padding:24px 0 8px;">
     <div class="section-title">Proyectos Recomendados</div>
     <div class="proj-list">${projsHtml}</div>
+    ${(() => { const rm = buildRoadmapDC(projs); return rm.length ? `<div class="section-title" style="margin-top:1.5rem;">Roadmap de Evolución</div>${renderRoadmapDC(rm)}` : ""; })()}
     <div class="gtd-footer" style="margin-top:2rem;padding-bottom:1rem;">GTD · Diagnóstico de Ciberseguridad · © 2026 Todos los derechos reservados</div>
     </div>
     <hr class="divider">
@@ -1659,15 +1697,6 @@ async function submitContact(){
     p21: getOptLabel(21, answers[21]),
     p22: isDC ? getOptLabel(22, answers[22]) : "",
     p23: isDC ? getOptLabel(23, answers[23]) : "",
-    p24: isDC ? getOptLabel(24, answers[24]) : "",
-    p25: isDC ? getOptLabel(25, answers[25]) : "",
-    p26: isDC ? getOptLabel(26, answers[26]) : "",
-    p27: isDC ? getOptLabel(27, answers[27]) : "",
-    p28: isDC ? getOptLabel(28, answers[28]) : "",
-    p29: isDC ? getOptLabel(29, answers[29]) : "",
-    p30: isDC ? getOptLabel(30, answers[30]) : "",
-    p31: isDC ? getOptLabel(31, answers[31]) : "",
-    p32: isDC ? getOptLabel(32, answers[32]) : "",
     proyectos: projs.length
       ? "Con base en las respuestas del diagnóstico, se recomienda avanzar en los siguientes proyectos:\n" +
         projs.map((p,i)=>`${i+1}. ${p.text||p}.`).join("\n")
@@ -1733,6 +1762,15 @@ async function downloadPDF() {
   const clientInfo = document.getElementById("pdf-client-info");
   const heroLogo = document.querySelector(".report-hero-logo");
   if (heroLogo) heroLogo.style.display = "inline";
+
+  // Neutralizar animación del radar antes de capturar (html2canvas no procesa
+  // de forma confiable transforms CSS animados sobre elementos SVG)
+  document.querySelectorAll(".radar-shape, .radar-dot, .radar-ring").forEach(el => {
+    el.style.animation = "none";
+    el.style.opacity = "1";
+    el.style.transform = "none";
+  });
+
   if (clientInfo) {
     let txt = "";
     if (nombre) txt += "Preparado para: <strong>" + nombre + "</strong>";
