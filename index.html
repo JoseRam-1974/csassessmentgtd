@@ -1350,6 +1350,10 @@ function getRecsDC(a) {
   const operativos = ["Housing / Colocation en Data Center certificado","DRaaS — Disaster Recovery as a Service","BaaS — Backup as a Service (cifrado e inmutable)","Manos Remotas — administración de sistemas 24x7"];
   const coincidencias = projs.filter(p => operativos.includes(p.text)).length;
   if (coincidencias >= 3) {
+    // Se retiran los ítems individuales ya cubiertos por el paquete, para no duplicar la recomendación
+    for (let i = projs.length - 1; i >= 0; i--) {
+      if (operativos.includes(projs[i].text)) projs.splice(i, 1);
+    }
     addProj("Servicios Gestionados — paquete integral (Housing + DRaaS + BaaS + Manos Remotas)", 1, null);
   }
 
