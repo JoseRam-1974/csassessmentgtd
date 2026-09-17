@@ -648,13 +648,13 @@ function getRecs(a) {
     const resp = opts[a[2]];
     if (a[2] === 0) {
       add(2, `El cliente utiliza <strong>VPN</strong> como método de acceso remoto. Si bien es una solución tradicional y ampliamente adoptada, presenta limitaciones en entornos híbridos modernos: mayor superficie de ataque, gestión compleja de credenciales y rendimiento variable. La tendencia del mercado apunta hacia arquitecturas <strong>Zero Trust y VPN-Less</strong>, donde el acceso se otorga por identidad y contexto, no por red. Recomendamos evaluar esta transición para mejorar seguridad y experiencia de usuario.`);
-      addProj("Implementación de arquitectura VPN-Less / Zero Trust", 3);
+      addProj("Implementación de arquitectura VPN-Less / Zero Trust", 3, 2);
     } else if (a[2] === 1) {
       add(2, `El cliente accede a los servicios a través de <strong>aplicaciones SaaS</strong>. Este modelo es moderno y flexible, pero requiere controles específicos: gestión de identidades centralizada (IdP), políticas de acceso condicional y monitoreo de actividad en cada plataforma. Sin estos controles, el SaaS puede convertirse en un vector de riesgo invisible. Recomendamos implementar una solución de <strong>CASB o SASE</strong> para visibilidad y control unificado.`);
-      addProj("Implementar CASB/SASE para control de acceso SaaS", 3);
+      addProj("Implementar CASB/SASE para control de acceso SaaS", 3, 2);
     } else {
       add(2, `El cliente indica que los usuarios <strong>no tienen acceso a los servicios de la compañía</strong> cuando trabajan de forma remota. Esto puede limitar severamente la productividad y continuidad operativa. En un entorno de trabajo híbrido, carecer de acceso remoto seguro es una brecha operativa crítica. Recomendamos implementar una solución de acceso remoto seguro con <strong>VPN o arquitectura Zero Trust</strong> según el perfil de la organización.`);
-      addProj("Implementar solución de acceso remoto seguro", 1);
+      addProj("Implementar solución de acceso remoto seguro", 1, 2);
     }
   }
 
@@ -688,22 +688,22 @@ function getRecs(a) {
       add(5, `La organización respaldea sus datos en <strong>${respStr}</strong>, aplicando la estrategia <strong>3-2-1</strong> (tres copias, dos medios distintos, una fuera de las instalaciones). Esta es la arquitectura de respaldo más robusta y recomendada por los principales frameworks de seguridad. Garantiza continuidad operativa ante ransomware, fallas de hardware o desastres físicos. El foco ahora debe estar en verificar que los respaldos se <strong>restauran correctamente</strong> mediante pruebas periódicas.`);
     } else if (A && B) {
       add(5, `La organización respaldea en <strong>${respStr}</strong>. Es una combinación sólida que cubre redundancia local y en nube. Para completar la estrategia 3-2-1 y protegerse ante escenarios de ransomware que cifran también los respaldos conectados, recomendamos incorporar un <strong>respaldo físico fuera de las premisas</strong> (cinta, disco externo en ubicación secundaria o servicio de vault offline).`);
-      addProj("Incorporar respaldo físico fuera de las premisas (estrategia 3-2-1)", 3);
+      addProj("Incorporar respaldo físico fuera de las premisas (estrategia 3-2-1)", 3, 5);
     } else if (A && C) {
       add(5, `La organización respaldea en <strong>${respStr}</strong>. Contar con una copia física offsite es positivo, pero sin respaldo en la nube la recuperación ante incidentes puede ser lenta. La nube permite recuperación rápida desde cualquier ubicación. Recomendamos incorporar un <strong>respaldo en nube</strong> como segunda capa de protección ágil.`);
-      addProj("Incorporar respaldo en la Nube como capa adicional", 3);
+      addProj("Incorporar respaldo en la Nube como capa adicional", 3, 5);
     } else if (B && C) {
       add(5, `La organización respaldea en <strong>${respStr}</strong>. Para una estrategia completa recomendamos también incluir el <strong>Datacenter</strong> como punto de respaldo primario, lo que permite recuperación inmediata ante fallas sin depender de conectividad externa.`);
-      addProj("Incorporar Datacenter como punto de respaldo primario", 3);
+      addProj("Incorporar Datacenter como punto de respaldo primario", 3, 5);
     } else if (A) {
       add(5, `La organización respaldea únicamente en <strong>Datacenter</strong>. Si bien es un punto de partida, un único punto de respaldo es vulnerable: un incidente físico, un ataque de ransomware o una falla de infraestructura podría comprometer tanto el sistema productivo como el respaldo. Recomendamos urgentemente agregar <strong>respaldo en la nube y almacenamiento físico offsite</strong>.`);
-      addProj("Implementar respaldo en Nube y almacenamiento físico offsite", 2);
+      addProj("Implementar respaldo en Nube y almacenamiento físico offsite", 2, 5);
     } else if (B) {
       add(5, `La organización respaldea únicamente en la <strong>Nube</strong>. Es un paso importante, pero depender de un único medio y proveedor expone a riesgos de disponibilidad y ransomware que se propaga a unidades sincronizadas. Recomendamos complementar con <strong>respaldo en Datacenter y almacenamiento físico offsite</strong>.`);
-      addProj("Complementar con respaldo en Datacenter y almacenamiento offsite", 2);
+      addProj("Complementar con respaldo en Datacenter y almacenamiento offsite", 2, 5);
     } else if (C) {
       add(5, `La organización respaldea en <strong>almacenamiento físico fuera de las premisas</strong>. Es una práctica valiosa para protegerse ante desastres físicos, pero sin respaldo digital (nube o datacenter) la recuperación puede ser lenta y manual. Recomendamos incorporar <strong>respaldo en nube</strong> para agilizar la recuperación operativa.`);
-      addProj("Incorporar respaldo en la Nube para recuperación ágil", 2);
+      addProj("Incorporar respaldo en la Nube para recuperación ágil", 2, 5);
     }
   }
 
@@ -714,16 +714,16 @@ function getRecs(a) {
     const desconoce = s.includes(4);
     if (desconoce) {
       add(6, `El cliente <strong>desconoce</strong> si tiene MFA implementado en sus sistemas. Esta falta de visibilidad es en sí misma una señal de alerta: sin claridad sobre los controles de acceso, es imposible garantizar que los sistemas críticos estén protegidos. Recomendamos realizar un <strong>inventario inmediato de accesos y autenticaciones</strong> y activar MFA en todos los sistemas críticos como prioridad.`);
-      addProj("Inventario de accesos y activación de MFA en todos los sistemas", 1);
+      addProj("Inventario de accesos y activación de MFA en todos los sistemas", 1, 6);
     } else if (s.length === 0) {
       add(6, `La organización <strong>no tiene MFA implementado</strong> en ningún sistema. Esta es una de las brechas más críticas en ciberseguridad: el 80% de los ataques exitosos involucran credenciales comprometidas. Sin MFA, una contraseña robada es todo lo que necesita un atacante para acceder a sistemas críticos. Recomendamos implementar MFA de forma <strong>urgente e inmediata</strong> en todos los sistemas.`);
-      addProj("Implementación urgente de MFA en todos los sistemas", 1);
+      addProj("Implementación urgente de MFA en todos los sistemas", 1, 6);
     } else {
       const conMFA = s.filter(i => i < 4).map(i => nombres[i]).join(", ");
       const sinMFA = [0,1,2,3].filter(i => !s.includes(i)).map(i => nombres[i]).join(", ");
       if (sinMFA) {
         add(6, `La organización tiene MFA implementado en: <strong>${conMFA}</strong>. Sin embargo, aún existen sistemas críticos sin esta protección: <strong>${sinMFA}</strong>. Cada sistema sin MFA es una puerta potencialmente abierta. Recomendamos extender la implementación de MFA a <strong>todos los sistemas</strong> sin excepción, priorizando los que manejan información financiera y datos sensibles.`);
-        addProj("Extender MFA a todos los sistemas críticos sin cobertura", 2);
+        addProj("Extender MFA a todos los sistemas críticos sin cobertura", 2, 6);
       } else {
         add(6, `Excelente: la organización tiene MFA implementado en <strong>todos los sistemas críticos</strong>: ${conMFA}. Esto reduce significativamente el riesgo de acceso no autorizado incluso ante robo de credenciales. Recomendamos mantener esta práctica y evaluar la adopción de <strong>autenticación sin contraseña (passwordless)</strong> como siguiente evolución.`);
       }
@@ -736,7 +736,7 @@ function getRecs(a) {
       add(7, `La organización <strong>cuenta con un programa de capacitación</strong> en ciberseguridad para sus colaboradores. Esto es fundamental: el factor humano sigue siendo el principal vector de ataque. Un colaborador capacitado puede detener un ataque de phishing antes de que cause daño. Recomendamos asegurar que el programa sea <strong>continuo, medible y actualizado</strong> con las amenazas más recientes, incluyendo ingeniería social y deepfakes.`);
     } else {
       add(7, `La organización <strong>no cuenta con un programa de capacitación</strong> en ciberseguridad. El 90% de los incidentes de seguridad tienen origen en el factor humano — un clic en el enlace incorrecto puede desencadenar un ransomware que paralice la operación. La capacitación no es un gasto, es la inversión de mayor retorno en ciberseguridad. Recomendamos implementar un programa estructurado con contenidos trimestrales y evaluaciones.`);
-      addProj("Implementar programa continuo de Capacitación en Ciberseguridad", 2);
+      addProj("Implementar programa continuo de Capacitación en Ciberseguridad", 2, 7);
     }
   }
 
@@ -746,7 +746,7 @@ function getRecs(a) {
       add(8, `La organización <strong>realiza pruebas de phishing</strong> a sus colaboradores. Esta práctica es altamente efectiva: permite medir la vulnerabilidad real del equipo humano, identificar quiénes requieren refuerzo y demostrar el impacto tangible de la capacitación. Recomendamos mantener una <strong>frecuencia mínima trimestral</strong>, variar los escenarios y complementar cada prueba con retroalimentación formativa, no punitiva.`);
     } else {
       add(8, `La organización <strong>no realiza pruebas de phishing</strong>. Sin simulaciones periódicas, es imposible saber cuántos colaboradores caerían en un ataque real. Las pruebas de phishing interno son la única forma de medir la resiliencia humana antes de que un atacante lo haga primero. Recomendamos implementar campañas simuladas con plataformas especializadas y refuerzo educativo posterior.`);
-      addProj("Implementar campañas de simulación de Phishing interno", 2);
+      addProj("Implementar campañas de simulación de Phishing interno", 2, 8);
     }
   }
 
@@ -757,16 +757,16 @@ function getRecs(a) {
     const desconoce = s.includes(5);
     if (desconoce) {
       add(9, `El cliente <strong>desconoce</strong> qué características de seguridad tiene activas en su Firewall. Un firewall mal configurado o con capacidades desactivadas ofrece una falsa sensación de seguridad. Recomendamos realizar una <strong>auditoría inmediata de la configuración</strong> del firewall para identificar qué está activo, qué falta habilitar y si el equipo está actualizado.`);
-      addProj("Auditoría y configuración del Firewall Perimetral", 2);
+      addProj("Auditoría y configuración del Firewall Perimetral", 2, 9);
     } else if (s.length === 0) {
       add(9, `La organización <strong>no tiene activas</strong> características de seguridad avanzadas en su Firewall. Un firewall sin estas capas actúa solo como filtro de puertos, lo que es completamente insuficiente ante amenazas modernas. Recomendamos activar como mínimo <strong>IPS, URL Filtering y Application Control</strong> para establecer una línea de defensa perimetral efectiva.`);
-      addProj("Activar características de seguridad avanzadas en Firewall (IPS, URL Filtering, App Control)", 1);
+      addProj("Activar características de seguridad avanzadas en Firewall (IPS, URL Filtering, App Control)", 1, 9);
     } else {
       const activas = s.filter(i => i < 5).map(i => nombres[i]).join(", ");
       const inactivas = [0,1,2,3,4].filter(i => !s.includes(i)).map(i => nombres[i]).join(", ");
       if (inactivas) {
         add(9, `El Firewall tiene activas las siguientes características: <strong>${activas}</strong>. Para maximizar la protección perimetral, recomendamos también activar: <strong>${inactivas}</strong>. Cada capa adicional dificulta el avance de un atacante y aumenta la probabilidad de detección temprana.`);
-        addProj("Activar características faltantes en Firewall: " + inactivas, 2);
+        addProj("Activar características faltantes en Firewall: " + inactivas, 2, 9);
       } else {
         add(9, `Excelente: el Firewall tiene <strong>todas las características de seguridad activas</strong>: ${activas}. Esto proporciona una defensa perimetral completa y en profundidad. Recomendamos mantener las firmas y reglas <strong>actualizadas regularmente</strong> y revisar los logs de manera periódica para detectar patrones anómalos.`);
       }
@@ -779,7 +779,7 @@ function getRecs(a) {
       add(10, `La organización utiliza <strong>SD-WAN</strong> para conectar sus sucursales y oficinas remotas. Esta tecnología proporciona visibilidad centralizada, enrutamiento inteligente y mayor resiliencia que las WAN tradicionales. Permite priorizar aplicaciones críticas y reducir la dependencia de enlaces MPLS costosos. Recomendamos asegurar que la solución SD-WAN incluya <strong>capacidades de seguridad integradas</strong> (Secure SD-WAN) para evitar crear nuevos vectores de ataque en las sucursales.`);
     } else {
       add(10, `La organización <strong>no utiliza SD-WAN</strong> para conectar sus ubicaciones remotas. Si opera con múltiples sucursales u oficinas, esto puede significar conectividad costosa, poco resiliente y difícil de gestionar de forma centralizada. Recomendamos evaluar la adopción de <strong>SD-WAN con capacidades de seguridad integradas</strong>, lo que modernizará la conectividad y reducirá la superficie de ataque en los accesos remotos.`);
-      addProj("Evaluar e implementar solución SD-WAN segura", 4);
+      addProj("Evaluar e implementar solución SD-WAN segura", 4, 10);
     }
   }
 
@@ -789,7 +789,7 @@ function getRecs(a) {
       add(11, `La organización <strong>ejecuta scaneos de vulnerabilidades automatizados</strong>. Esta práctica es esencial para mantener visibilidad continua sobre el estado de salud de la infraestructura. Los sistemas evolucionan constantemente y nuevas vulnerabilidades son publicadas diariamente. Recomendamos asegurar que los scaneos tengan una <strong>frecuencia mínima semanal</strong>, cubran 100% de los activos (incluyendo nube) y que los hallazgos se gestionen con tiempos de remediación definidos según criticidad.`);
     } else {
       add(11, `La organización <strong>no realiza scaneos de vulnerabilidades automatizados</strong>. Sin visibilidad sobre las brechas existentes, la organización opera a ciegas: no sabe cuántas vulnerabilidades críticas están expuestas ni desde cuándo. Los atacantes sí escanean de forma continua buscando estas brechas. Recomendamos implementar una herramienta de scaneo automatizado con <strong>reportes periódicos y flujo de remediación</strong> definido.`);
-      addProj("Implementar Scaneo de Vulnerabilidades Automatizado", 2);
+      addProj("Implementar Scaneo de Vulnerabilidades Automatizado", 2, 11);
     }
   }
 
@@ -800,13 +800,13 @@ function getRecs(a) {
       add(12, `La organización utiliza <strong>herramientas automatizadas de Patch Management</strong> para gestionar las correcciones de vulnerabilidades. Este es el nivel de madurez más alto en gestión de parches: elimina la dependencia de procesos manuales, reduce el tiempo entre detección y remediación, y garantiza consistencia. Recomendamos complementar con <strong>métricas de tiempo medio de remediación (MTTR)</strong> por nivel de criticidad y revisiones periódicas de efectividad.`);
     } else if (s.includes(0) && s.includes(1)) {
       add(12, `La organización remedia vulnerabilidades de forma <strong>manual, tanto ante impactos altos como tras cada ciclo de análisis</strong>. Es un proceso responsable pero dependiente de recursos humanos y tiempos de reacción variables. A medida que la infraestructura crece, este modelo se vuelve insostenible. Recomendamos automatizar el proceso con herramientas de <strong>Patch Management</strong> que reduzcan el tiempo de exposición.`);
-      addProj("Implementar herramientas de Patch Management automático", 3);
+      addProj("Implementar herramientas de Patch Management automático", 3, 12);
     } else if (s.includes(0)) {
       add(12, `La organización remedia vulnerabilidades <strong>manualmente solo cuando son de alto impacto</strong>. Esto significa que vulnerabilidades de criticidad media o baja pueden permanecer sin corregir indefinidamente, acumulando deuda técnica y riesgo. Los atacantes frecuentemente encadenan vulnerabilidades "menores" para escalar privilegios. Recomendamos implementar un <strong>proceso de remediación completo y automatizado</strong>.`);
-      addProj("Implementar Patch Management automático y proceso de remediación integral", 2);
+      addProj("Implementar Patch Management automático y proceso de remediación integral", 2, 12);
     } else {
       add(12, `La organización remedia vulnerabilidades <strong>manualmente después de cada ciclo de análisis</strong>. Es un proceso ordenado, pero el tiempo entre detección y corrección puede ser demasiado largo en un entorno de amenazas dinámico. Recomendamos complementar con <strong>automatización de parches</strong> para vulnerabilidades críticas, reduciendo el tiempo de exposición a horas en lugar de días o semanas.`);
-      addProj("Complementar con automatización de Patch Management para vulnerabilidades críticas", 3);
+      addProj("Complementar con automatización de Patch Management para vulnerabilidades críticas", 3, 12);
     }
   }
 
@@ -816,7 +816,7 @@ function getRecs(a) {
       add(13, `La organización <strong>ha implementado controles de ciberseguridad en la nube</strong>. Esto es fundamental bajo el modelo de responsabilidad compartida: el proveedor protege la infraestructura, pero la seguridad de los datos, accesos y configuraciones es responsabilidad del cliente. Recomendamos asegurar que los controles incluyan <strong>CSPM (Cloud Security Posture Management)</strong> para detectar configuraciones incorrectas, gestión de identidades cloud (IAM) y cifrado de datos en reposo y tránsito.`);
     } else {
       add(13, `La organización <strong>no ha implementado controles de ciberseguridad en la nube</strong>. Bajo el modelo de responsabilidad compartida, esto significa que aunque el proveedor protege la infraestructura física, los datos, accesos y configuraciones quedan desprotegidos. Las configuraciones incorrectas en nube son la causa #1 de brechas en entornos cloud. Recomendamos implementar <strong>controles de seguridad cloud de forma urgente</strong>.`);
-      addProj("Implementar Controles de Ciberseguridad en la Nube", 1);
+      addProj("Implementar Controles de Ciberseguridad en la Nube", 1, 13);
     }
   }
 
@@ -826,7 +826,7 @@ function getRecs(a) {
       add(14, `La organización <strong>realiza monitoreo 24/7</strong> de alertas y ataques de ciberseguridad. Esta capacidad es la diferencia entre detectar un ataque en minutos o en semanas. El tiempo medio de detección en organizaciones sin monitoreo continuo supera los 200 días. Con monitoreo activo, la organización puede contener incidentes antes de que causen daño significativo. Recomendamos asegurar que el equipo de respuesta tenga <strong>playbooks definidos</strong> para los tipos de alerta más comunes.`);
     } else {
       add(14, `La organización <strong>no realiza monitoreo 24/7</strong> de ciberseguridad. Los ataques no respetan horarios: el 60% de las intrusiones ocurren fuera del horario laboral, precisamente cuando nadie está mirando. Sin visibilidad continua, un atacante puede permanecer dentro de la red por semanas sin ser detectado. Recomendamos implementar un servicio de <strong>MDR (Managed Detection & Response)</strong> o SOC como servicio para cobertura continua.`);
-      addProj("Implementar Monitoreo 24/7 — MDR o SOC como servicio", 1);
+      addProj("Implementar Monitoreo 24/7 — MDR o SOC como servicio", 1, 14);
     }
   }
 
@@ -836,7 +836,7 @@ function getRecs(a) {
       add(15, `La organización <strong>realiza monitoreo de inteligencia en Deep Web y Dark Web sobre su marca</strong>. Esta capacidad permite detectar de forma proactiva filtraciones de credenciales, datos sensibles expuestos, menciones maliciosas o suplantaciones de identidad antes de que se conviertan en un incidente. Recomendamos mantener este servicio activo y asegurar que los hallazgos se integren al <strong>proceso de respuesta ante incidentes</strong> para una acción oportuna.`);
     } else {
       add(15, `La organización <strong>no realiza monitoreo de inteligencia en Deep Web ni Dark Web sobre su marca</strong>. Hoy en día, credenciales corporativas, datos de clientes y documentos internos circulan en foros clandestinos sin que las organizaciones lo sepan — a veces durante meses antes de que se produzca un ataque. Este monitoreo permite actuar antes de que la información filtrada sea explotada. Recomendamos implementar un servicio de <strong>inteligencia de amenazas y monitoreo de marca en Deep/Dark Web</strong> como medida preventiva de alto impacto.`);
-      addProj("Implementar Monitoreo de Inteligencia en Deep Web y Dark Web sobre la Marca", 2);
+      addProj("Implementar Monitoreo de Inteligencia en Deep Web y Dark Web sobre la Marca", 2, 15);
     }
   }
 
@@ -850,7 +850,7 @@ function getRecs(a) {
       `La organización destina <strong>más de USD 500,000 anuales</strong> a ciberseguridad. Esto refleja una comprensión profunda del riesgo y una visión estratégica de la protección. En este nivel, el foco debe estar en la <strong>optimización, integración y mejora continua</strong> del programa: threat hunting proactivo, red team, automatización de respuesta (SOAR) y métricas de madurez. Somos el socio ideal para acompañar este nivel de ambición.`
     ];
     add(16, textos[a[16]]);
-    if (a[16] === 0) addProj("Definir Presupuesto de Ciberseguridad y Plan de Proyectos", 2);
+    if (a[16] === 0) addProj("Definir Presupuesto de Ciberseguridad y Plan de Proyectos", 2, 16);
   }
 
   // Q17 — Ley 21.719 Gobernanza
