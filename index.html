@@ -312,11 +312,12 @@
 
   /* ── CONTACT ── */
   .contact-card {
-    background: var(--surface); border: 1px solid var(--border);
+    background: var(--gtd-blue-light); border: 2px solid var(--gtd-blue);
     border-radius: var(--radius); padding: 1.5rem; margin-top: 1.5rem;
     box-shadow: 0 1px 4px rgba(0,0,0,0.04);
   }
-  .contact-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gtd-blue); margin-bottom: 6px; }
+  .contact-eyebrow { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; background: var(--gtd-blue); color: #fff; padding: 3px 9px; border-radius: 10px; margin-bottom: 10px; }
+  .contact-card .form-field input, .contact-card .form-field select { background: #fff; }
   .contact-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 4px; color: var(--text); }
   .contact-card p  { font-size: 14px; color: var(--text2); margin-bottom: 1.25rem; line-height: 1.5; }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
