@@ -169,40 +169,38 @@
     font-family:Arial, sans-serif; font-size:13.5px; color:#5B3524; line-height:1.55;
   }
   .advice strong{color:var(--orange-2);}
-  .cta{
-    margin-top:16px; display:flex; align-items:center; justify-content:space-between; gap:12px;
-    flex-wrap:wrap;
-  }
-  .cta a{
-    font-family:Arial, sans-serif; font-size:13.5px; font-weight:700; color:#fff; background:var(--navy);
-    padding:11px 18px; border-radius:8px; text-decoration:none; white-space:nowrap;
-  }
-  .cta a:hover{background:var(--navy-2);}
-  .cta span{font-family:Arial, sans-serif; font-size:12px; color:var(--muted);}
-
   .optin-card{
-    margin-top:22px; border:1px solid var(--line); border-radius:12px; padding:20px 22px;
-    background:#F8FAFB;
+    margin-top:24px; border-radius:14px; padding:26px 26px 24px;
+    background:linear-gradient(155deg, var(--navy) 0%, var(--navy-2) 100%);
+    box-shadow:0 16px 32px -14px rgba(10,46,82,0.35);
   }
-  .optin-title{font-family:Arial, sans-serif; font-weight:700; font-size:14.5px; color:var(--navy); margin-bottom:4px;}
-  .optin-sub{font-family:Arial, sans-serif; font-size:12px; color:var(--muted); line-height:1.5; margin-bottom:14px;}
+  .optin-eyebrow{
+    font-family:Arial, sans-serif; font-weight:700; font-size:11px; text-transform:uppercase;
+    letter-spacing:1.2px; color:var(--orange); margin-bottom:8px;
+  }
+  .optin-title{font-family:Georgia, serif; font-weight:700; font-size:19px; color:#fff; margin-bottom:8px; line-height:1.25;}
+  .optin-sub{font-family:Arial, sans-serif; font-size:12.5px; color:#C7D3E0; line-height:1.55; margin-bottom:18px;}
   .optin-row{display:flex; gap:10px; margin-bottom:10px;}
-  .optin-row input[type=text], .optin-row input[type=email]{
-    flex:1; padding:10px 12px; border:1.5px solid var(--line); border-radius:8px;
-    font-family:Arial, sans-serif; font-size:13px; background:#fff; color:var(--ink); min-width:0;
+  .optin-row input[type=text], .optin-row input[type=email], .optin-row input[type=tel]{
+    flex:1; padding:11px 12px; border:1.5px solid rgba(255,255,255,0.18); border-radius:8px;
+    font-family:Arial, sans-serif; font-size:13px; background:rgba(255,255,255,0.07); color:#fff; min-width:0;
   }
-  .optin-row input:focus{outline:none; border-color:var(--navy-2);}
+  .optin-row input::placeholder{color:#9FB0C3;}
+  .optin-row input:focus{outline:none; border-color:var(--orange); background:rgba(255,255,255,0.12);}
   .optin-btn{
-    flex-shrink:0; padding:10px 16px; border:none; border-radius:8px; background:var(--navy);
-    color:#fff; font-family:Arial, sans-serif; font-weight:700; font-size:13px; cursor:pointer;
-    white-space:nowrap;
+    width:100%; margin-top:4px; padding:14px 18px; border:none; border-radius:9px; background:var(--orange);
+    color:#fff; font-family:Arial, sans-serif; font-weight:700; font-size:14.5px; cursor:pointer;
+    letter-spacing:0.2px; transition:background .15s ease;
   }
-  .optin-btn:hover{background:var(--navy-2);}
-  @media (max-width:520px){ .optin-row{flex-direction:column;} .optin-btn{width:100%;} }
+  .optin-btn:hover{background:var(--orange-2);}
+  @media (max-width:520px){ .optin-row{flex-direction:column;} }
   .optin-thanks{
-    display:none; font-family:Arial, sans-serif; font-size:13px; color:var(--low); font-weight:700;
-    padding:6px 2px;
+    display:none; text-align:center; padding:10px 4px;
   }
+  .optin-thanks-title{
+    font-family:Georgia, serif; font-weight:700; font-size:19px; color:#fff; margin-bottom:6px;
+  }
+  .optin-thanks div{font-family:Arial, sans-serif; font-size:13px; color:#C7D3E0;}
   .optin-card.sent form{display:none;}
   .optin-card.sent .optin-thanks{display:block;}
 
@@ -410,15 +408,11 @@
 
         <div class="advice" id="advice"></div>
 
-        <div class="cta">
-          <span>¿Quieres revisar esto con un especialista?</span>
-          <a href="https://www.gtd.cl/contacto" target="_blank" rel="noopener">Conversemos →</a>
-        </div>
-
         <div class="optin-card" id="optin-card">
           <div class="optin-head">
-            <div class="optin-title">¿Te enviamos este diagnóstico?</div>
-            <div class="optin-sub">Opcional — te lo enviamos por correo junto con recomendaciones puntuales para tu perfil. No es obligatorio para ver tu resultado.</div>
+            <div class="optin-eyebrow">Siguiente paso</div>
+            <div class="optin-title">Habla con nuestro equipo de ciberseguridad</div>
+            <div class="optin-sub">Un especialista puede ayudarte a priorizar acciones concretas según este resultado — sin costo y sin compromiso. Déjanos tus datos y te contactamos a la brevedad.</div>
           </div>
           <form id="optin-form" name="diagnostico-ransomware" method="POST" data-netlify="true" netlify-honeypot="empresa-web">
             <input type="hidden" name="form-name" value="diagnostico-ransomware">
@@ -435,10 +429,14 @@
             </div>
             <div class="optin-row">
               <input type="text" name="empresa" placeholder="Empresa">
-              <button type="submit" class="optin-btn">Enviarme el diagnóstico</button>
+              <input type="tel" name="telefono" placeholder="Teléfono (opcional)">
             </div>
+            <button type="submit" class="optin-btn optin-btn-full">Quiero que me contacten →</button>
           </form>
-          <div class="optin-thanks" id="optin-thanks">Listo — te llegará el diagnóstico a tu correo a la brevedad. Gracias.</div>
+          <div class="optin-thanks" id="optin-thanks">
+            <div class="optin-thanks-title">¡Listo!</div>
+            <div>Un especialista de Gtd revisará tu perfil y te contactará a la brevedad.</div>
+          </div>
         </div>
       </div>
     </div>
