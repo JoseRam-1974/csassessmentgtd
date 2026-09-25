@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Exposición a Ransomware · Gtd</title>
+<style>
+  :root{
+    --navy:#0A2E52;
+    --navy-2:#0F3D6B;
+    --ink:#0B1E30;
+    --orange:#E4572E;
+    --orange-2:#C7431D;
+    --paper:#F4F6F8;
+    --line:#DCE3E8;
+    --muted:#5B6B78;
+    --white:#ffffff;
+    --low:#2E8B57;
+    --med:#D4A017;
+    --high:#E4572E;
+    --crit:#B02A2A;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family: 'Georgia', 'Iowan Old Style', serif;
+    background:var(--paper);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono, .num, input, select{
+    font-family: 'Menlo','Consolas',monospace;
+  }
+  header.top{
+    background:var(--navy);
+    color:#fff;
+    padding:22px 6vw;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-logo{height:30px; width:auto; display:block;}
+  .brand .tag{font-family:Arial, sans-serif;font-size:11px;color:#B9C7D6;letter-spacing:1.5px;text-transform:uppercase;}
+  nav.top-links{font-family:Arial, sans-serif;font-size:13px;color:#B9C7D6;}
+
+  .hero{
+    background:linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 55%, #0c3a63 100%);
+    color:#fff;
+    padding:56px 6vw 72px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; right:-10%; top:-30%;
+    width:520px;height:520px;border-radius:50%;
+    background:radial-gradient(circle, rgba(228,87,46,0.28), transparent 70%);
+  }
+  .hero-inner{max-width:760px; position:relative; z-index:2;}
+  .eyebrow{
+    font-family:Arial, sans-serif; text-transform:uppercase; letter-spacing:2px;
+    color:var(--orange); font-size:12.5px; font-weight:700; margin-bottom:14px;
+  }
+  h1.hero-title{
+    font-size:clamp(30px,4vw,46px); line-height:1.15; margin:0 0 18px; font-weight:700;
+  }
+  .hero p.sub{
+    font-family:Arial, sans-serif; font-size:16px; line-height:1.6; color:#D9E2EA; max-width:600px;
+  }
+  .ticker{
+    margin-top:34px; display:flex; gap:34px; flex-wrap:wrap;
+    font-family:Arial, sans-serif;
+  }
+  .ticker .item .big{font-size:25px;font-weight:800;color:var(--orange);font-family:'Menlo','Consolas',monospace; white-space:nowrap; letter-spacing:-0.3px;}
+  .ticker .item .lbl{font-size:11.5px;color:#A9BBCA;text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+
+  main{max-width:1100px;margin:0 auto;padding:0 6vw 90px;}
+  .grid{
+    display:grid; grid-template-columns: 1.05fr 1fr; gap:34px;
+    margin-top:-40px; position:relative; z-index:3;
+  }
+  @media (max-width:900px){ .grid{grid-template-columns:1fr;} .hero{padding-bottom:40px;} .grid{margin-top:-20px;} }
+
+  .card{
+    background:#fff; border-radius:14px; border:1px solid var(--line);
+    box-shadow:0 18px 40px -18px rgba(10,46,82,0.25);
+    padding:30px 30px 34px;
+  }
+  .card h2{
+    font-size:20px; margin:0 0 4px; color:var(--navy);
+  }
+  .card .card-sub{
+    font-family:Arial, sans-serif; font-size:13px; color:var(--muted); margin-bottom:22px;
+  }
+  .field{margin-bottom:18px;}
+  .field label{
+    display:block; font-family:Arial, sans-serif; font-size:12.5px; font-weight:700;
+    color:var(--navy); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.4px;
+  }
+  .field .hint{font-family:Arial, sans-serif; font-size:11.5px; color:var(--muted); margin-top:5px;}
+  select, input[type=text]{
+    width:100%; padding:11px 12px; border:1.5px solid var(--line); border-radius:8px;
+    font-size:14.5px; background:#fbfcfd; color:var(--ink); appearance:none;
+  }
+  select:focus, input:focus{outline:none; border-color:var(--orange); background:#fff;}
+  .select-wrap{position:relative;}
+  .select-wrap::after{
+    content:"⌄"; position:absolute; right:14px; top:50%; transform:translateY(-55%);
+    color:var(--navy); font-size:18px; pointer-events:none;
+  }
+
+  button.calc-btn{
+    margin-top:8px; width:100%; padding:15px 18px; border:none; border-radius:9px;
+    background:var(--orange); color:#fff; font-family:Arial, sans-serif; font-weight:700;
+    font-size:15px; letter-spacing:0.3px; cursor:pointer; transition:background .15s ease, transform .1s ease;
+  }
+  button.calc-btn:hover{background:var(--orange-2);}
+  button.calc-btn:active{transform:scale(0.99);}
+
+  /* RESULTS */
+  #results{display:none;}
+  #results.show{display:block;}
+  .score-block{
+    display:flex; align-items:center; gap:22px; margin-bottom:24px;
+  }
+  .score-ring{
+    width:104px;height:104px;border-radius:50%;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    background:conic-gradient(var(--ring-color) calc(var(--pct) * 1%), #ECEFF2 0);
+    position:relative;
+  }
+  .score-ring::before{
+    content:""; position:absolute; width:78px; height:78px; border-radius:50%; background:#fff;
+  }
+  .score-ring .val{position:relative; z-index:2; font-family:'Menlo','Consolas',monospace; font-weight:800; font-size:24px; color:var(--ink);}
+  .score-meta .cat{
+    font-family:Arial, sans-serif; font-weight:800; font-size:22px; letter-spacing:0.3px;
+  }
+  .score-meta .desc{font-family:Arial, sans-serif; font-size:13px; color:var(--muted); margin-top:4px; max-width:280px;}
+
+  .factor-bars{margin-bottom:26px;}
+  .factor-row{display:flex; align-items:center; gap:10px; margin-bottom:3px; font-family:Arial, sans-serif; font-size:12.5px;}
+  .factor-row .flabel{width:92px; color:var(--muted); flex-shrink:0;}
+  .factor-row .ftrack{flex:1; height:8px; background:#ECEFF2; border-radius:6px; overflow:hidden;}
+  .factor-row .ffill{height:100%; background:var(--navy-2); border-radius:6px;}
+  .factor-row .fval{width:34px; text-align:right; font-family:'Menlo','Consolas',monospace; color:var(--ink); font-weight:700;}
+  .factor-sub{
+    font-family:Arial, sans-serif; font-size:11px; color:var(--muted);
+    margin:0 0 11px 102px;
+  }
+
+  .cost-total{
+    background:var(--navy); color:#fff; border-radius:12px; padding:22px 24px; margin-bottom:20px;
+  }
+  .cost-total .lbl{font-family:Arial, sans-serif; font-size:11.5px; text-transform:uppercase; letter-spacing:1.4px; color:#A9BBCA;}
+  .cost-total .amt{font-family:'Menlo','Consolas',monospace; font-size:34px; font-weight:800; margin-top:4px;}
+  .cost-total .days{font-family:Arial, sans-serif; font-size:13px; color:#D9E2EA; margin-top:8px;}
+
+  .breakdown{border-top:1px solid var(--line); padding-top:16px;}
+  .brow{display:flex; justify-content:space-between; padding:9px 0; font-family:Arial, sans-serif; font-size:13.5px; border-bottom:1px dashed var(--line);}
+  .brow:last-child{border-bottom:none;}
+  .brow .k{color:var(--muted);}
+  .brow .v{font-family:'Menlo','Consolas',monospace; font-weight:700; color:var(--ink);}
+  .brow.discount .v{color:var(--low);}
+
+  .advice{
+    margin-top:22px; background:#FFF5F0; border:1px solid #F6D8CB; border-radius:10px; padding:16px 18px;
+    font-family:Arial, sans-serif; font-size:13.5px; color:#5B3524; line-height:1.55;
+  }
+  .advice strong{color:var(--orange-2);}
+  .cta{
+    margin-top:16px; display:flex; align-items:center; justify-content:space-between; gap:12px;
+    flex-wrap:wrap;
+  }
+  .cta a{
+    font-family:Arial, sans-serif; font-size:13.5px; font-weight:700; color:#fff; background:var(--navy);
+    padding:11px 18px; border-radius:8px; text-decoration:none; white-space:nowrap;
+  }
+  .cta a:hover{background:var(--navy-2);}
+  .cta span{font-family:Arial, sans-serif; font-size:12px; color:var(--muted);}
+
+  .optin-card{
+    margin-top:22px; border:1px solid var(--line); border-radius:12px; padding:20px 22px;
+    background:#F8FAFB;
+  }
+  .optin-title{font-family:Arial, sans-serif; font-weight:700; font-size:14.5px; color:var(--navy); margin-bottom:4px;}
+  .optin-sub{font-family:Arial, sans-serif; font-size:12px; color:var(--muted); line-height:1.5; margin-bottom:14px;}
+  .optin-row{display:flex; gap:10px; margin-bottom:10px;}
+  .optin-row input[type=text], .optin-row input[type=email]{
+    flex:1; padding:10px 12px; border:1.5px solid var(--line); border-radius:8px;
+    font-family:Arial, sans-serif; font-size:13px; background:#fff; color:var(--ink); min-width:0;
+  }
+  .optin-row input:focus{outline:none; border-color:var(--navy-2);}
+  .optin-btn{
+    flex-shrink:0; padding:10px 16px; border:none; border-radius:8px; background:var(--navy);
+    color:#fff; font-family:Arial, sans-serif; font-weight:700; font-size:13px; cursor:pointer;
+    white-space:nowrap;
+  }
+  .optin-btn:hover{background:var(--navy-2);}
+  @media (max-width:520px){ .optin-row{flex-direction:column;} .optin-btn{width:100%;} }
+  .optin-thanks{
+    display:none; font-family:Arial, sans-serif; font-size:13px; color:var(--low); font-weight:700;
+    padding:6px 2px;
+  }
+  .optin-card.sent form{display:none;}
+  .optin-card.sent .optin-thanks{display:block;}
+
+  .reg-field{
+    border-top:1px solid var(--line); padding-top:16px; margin-top:4px;
+  }
+  .check-row{
+    display:flex; align-items:flex-start; gap:9px; margin-bottom:10px; cursor:pointer;
+    font-family:Arial, sans-serif; font-size:12.5px; color:var(--ink); font-weight:400;
+    text-transform:none; letter-spacing:normal;
+  }
+  .check-row input[type=checkbox]{
+    width:16px; height:16px; margin-top:1px; accent-color:var(--navy); flex-shrink:0; cursor:pointer;
+  }
+
+  .reg-box{
+    display:none; margin-top:22px; border:1px solid #F0D9C8; border-radius:12px; padding:18px 20px;
+    background:#FFFAF5;
+  }
+  .reg-box.show{display:block;}
+  .reg-box .reg-title{
+    font-family:Arial, sans-serif; font-weight:700; font-size:13px; color:var(--orange-2);
+    text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px;
+  }
+  .reg-row{
+    display:flex; justify-content:space-between; align-items:baseline; padding:8px 0;
+    border-bottom:1px dashed #F0D9C8; font-family:Arial, sans-serif; font-size:13px;
+  }
+  .reg-row:last-of-type{border-bottom:none;}
+  .reg-row .k{color:var(--ink); max-width:62%;}
+  .reg-row .v{font-family:'Menlo','Consolas',monospace; font-weight:700; color:var(--orange-2); text-align:right;}
+  .reg-note{
+    font-family:Arial, sans-serif; font-size:11px; color:var(--muted); margin-top:10px; line-height:1.5;
+  }
+
+  .disclaimer{
+    margin-top:34px; font-family:Arial, sans-serif; font-size:11.5px; color:var(--muted);
+    line-height:1.6; border-top:1px solid var(--line); padding-top:18px;
+  }
+  footer{
+    text-align:center; padding:26px 6vw 40px; font-family:Arial, sans-serif; font-size:11.5px; color:var(--muted);
+  }
+  .empty-state{
+    font-family:Arial, sans-serif; color:var(--muted); font-size:13.5px; line-height:1.7;
+    padding:20px 4px;
+  }
+  .empty-state .num{font-family:'Menlo','Consolas',monospace; color:var(--navy); font-weight:800;}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <img src="data:image/png;base64,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" alt="Gtd" class="brand-logo">
+    <div class="tag">Ciberseguridad</div>
+  </div>
+  <nav class="top-links">Herramienta de autodiagnóstico</nav>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">Calculadora de exposición</div>
+    <h1 class="hero-title">¿Qué le costaría a tu empresa un ataque de ransomware?</h1>
+    <p class="sub">Completa seis datos de tu operación y obtén una estimación de tu nivel de riesgo y del costo económico potencial de un incidente, basada en promedios de industria (IBM, Sophos, Coveware).</p>
+    <div class="ticker">
+      <div class="item"><div class="big">USD 5.080.000.-</div><div class="lbl">Costo promedio global de un incidente (2026)</div></div>
+      <div class="item"><div class="big">24</div><div class="lbl">Días de inactividad promedio</div></div>
+      <div class="item"><div class="big">64%</div><div class="lbl">De víctimas rechaza pagar el rescate</div></div>
+    </div>
+  </div>
+</section>
+
+<main>
+  <div class="grid">
+    <div class="card" id="form-card">
+      <h2>Tu perfil de exposición</h2>
+      <div class="card-sub">Los datos no se almacenan ni se envían a ningún servidor — el cálculo ocurre en tu navegador.</div>
+
+      <form id="calc-form">
+        <div class="field">
+          <label for="sector">Sector / industria</label>
+          <div class="select-wrap">
+            <select id="sector" required>
+              <option value="salud">Salud</option>
+              <option value="financiero">Financiero</option>
+              <option value="retail">Retail</option>
+              <option value="manufactura">Manufactura</option>
+              <option value="gobierno">Gobierno</option>
+              <option value="otro" selected>Otro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="revenue">Ingresos anuales (USD)</label>
+          <div class="select-wrap">
+            <select id="revenue" required>
+              <option value="0.2|5000000">Menos de 10 millones</option>
+              <option value="0.4|30000000" selected>Entre 10 y 50 millones</option>
+              <option value="0.7|120000000">Entre 50 y 200 millones</option>
+              <option value="1.2|600000000">Entre 200 y 1.000 millones</option>
+              <option value="2.0|1500000000">Más de 1.000 millones</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="employees">N° de empleados / endpoints</label>
+          <div class="select-wrap">
+            <select id="employees" required>
+              <option value="30">1 – 50</option>
+              <option value="150" selected>51 – 250</option>
+              <option value="600">251 – 1.000</option>
+              <option value="3000">1.001 – 5.000</option>
+              <option value="8000">Más de 5.000</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="backup">Estado de backups</label>
+          <div class="select-wrap">
+            <select id="backup" required>
+              <option value="1">Sin backups, o no probados</option>
+              <option value="2" selected>Backups periódicos, sin aislamiento de red</option>
+              <option value="3">Backups aislados / inmutables, sin pruebas de recuperación</option>
+              <option value="4">Backups inmutables + pruebas de recuperación regulares (3-2-1)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="security">Madurez de seguridad</label>
+          <div class="select-wrap">
+            <select id="security" required>
+              <option value="1">Controles básicos, sin MFA</option>
+              <option value="2" selected>MFA parcial, sin EDR, parches irregulares</option>
+              <option value="3">MFA + EDR, gestión formal de parches</option>
+              <option value="4">MFA + EDR/XDR + SOC 24/7</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="insurance">Seguro cibernético</label>
+          <div class="select-wrap">
+            <select id="insurance" required>
+              <option value="1" selected>Sin seguro cibernético</option>
+              <option value="2">Seguro general, sin cobertura específica</option>
+              <option value="3">Cobertura específica de ransomware</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field reg-field">
+          <label style="margin-bottom:8px;">Contexto regulatorio Chile (opcional)</label>
+          <label class="check-row">
+            <input type="checkbox" id="isOIV">
+            <span>Somos Operador de Importancia Vital (OIV) o Servicio Esencial (Ley 21.663)</span>
+          </label>
+          <label class="check-row">
+            <input type="checkbox" id="handlesData">
+            <span>Tratamos datos personales de clientes, usuarios o colaboradores (Ley 21.719)</span>
+          </label>
+        </div>
+
+        <button type="submit" class="calc-btn">Calcular mi exposición →</button>
+      </form>
+    </div>
+
+    <div class="card" id="results-card">
+      <h2>Resultado</h2>
+      <div class="card-sub">Score de riesgo y costo estimado según tu perfil</div>
+
+      <div class="empty-state" id="empty-state">
+        Completa el formulario y presiona <span class="num">"Calcular mi exposición"</span> para ver tu score de riesgo (0-100), el costo total estimado en caso de incidente, y el desglose por componente (interrupción de negocio, rescate referencial, remediación y costos legales).
+      </div>
+
+      <div id="results">
+        <div class="score-block">
+          <div class="score-ring" id="score-ring" style="--pct:0; --ring-color:#2E8B57;">
+            <div class="val" id="score-val">0</div>
+          </div>
+          <div class="score-meta">
+            <div class="cat" id="score-cat" style="color:#2E8B57;">—</div>
+            <div class="desc" id="score-desc"></div>
+          </div>
+        </div>
+
+        <div class="factor-bars" id="factor-bars"></div>
+
+        <div class="cost-total">
+          <div class="lbl">Costo total estimado del incidente</div>
+          <div class="amt" id="total-cost">USD 0</div>
+          <div class="days" id="downtime-days"></div>
+        </div>
+
+        <div class="breakdown" id="breakdown"></div>
+
+        <div class="reg-box" id="reg-box">
+          <div class="reg-title">⚠ Exposición regulatoria adicional (Chile)</div>
+          <div id="reg-rows"></div>
+          <div class="reg-note" id="reg-note"></div>
+        </div>
+
+        <div class="advice" id="advice"></div>
+
+        <div class="cta">
+          <span>¿Quieres revisar esto con un especialista?</span>
+          <a href="https://www.gtd.cl/contacto" target="_blank" rel="noopener">Conversemos →</a>
+        </div>
+
+        <div class="optin-card" id="optin-card">
+          <div class="optin-head">
+            <div class="optin-title">¿Te enviamos este diagnóstico?</div>
+            <div class="optin-sub">Opcional — te lo enviamos por correo junto con recomendaciones puntuales para tu perfil. No es obligatorio para ver tu resultado.</div>
+          </div>
+          <form id="optin-form" name="diagnostico-ransomware" method="POST" data-netlify="true" netlify-honeypot="empresa-web">
+            <input type="hidden" name="form-name" value="diagnostico-ransomware">
+            <input type="hidden" name="score" id="f-score">
+            <input type="hidden" name="categoria" id="f-categoria">
+            <input type="hidden" name="costo_estimado_usd" id="f-costo">
+            <input type="hidden" name="sector" id="f-sector">
+            <div style="display:none">
+              <label>No completar: <input name="empresa-web" /></label>
+            </div>
+            <div class="optin-row">
+              <input type="text" name="nombre" placeholder="Nombre" required>
+              <input type="email" name="correo" placeholder="Correo corporativo" required>
+            </div>
+            <div class="optin-row">
+              <input type="text" name="empresa" placeholder="Empresa">
+              <button type="submit" class="optin-btn">Enviarme el diagnóstico</button>
+            </div>
+          </form>
+          <div class="optin-thanks" id="optin-thanks">Listo — te llegará el diagnóstico a tu correo a la brevedad. Gracias.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    Esta calculadora entrega una estimación orientativa construida a partir de promedios públicos de industria (IBM Cost of a Data Breach, Sophos State of Ransomware, Coveware Quarterly Reports, Coalition Cyber Claims Report) y no constituye una auditoría de riesgo, un peritaje actuarial ni una cotización de seguro. El componente "exposición a rescate" se presenta únicamente como referencia de magnitud de mercado — Gtd no recomienda ni facilita el pago de rescates ante un incidente de ransomware. El descuento por seguro cibernético refleja sublímites de cobertura típicos de mercado (~25% del límite nominal en pólizas con cobertura específica de ransomware) y no representa una cotización real — incluso con la mejor cobertura disponible, el seguro no suele cubrir el 100% del impacto. Para una evaluación formal de tu postura de seguridad o de tu póliza, contacta a nuestro equipo.
+  </div>
+</main>
+
+<footer>© Gtd — Herramienta educativa de autodiagnóstico de ciberseguridad</footer>
+
+<script>
+const SECTOR = {
+  salud:      { base: 7420000, sectorPts: 20, riskPct: 0.55, legal: 1.40, label: "Salud" },
+  financiero: { base: 5560000, sectorPts: 20, riskPct: 0.65, legal: 1.40, label: "Financiero" },
+  gobierno:   { base: 2860000, sectorPts: 16, riskPct: 0.35, legal: 1.25, label: "Gobierno" },
+  manufactura:{ base: 5000000, sectorPts: 16, riskPct: 0.50, legal: 1.10, label: "Manufactura" },
+  retail:     { base: 3540000, sectorPts: 12, riskPct: 0.60, legal: 1.10, label: "Retail" },
+  otro:       { base: 4440000, sectorPts: 10, riskPct: 0.45, legal: 1.00, label: "Otro" },
+};
+const SIZE_LABEL = {
+  2:  "Menos de USD 10 millones en ingresos",
+  4:  "Entre USD 10 y 50 millones en ingresos",
+  6:  "Entre USD 50 y 200 millones en ingresos",
+  8:  "Entre USD 200 y 1.000 millones en ingresos",
+  10: "Más de USD 1.000 millones en ingresos",
+};
+const RANSOM_DEMAND_BY_SIZE = {
+  2:  150000,     // <10M ingresos
+  4:  250000,     // 10-50M
+  6:  350000,     // 50-200M (ancla Sophos: ≤250M ingresos → demanda mediana <350K)
+  8:  1500000,    // 200-1.000M
+  10: 5000000,    // >1.000M (ancla Sophos: >1.000M ingresos → demanda mediana 5M)
+};
+const BACKUP = {
+  1: { mult: 1.6, pts: 25, label: "Sin backups probados" },
+  2: { mult: 1.3, pts: 18, label: "Backups sin aislamiento" },
+  3: { mult: 1.0, pts: 10, label: "Backups aislados, sin pruebas" },
+  4: { mult: 0.7, pts: 3,  label: "Backups inmutables y probados" },
+};
+const SECURITY = {
+  1: { mult: 1.5, pts: 30, label: "Controles básicos" },
+  2: { mult: 1.25,pts: 22, label: "MFA parcial" },
+  3: { mult: 0.9, pts: 12, label: "MFA + EDR" },
+  4: { mult: 0.6, pts: 4,  label: "MFA + EDR/XDR + SOC 24/7" },
+};
+const INSURANCE = {
+  1: { discount: 0.00, pts: 15, label: "Sin seguro" },
+  2: { discount: 0.08, pts: 8,  label: "Cobertura general" },
+  3: { discount: 0.25, pts: 3,  label: "Cobertura específica" },
+};
+
+function fmtUSD(n){
+  return "USD " + Math.round(n).toLocaleString("es-CL");
+}
+
+document.getElementById("calc-form").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const sectorKey = document.getElementById("sector").value;
+  const [sizeMult, revenueUSD] = document.getElementById("revenue").value.split("|").map(Number);
+  const employees = Number(document.getElementById("employees").value);
+  const backupLvl = Number(document.getElementById("backup").value);
+  const securityLvl = Number(document.getElementById("security").value);
+  const insuranceLvl = Number(document.getElementById("insurance").value);
+
+  const sector = SECTOR[sectorKey];
+  const backup = BACKUP[backupLvl];
+  const security = SECURITY[securityLvl];
+  const insurance = INSURANCE[insuranceLvl];
+
+  let sizePts = 2;
+  if (sizeMult >= 2.0) sizePts = 10;
+  else if (sizeMult >= 1.2) sizePts = 8;
+  else if (sizeMult >= 0.7) sizePts = 6;
+  else if (sizeMult >= 0.4) sizePts = 4;
+
+  // --- Costos ---
+  let downtimeDays = 24 * backup.mult * security.mult;
+  downtimeDays = Math.min(60, Math.max(3, downtimeDays));
+
+  const interruption = (revenueUSD / 365) * sector.riskPct * downtimeDays;
+  const ransomExposure = RANSOM_DEMAND_BY_SIZE[sizePts];
+  const remediation = employees * 3650 * security.mult;
+  const legal = sector.base * 0.08 * sector.legal;
+  const insuranceDiscount = (ransomExposure + remediation) * insurance.discount;
+
+  const total = interruption + ransomExposure + remediation + legal - insuranceDiscount;
+
+  // --- Score de riesgo ---
+  const score = Math.round(sector.sectorPts + sizePts + backup.pts + security.pts + insurance.pts);
+
+  let cat, color, desc;
+  if (score <= 25){ cat="Bajo"; color="#2E8B57"; desc="Postura de seguridad y continuidad sólida; exposición controlada."; }
+  else if (score <= 50){ cat="Medio"; color="#D4A017"; desc="Brechas puntuales; conviene reforzar controles específicos."; }
+  else if (score <= 75){ cat="Alto"; color="#E4572E"; desc="Múltiples brechas relevantes; alta probabilidad de impacto severo."; }
+  else { cat="Crítico"; color="#B02A2A"; desc="Exposición crítica; se recomienda intervención prioritaria."; }
+
+  // --- Render ---
+  document.getElementById("empty-state").style.display = "none";
+  document.getElementById("results").classList.add("show");
+
+  document.getElementById("score-val").textContent = score;
+  document.getElementById("score-ring").style.setProperty("--pct", score);
+  document.getElementById("score-ring").style.setProperty("--ring-color", color);
+  document.getElementById("score-cat").textContent = cat;
+  document.getElementById("score-cat").style.color = color;
+  document.getElementById("score-desc").textContent = desc;
+
+  const factors = [
+    ["Sector", sector.sectorPts, 20, sector.label],
+    ["Tamaño", sizePts, 10, SIZE_LABEL[sizePts]],
+    ["Backup", backup.pts, 25, backup.label],
+    ["Seguridad", security.pts, 30, security.label],
+    ["Seguro", insurance.pts, 15, insurance.label],
+  ];
+  document.getElementById("factor-bars").innerHTML = factors.map(f => `
+    <div class="factor-row">
+      <div class="flabel">${f[0]}</div>
+      <div class="ftrack"><div class="ffill" style="width:${(f[1]/f[2]*100).toFixed(0)}%"></div></div>
+      <div class="fval">${f[1]}/${f[2]}</div>
+    </div>
+    <div class="factor-sub">${f[3]}</div>
+  `).join("");
+
+  document.getElementById("total-cost").textContent = fmtUSD(total);
+  document.getElementById("downtime-days").textContent = `Estimado a partir de ${downtimeDays.toFixed(0)} días de inactividad`;
+
+  document.getElementById("breakdown").innerHTML = `
+    <div class="brow"><div class="k">Interrupción de negocio</div><div class="v">${fmtUSD(interruption)}</div></div>
+    <div class="brow"><div class="k">Exposición a rescate (referencial)</div><div class="v">${fmtUSD(ransomExposure)}</div></div>
+    <div class="brow"><div class="k">Remediación / recuperación</div><div class="v">${fmtUSD(remediation)}</div></div>
+    <div class="brow"><div class="k">Legal / regulatorio</div><div class="v">${fmtUSD(legal)}</div></div>
+    ${insuranceDiscount > 0 ? `<div class="brow discount"><div class="k">Descuento por seguro</div><div class="v">– ${fmtUSD(insuranceDiscount)}</div></div>` : ""}
+  `;
+
+  // Advice: pick the weakest factor
+  const weak = [
+    ["backup", backup.pts, 25, "Tu nivel de respaldo hoy amplía el tiempo de inactividad ante un incidente."],
+    ["security", security.pts, 30, "Tu madurez de seguridad actual deja ventanas de detección y contención más largas."],
+    ["insurance", insurance.pts, 15, "No contar con cobertura específica de ransomware deja el impacto financiero completo sobre la operación."],
+  ].sort((a,b)=> (b[1]/b[2]) - (a[1]/a[2]))[0];
+
+  document.getElementById("advice").innerHTML = `<strong>Observación:</strong> ${weak[3]}<br>Nuestro equipo de ciberseguridad puede ayudarte a revisar continuidad, respaldo gestionado y monitoreo 24/7 acorde al tamaño de tu operación.`;
+
+  // Datos de contexto para el formulario de opt-in (Netlify Forms)
+  document.getElementById("f-score").value = score;
+  document.getElementById("f-categoria").value = cat;
+  document.getElementById("f-costo").value = Math.round(total);
+  document.getElementById("f-sector").value = sectorKey;
+
+  // Exposición regulatoria Chile (informativa — NO se suma al costo total)
+  const isOIV = document.getElementById("isOIV").checked;
+  const handlesData = document.getElementById("handlesData").checked;
+  const regBox = document.getElementById("reg-box");
+  const UTM_USD = 80; // referencial: UTM sept. 2026 ≈ CLP 71.721 / ~900 CLP por USD
+
+  if (isOIV || handlesData) {
+    let rows = "";
+    if (isOIV) {
+      rows += `
+        <div class="reg-row"><div class="k">Ley 21.663 (Marco de Ciberseguridad) — infracción gravísima, OIV</div><div class="v">hasta USD ${(40000*UTM_USD).toLocaleString("es-CL")}</div></div>
+        <div class="reg-row"><div class="k">Ley 21.663 — infracción gravísima, régimen general</div><div class="v">hasta USD ${(20000*UTM_USD).toLocaleString("es-CL")}</div></div>`;
+    }
+    if (handlesData) {
+      rows += `
+        <div class="reg-row"><div class="k">Ley 21.719 (Protección de Datos Personales) — infracción gravísima</div><div class="v">hasta USD ${(20000*UTM_USD).toLocaleString("es-CL")}</div></div>
+        <div class="reg-row"><div class="k">Ley 21.719 — reincidencia (o 4% ingresos anuales si es mayor)</div><div class="v">hasta 4% ingresos</div></div>`;
+    }
+    document.getElementById("reg-rows").innerHTML = rows;
+    document.getElementById("reg-note").innerHTML =
+      `Estos son <strong>techos legales máximos</strong>, no un costo promedio ni una probabilidad — no están incluidos en el "Costo total estimado" de arriba. ` +
+      (isOIV ? `Ley 21.663 vigente desde marzo 2025, fiscalizada por la ANCI. ` : ``) +
+      (handlesData ? `Ley 21.719 entra en plena vigencia el 1 de diciembre de 2026, fiscalizada por la Agencia de Protección de Datos Personales. ` : ``) +
+      `Valor UTM referencial (sept. 2026) y tipo de cambio aproximado — verificar cifra vigente al momento de uso.`;
+    regBox.classList.add("show");
+  } else {
+    regBox.classList.remove("show");
+  }
+
+  const optinCard = document.getElementById("optin-card");
+  optinCard.classList.remove("sent");
+  document.getElementById("optin-form").reset();
+});
+
+// Envío del opt-in sin recargar la página (compatible con Netlify Forms)
+document.getElementById("optin-form").addEventListener("submit", function(e){
+  e.preventDefault();
+  const form = e.target;
+  const data = new FormData(form);
+
+  fetch("/", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams(data).toString(),
+  })
+    .then(() => {
+      document.getElementById("optin-card").classList.add("sent");
+    })
+    .catch(() => {
+      // Si no está desplegado en Netlify (ej. estás probando en local), igual mostramos confirmación visual
+      document.getElementById("optin-card").classList.add("sent");
+    });
+});
+</script>
+
+</body>
+</html>
