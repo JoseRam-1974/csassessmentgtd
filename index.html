@@ -581,7 +581,7 @@ const Q = [
   { id:10, text:"¿Utiliza SD-WAN para conectar sucursales y/o oficinas remotas?", type:"radio", opts:["Sí","No"] },
   { id:11, text:"¿Ejecuta Scaneos de Vulnerabilidades Automatizados?", type:"radio", opts:["Sí","No"] },
   { id:12, text:"¿Cómo ejecuta las correcciones y/o mitigaciones en temas de Vulnerabilidades?", type:"check", opts:["Manualmente cuando existen Vulnerabilidades de Alto Impacto","Manualmente después de cada ciclo de Análisis","Automatizado — Herramientas de Patch Management (actualización centralizada, programada y automática de parches de seguridad en todos los sistemas)"] },
-  { id:13, text:"¿Cumple con controles base de Ciberseguridad en la nube?", type:"radio", opts:["Sí","No"] },
+  { id:13, text:"¿Cumple con controles base de Ciberseguridad en la nube?", type:"radio", opts:["Sí","No","No sé"], glossary:"<strong>Controles base de ciberseguridad en la nube:</strong> medidas mínimas que la organización debe configurar en sus servicios cloud (AWS, Azure, Google Cloud, Microsoft 365), ya que bajo el modelo de responsabilidad compartida el proveedor protege la infraestructura, pero no la configuración ni los datos del cliente.<br><br><strong>Identidades y accesos:</strong> MFA en todas las cuentas, mínimo privilegio y cuentas de administrador protegidas.<br><br><strong>Configuración segura:</strong> evitar recursos expuestos a internet por error (almacenamiento o bases de datos abiertas), tomando como referencia los CIS Benchmarks de cada nube.<br><br><strong>Cifrado:</strong> datos cifrados en reposo y en tránsito.<br><br><strong>Registro y monitoreo:</strong> logs de actividad habilitados y revisados periódicamente.<br><br><strong>Segmentación de red:</strong> reglas de firewall y grupos de seguridad que limiten el tráfico solo a lo necesario." },
   { id:14, text:"¿Realiza monitoreo 24/7 de Alertas de Ciberseguridad?", type:"radio", opts:["Sí","No"] },
   { id:15, text:"¿Realiza monitoreo de inteligencia en la Deep Web y Dark Web sobre su marca?", type:"radio", opts:["Sí","No"] },
   { id:16, text:"¿La Organización cuenta con un presupuesto asignado para invertir en Soluciones, Estructura, Herramientas o un Plan de Proyectos de Ciberseguridad?", type:"radio", opts:["No","Sí — Menor a USD 100,000 anual","Sí — Entre USD 100,001 y USD 300,000","Sí — Entre USD 300,001 y USD 500,000","Sí — Mayor a USD 500,000"] },
@@ -845,9 +845,12 @@ function getRecs(a) {
   if (a[13] !== undefined) {
     if (a[13] === 0) {
       add(13, `La organización <strong>ha implementado controles de ciberseguridad en la nube</strong>. Esto es fundamental bajo el modelo de responsabilidad compartida: el proveedor protege la infraestructura, pero la seguridad de los datos, accesos y configuraciones es responsabilidad del cliente. Recomendamos asegurar que los controles incluyan <strong>CSPM (Cloud Security Posture Management)</strong> para detectar configuraciones incorrectas, gestión de identidades cloud (IAM) y cifrado de datos en reposo y tránsito.`);
+    } else if (a[13] === 2) {
+      add(13, `La organización <strong>no sabe si cumple con los controles base de ciberseguridad en la nube</strong>. Esta falta de visibilidad es en sí misma un riesgo: bajo el modelo de responsabilidad compartida, la configuración, los accesos y los datos son responsabilidad del cliente, y las configuraciones incorrectas son la principal causa de brechas en entornos cloud. Recomendamos partir con una <strong>revisión de postura de seguridad cloud</strong> que identifique brechas en identidades, configuración, cifrado, registro y segmentación, para luego implementar los controles faltantes.`);
+      addProj("Implementar Controles de Ciberseguridad en la Nube", 2, 13);
     } else {
       add(13, `La organización <strong>no ha implementado controles de ciberseguridad en la nube</strong>. Bajo el modelo de responsabilidad compartida, esto significa que aunque el proveedor protege la infraestructura física, los datos, accesos y configuraciones quedan desprotegidos. Las configuraciones incorrectas en nube son la causa #1 de brechas en entornos cloud. Recomendamos implementar <strong>controles de seguridad cloud de forma urgente</strong>.`);
-      addProj("Implementar Controles de Ciberseguridad en la Nube", 1);
+      addProj("Implementar Controles de Ciberseguridad en la Nube", 1, 13);
     }
   }
 
