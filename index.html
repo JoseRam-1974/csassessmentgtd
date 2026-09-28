@@ -716,24 +716,24 @@ function getRecs(a) {
     const ubicaciones = [A?"Datacenter":null, B?"Nube":null, C?"Almacenamiento físico fuera de las premisas":null].filter(Boolean);
     const respStr = ubicaciones.length > 0 ? ubicaciones.join(", ") : "ninguna ubicación indicada";
     if (A && B && C) {
-      add(5, `La organización respaldea sus datos en <strong>${respStr}</strong>, aplicando la estrategia <strong>3-2-1</strong> (tres copias, dos medios distintos, una fuera de las instalaciones). Esta es la arquitectura de respaldo más robusta y recomendada por los principales frameworks de seguridad. Garantiza continuidad operativa ante ransomware, fallas de hardware o desastres físicos. El foco ahora debe estar en verificar que los respaldos se <strong>restauran correctamente</strong> mediante pruebas periódicas.`);
+      add(5, `La organización respalda sus datos en <strong>${respStr}</strong>, aplicando la estrategia <strong>3-2-1</strong> (tres copias, dos medios distintos, una fuera de las instalaciones). Esta es la arquitectura de respaldo más robusta y recomendada por los principales frameworks de seguridad. Garantiza continuidad operativa ante ransomware, fallas de hardware o desastres físicos. El foco ahora debe estar en verificar que los respaldos se <strong>restauran correctamente</strong> mediante pruebas periódicas.`);
     } else if (A && B) {
-      add(5, `La organización respaldea en <strong>${respStr}</strong>. Es una combinación sólida que cubre redundancia local y en nube. Para completar la estrategia 3-2-1 y protegerse ante escenarios de ransomware que cifran también los respaldos conectados, recomendamos incorporar un <strong>respaldo físico fuera de las premisas</strong> (cinta, disco externo en ubicación secundaria o servicio de vault offline).`);
+      add(5, `La organización respalda en <strong>${respStr}</strong>. Es una combinación sólida que cubre redundancia local y en nube. Para completar la estrategia 3-2-1 y protegerse ante escenarios de ransomware que cifran también los respaldos conectados, recomendamos incorporar un <strong>respaldo físico fuera de las premisas</strong> (cinta, disco externo en ubicación secundaria o servicio de vault offline).`);
       addProj("Incorporar respaldo físico fuera de las premisas (estrategia 3-2-1)", 3);
     } else if (A && C) {
-      add(5, `La organización respaldea en <strong>${respStr}</strong>. Contar con una copia física offsite es positivo, pero sin respaldo en la nube la recuperación ante incidentes puede ser lenta. La nube permite recuperación rápida desde cualquier ubicación. Recomendamos incorporar un <strong>respaldo en nube</strong> como segunda capa de protección ágil.`);
+      add(5, `La organización respalda en <strong>${respStr}</strong>. Contar con una copia física offsite es positivo, pero sin respaldo en la nube la recuperación ante incidentes puede ser lenta. La nube permite recuperación rápida desde cualquier ubicación. Recomendamos incorporar un <strong>respaldo en nube</strong> como segunda capa de protección ágil.`);
       addProj("Incorporar respaldo en la Nube como capa adicional", 3);
     } else if (B && C) {
-      add(5, `La organización respaldea en <strong>${respStr}</strong>. Para una estrategia completa recomendamos también incluir el <strong>Datacenter</strong> como punto de respaldo primario, lo que permite recuperación inmediata ante fallas sin depender de conectividad externa.`);
+      add(5, `La organización respalda en <strong>${respStr}</strong>. Para una estrategia completa recomendamos también incluir el <strong>Datacenter</strong> como punto de respaldo primario, lo que permite recuperación inmediata ante fallas sin depender de conectividad externa.`);
       addProj("Incorporar Datacenter como punto de respaldo primario", 3);
     } else if (A) {
-      add(5, `La organización respaldea únicamente en <strong>Datacenter</strong>. Si bien es un punto de partida, un único punto de respaldo es vulnerable: un incidente físico, un ataque de ransomware o una falla de infraestructura podría comprometer tanto el sistema productivo como el respaldo. Recomendamos urgentemente agregar <strong>respaldo en la nube y almacenamiento físico offsite</strong>.`);
+      add(5, `La organización respalda únicamente en <strong>Datacenter</strong>. Si bien es un punto de partida, un único punto de respaldo es vulnerable: un incidente físico, un ataque de ransomware o una falla de infraestructura podría comprometer tanto el sistema productivo como el respaldo. Recomendamos urgentemente agregar <strong>respaldo en la nube y almacenamiento físico offsite</strong>.`);
       addProj("Implementar respaldo en Nube y almacenamiento físico offsite", 2);
     } else if (B) {
-      add(5, `La organización respaldea únicamente en la <strong>Nube</strong>. Es un paso importante, pero depender de un único medio y proveedor expone a riesgos de disponibilidad y ransomware que se propaga a unidades sincronizadas. Recomendamos complementar con <strong>respaldo en Datacenter y almacenamiento físico offsite</strong>.`);
+      add(5, `La organización respalda únicamente en la <strong>Nube</strong>. Es un paso importante, pero depender de un único medio y proveedor expone a riesgos de disponibilidad y ransomware que se propaga a unidades sincronizadas. Recomendamos complementar con <strong>respaldo en Datacenter y almacenamiento físico offsite</strong>.`);
       addProj("Complementar con respaldo en Datacenter y almacenamiento offsite", 2);
     } else if (C) {
-      add(5, `La organización respaldea en <strong>almacenamiento físico fuera de las premisas</strong>. Es una práctica valiosa para protegerse ante desastres físicos, pero sin respaldo digital (nube o datacenter) la recuperación puede ser lenta y manual. Recomendamos incorporar <strong>respaldo en nube</strong> para agilizar la recuperación operativa.`);
+      add(5, `La organización respalda en <strong>almacenamiento físico fuera de las premisas</strong>. Es una práctica valiosa para protegerse ante desastres físicos, pero sin respaldo digital (nube o datacenter) la recuperación puede ser lenta y manual. Recomendamos incorporar <strong>respaldo en nube</strong> para agilizar la recuperación operativa.`);
       addProj("Incorporar respaldo en la Nube para recuperación ágil", 2);
     }
   }
