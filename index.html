@@ -516,9 +516,9 @@
         <div class="lock-eyebrow dc-eyebrow" style="margin-bottom:0">Data Center</div>
       </div>
       <h1>Assessment Data Center</h1>
-      <p>Evalúa la madurez de tu infraestructura de Data Center, conectividad y cloud readiness en 23 preguntas: Facility, Seguridad Física, Energía y Continuidad, Infraestructura Tecnológica y Estrategia Cloud.</p>
+      <p>Evalúa la madurez de tu infraestructura de Data Center, conectividad y cloud readiness en 23 preguntas: Infraestructura Física, Seguridad y Operación, Continuidad y DRP, Infraestructura Tecnológica, y Conectividad y Cloud.</p>
       <button class="btn-gtd btn-steel" onclick="startAssessment('dc')">Comenzar diagnóstico →</button>
-      <div class="lock-card-meta"><span class="lock-tag dc">23 preguntas</span><span class="lock-tag dc">9 dominios</span></div>
+      <div class="lock-card-meta"><span class="lock-tag dc">23 preguntas</span><span class="lock-tag dc">5 dominios</span></div>
     </div>
 
     <div class="lock-card ransom-card">
@@ -591,30 +591,30 @@ const Q = [
   { id:21, text:"¿Ha implementado un control de seguridad que inspeccione en tiempo real la interacción de los usuarios en los diferentes prompts de IA generativa para evitar la fuga de archivos e información confidencial y propietaria?", type:"radio", opts:["No existe ningún control que supervise las interacciones con herramientas de IA generativa","Se aplican restricciones básicas de acceso pero sin inspección del contenido de los prompts","Existe monitoreo parcial de algunas herramientas de IA pero no cubre todas las plataformas utilizadas","Contamos con una solución que inspecciona en tiempo real los prompts de IA generativa, previniendo fuga de información confidencial en todas las plataformas"] }
 ];
 
-// Cuestionario Data Center — 23 preguntas, 9 dominios
+// Cuestionario Data Center — 23 preguntas, 5 dominios de madurez (+ perfil de contexto)
 const Q_DC = [
   // Dominio 1 — Perfil y Criticidad (3)
   { id:1, domain:"Perfil y Criticidad", text:"¿Cuál es la industria principal de la organización?", type:"radio", opts:["Financiero","Salud","Retail","Gobierno","Educación","Manufactura","Minería","Telecomunicaciones","Servicios profesionales","Otro"] },
   { id:2, domain:"Perfil y Criticidad", text:"¿Cuál es el nivel de criticidad de la infraestructura evaluada?", type:"radio", opts:["Bajo (procesos administrativos)","Medio (procesos operacionales)","Alto (procesos productivos o core)","Crítico (atención a clientes o procesamiento transaccional)"] },
-  { id:3, domain:"Perfil y Criticidad", text:"¿Cuál es el objetivo de disponibilidad requerido?", type:"radio", opts:["99,50%","99,90%","99,95%","99,99%","Mayor a 99,99%"] },
+  { id:3, domain:"Perfil y Criticidad", text:"¿Cuál es el uptime con el que cuentas actualmente?", type:"radio", opts:["99,50%","99,90%","99,95%","99,99%","Mayor a 99,99%"] },
 
   // Dominio 2 — Facility (2)
-  { id:4, domain:"Facility", text:"¿Qué tipo de infraestructura aloja actualmente el Data Center?", type:"radio", opts:["Oficina o sala técnica (no diseñada como DC)","Data Center propio con diseño parcial","Data Center propio certificado","Data Center externo (Housing/Colocation)","Nube pública","Ambiente mixto"] },
-  { id:5, domain:"Facility", text:"¿Existe capacidad física disponible para crecimiento?", type:"radio", opts:["Nula","Limitada","Suficiente","Amplia"] },
+  { id:4, domain:"Infraestructura Física", text:"¿Dónde alojas actualmente tu infraestructura?", type:"radio", opts:["Oficina o sala técnica (no diseñada como DC)","Data Center propio con diseño parcial","Data Center propio certificado","Data Center externo (Housing/Colocation)","Nube pública","Ambiente mixto"] },
+  { id:5, domain:"Infraestructura Física", text:"¿Existe capacidad física disponible para crecimiento?", type:"radio", opts:["Nula","Limitada","Suficiente","Amplia"] },
 
   // Dominio 3 — Seguridad Física (1, consolidada)
-  { id:6, domain:"Seguridad Física", text:"¿Cuáles de estos controles de seguridad física posee?", type:"check", opts:["Control de acceso (tarjeta/biometría)","CCTV con grabación","Bitácora de ingreso de visitas","Segregación de áreas críticas","Validación de identidad y NDA para visitas externas"] },
+  { id:6, domain:"Seguridad y Operación", text:"¿Cuáles de estos controles de seguridad física posee?", type:"check", opts:["Control de acceso (tarjeta/biometría)","CCTV con grabación","Bitácora de ingreso de visitas","Segregación de áreas críticas","Validación de identidad y NDA para visitas externas"] },
 
   // Dominio 4 — Energía, Climatización e Incendios (2, consolidada)
-  { id:7, domain:"Energía, Climatización e Incendios", text:"¿Cuáles de estos elementos de resiliencia posee?", type:"check", opts:["Doble acometida eléctrica","UPS redundante","Grupo generador","Climatización redundante (N+1)","Monitoreo continuo de temperatura/humedad","Detección y extinción automática de incendios"] },
-  { id:8, domain:"Energía, Climatización e Incendios", text:"¿Cuánto tiempo puede operar sin energía comercial?", type:"radio", opts:["Menos de 5 min","5 a 30 min","30 min a 4 horas","Más de 4 horas","Más de 24 horas"] },
+  { id:7, domain:"Infraestructura Física", text:"¿Cuáles de estos elementos de resiliencia posee?", type:"check", opts:["Doble acometida eléctrica","UPS redundante","Grupo generador","Climatización redundante (N+1)","Monitoreo continuo de temperatura/humedad","Detección y extinción automática de incendios"] },
+  { id:8, domain:"Infraestructura Física", text:"¿Cuánto tiempo puede operar ante un corte del suministro eléctrico de la red (distribuidora)?", type:"radio", opts:["Menos de 5 min","5 a 30 min","30 min a 4 horas","Más de 4 horas","Más de 24 horas"] },
 
   // Dominio 5 — Operación y Soporte (1, consolidada)
-  { id:9, domain:"Operación y Soporte", text:"¿Cuáles de estas prácticas operacionales tiene implementadas?", type:"check", opts:["Personal técnico en sitio 24x7","Procedimiento formal de control de cambios","Monitoreo de alarmas y atención de fallas"] },
+  { id:9, domain:"Seguridad y Operación", text:"¿Cuáles de estas prácticas operacionales tiene implementadas?", type:"check", opts:["Personal técnico en sitio 24x7","Procedimiento formal de control de cambios","Monitoreo de alarmas y atención de fallas"] },
 
   // Dominio 6 — Continuidad y DRP (5, sin cambios)
   { id:10, domain:"Continuidad y DRP", text:"¿Existe un plan de recuperación ante desastres (DRP) formal?", type:"radio", opts:["Sí","En desarrollo","No"], warning:"La continuidad operacional está directamente vinculada a las exigencias de la Ley Marco de Ciberseguridad para organizaciones que prestan Servicios Esenciales u OIV (Operadores de Importancia Vital) en Chile, que exige capacidad de recuperación ante incidentes." },
-  { id:11, domain:"Continuidad y DRP", text:"¿Existe sitio alterno?", type:"radio", opts:["Sí, propio","Sí, contratado","No"] },
+  { id:11, domain:"Continuidad y DRP", text:"¿Cuenta con un sitio alterno de respaldo?", type:"radio", opts:["Sí, propio","Sí, contratado","No"] },
   { id:12, domain:"Continuidad y DRP", text:"¿Cuál es el RTO requerido?", type:"radio", opts:["Menos de 1 hora","1 a 4 horas","4 a 24 horas","Más de 24 horas","No definido"], glossary:"<strong>RTO (Recovery Time Objective):</strong> tiempo máximo aceptable para restablecer un sistema o servicio después de una interrupción." },
   { id:13, domain:"Continuidad y DRP", text:"¿Cuál es el RPO requerido?", type:"radio", opts:["Menos de 15 min","15 min a 1 hora","1 a 4 horas","Más de 4 horas","No definido"], glossary:"<strong>RPO (Recovery Point Objective):</strong> cantidad máxima de datos, medida en tiempo, que la organización puede permitirse perder tras un incidente." },
   { id:14, domain:"Continuidad y DRP", text:"¿Se realizan pruebas de recuperación con informes de resultado?", type:"radio", opts:["Sí, anual con informe","Sí, esporádicamente","No"] },
@@ -623,16 +623,16 @@ const Q_DC = [
   { id:15, domain:"Infraestructura Tecnológica", text:"¿Cuál es la antigüedad promedio de los servidores?", type:"radio", opts:["Menos de 3 años","3 a 5 años","5 a 7 años","Más de 7 años"] },
   { id:16, domain:"Infraestructura Tecnológica", text:"¿Cuál es la utilización promedio de CPU/RAM?", type:"radio", opts:["Menos de 30%","30-60%","60-80%","Más de 80%","No conocida"] },
   { id:17, domain:"Infraestructura Tecnológica", text:"¿Qué tipo de almacenamiento utiliza y cuál es su capacidad utilizada?", type:"radio", opts:["SAN/NAS menor a 70%","SAN/NAS 70-85%","SAN/NAS mayor a 85%","HCI o Cloud Storage","Mixto"], glossary:"<strong>SAN (Storage Area Network):</strong> red dedicada de almacenamiento en bloque, de alto rendimiento, típica en Data Centers empresariales.<br><br><strong>NAS (Network Attached Storage):</strong> almacenamiento en archivos accesible por red, más simple de administrar que una SAN.<br><br><strong>HCI (Hyper-Converged Infrastructure):</strong> arquitectura que integra cómputo, almacenamiento y virtualización en un solo clúster de nodos, simplificando la gestión.<br><br><strong>Cloud Storage:</strong> almacenamiento provisto por un proveedor de nube pública (ej. Amazon S3, Azure Blob), con capacidad elástica y pago por uso." },
-  { id:18, domain:"Infraestructura Tecnológica", text:"¿Cuáles de estas prácticas de backup tiene implementadas?", type:"check", opts:["Backup en plataforma dedicada (on-premise o nube)","Cifrado de respaldos","Inmutabilidad de respaldos"] },
+  { id:18, domain:"Infraestructura Tecnológica", text:"¿Cuáles de estas prácticas de backup tiene implementadas?", type:"check", opts:["Backup en plataforma dedicada (on-premise o nube)","Cifrado de respaldos","Inmutabilidad de respaldos","Copia fuera del sitio o aislada","Respaldo de aplicaciones SaaS"], glossary:"<strong>Inmutabilidad:</strong> los respaldos no pueden modificarse ni borrarse durante un período definido, ni siquiera por un administrador. Es la principal defensa contra ransomware.<br><br><strong>Copia fuera del sitio o aislada (off-site / air-gap):</strong> copia guardada en otra ubicación o desconectada de la red, de modo que un incendio o un ataque no destruya al mismo tiempo los datos y sus respaldos.<br><br><strong>Respaldo de aplicaciones SaaS:</strong> copia propia de los datos en Microsoft 365, Google Workspace, Salesforce u otras plataformas. El proveedor garantiza la disponibilidad del servicio, no la recuperación ante borrados o ransomware." },
   { id:19, domain:"Infraestructura Tecnológica", text:"¿Presenta problemas recurrentes de rendimiento o capacidad?", type:"radio", opts:["Sí, frecuentemente","Ocasionalmente","No"] },
 
   // Dominio 8 — Conectividad (2)
-  { id:20, domain:"Conectividad", text:"¿Cuenta con redundancia WAN y diversidad de carrier?", type:"radio", opts:["Sí, ambos","Solo redundancia","Ninguno"] },
-  { id:21, domain:"Conectividad", text:"¿Requiere o cuenta con conectividad privada hacia nube pública?", type:"radio", opts:["Sí, cuenta","Requiere, no cuenta","No aplica"] },
+  { id:20, domain:"Conectividad y Cloud", text:"¿Cuenta con redundancia WAN y diversidad de carrier?", type:"radio", opts:["Sí, ambos","Solo redundancia","Ninguno"] },
+  { id:21, domain:"Conectividad y Cloud", text:"¿Requiere o cuenta con conectividad privada hacia nube pública?", type:"radio", opts:["Sí, cuenta","Requiere, no cuenta","No aplica"] },
 
   // Dominio 9 — Cloud Readiness (2)
-  { id:22, domain:"Cloud Readiness", text:"¿Tiene cargas actualmente en nube pública o considera migrar?", type:"radio", opts:["Sí, en producción","Parcial","Planea migrar","No"] },
-  { id:23, domain:"Cloud Readiness", text:"¿Existen restricciones regulatorias o de residencia de datos?", type:"radio", opts:["Sí","No","No sabe"] }
+  { id:22, domain:"Conectividad y Cloud", text:"¿Tiene cargas actualmente en nube pública o considera migrar?", type:"radio", opts:["Sí, en producción","Parcial","Planea migrar","No"] },
+  { id:23, domain:"Conectividad y Cloud", text:"¿Existen restricciones regulatorias o de residencia de datos?", type:"radio", opts:["Sí","No","No sabe"] }
 ];
 
 // NOTA: FinOps (modelo financiero + presupuesto) y fabricante de servidores se
@@ -1162,7 +1162,7 @@ function scoreForQidDC(qid) {
     case 15: return [1, 0.66, 0.33, 0][a];                        // antigüedad servidores
     case 16: return [0.5, 1, 0.5, 0, 0.3][a];                     // utilización CPU/RAM
     case 17: return [1, 0.6, 0.2, 1, 0.7][a];                     // almacenamiento
-    case 18: return Array.isArray(a) ? a.length / 3 : 0;          // backup consolidado (plataforma+cifrado+inmutabilidad)
+    case 18: return Array.isArray(a) ? a.length / 5 : 0;          // backup (plataforma, cifrado, inmutabilidad, off-site, SaaS)
     case 19: return a === 0 ? 0 : (a === 1 ? 0.5 : 1);            // problemas rendimiento
 
     // Conectividad
@@ -1178,14 +1178,11 @@ function scoreForQidDC(qid) {
 
 function buildDomainDataDC() {
   const DOMAINS = [
-    { label:"Facility", weight:11, qids:[4,5] },
-    { label:"Seguridad Física", weight:9, qids:[6] },
-    { label:"Energía, Climatización e Incendios", weight:17, qids:[7,8] },
-    { label:"Operación y Soporte", weight:8, qids:[9] },
+    { label:"Infraestructura Física", weight:28, qids:[4,5,7,8] },
+    { label:"Seguridad y Operación", weight:17, qids:[6,9] },
     { label:"Continuidad y DRP", weight:23, qids:[10,11,12,13,14] },
     { label:"Infraestructura Tecnológica", weight:17, qids:[15,16,17,18,19] },
-    { label:"Conectividad", weight:9, qids:[20,21] },
-    { label:"Cloud Readiness", weight:6, qids:[22] }
+    { label:"Conectividad y Cloud", weight:15, qids:[20,21,22] }
   ];
   return DOMAINS.map(d => {
     const scores = d.qids.map(scoreForQidDC).filter(s => s !== null);
@@ -1280,107 +1277,352 @@ function renderRadarDC(data, projs) {
 
 
 // ═══════════════ MOTOR DE RECOMENDACIÓN — DATA CENTER ═══════════════
-// Capa 1: reglas disparadoras (condiciones sobre respuestas específicas, no solo score)
-// Capa 2: la priorización final por score se aplica en renderReport al ordenar `projs`
+// Mismo modelo que Ciberseguridad: cada pregunta evaluada genera un hallazgo propio.
+//   · warn=false → fortaleza (recuadro verde, aparece en "Áreas con buena cobertura")
+//   · warn=true  → brecha (recuadro ámbar), normalmente con un proyecto asociado
+// Las combinaciones críticas (ej. criticidad alta sin DRP) no generan bloques extra:
+// elevan la prioridad del proyecto y refuerzan el texto del hallazgo correspondiente.
+const SECS_DC = [
+  {qid:4,  dom:"Infraestructura Física",      title:"Ubicación de la infraestructura"},
+  {qid:5,  dom:"Infraestructura Física",      title:"Capacidad de crecimiento"},
+  {qid:7,  dom:"Infraestructura Física",      title:"Energía, climatización e incendios"},
+  {qid:8,  dom:"Infraestructura Física",      title:"Autonomía eléctrica"},
+  {qid:6,  dom:"Seguridad y Operación",       title:"Seguridad física"},
+  {qid:9,  dom:"Seguridad y Operación",       title:"Operación y soporte"},
+  {qid:10, dom:"Continuidad y DRP",           title:"Plan de recuperación (DRP)"},
+  {qid:11, dom:"Continuidad y DRP",           title:"Sitio alterno de respaldo"},
+  {qid:12, dom:"Continuidad y DRP",           title:"Tiempo de recuperación (RTO)"},
+  {qid:13, dom:"Continuidad y DRP",           title:"Pérdida de datos tolerable (RPO)"},
+  {qid:14, dom:"Continuidad y DRP",           title:"Pruebas de recuperación"},
+  {qid:15, dom:"Infraestructura Tecnológica", title:"Antigüedad de servidores"},
+  {qid:16, dom:"Infraestructura Tecnológica", title:"Utilización de recursos"},
+  {qid:17, dom:"Infraestructura Tecnológica", title:"Almacenamiento"},
+  {qid:18, dom:"Infraestructura Tecnológica", title:"Prácticas de respaldo"},
+  {qid:19, dom:"Infraestructura Tecnológica", title:"Rendimiento y capacidad"},
+  {qid:20, dom:"Conectividad y Cloud",        title:"Redundancia WAN"},
+  {qid:21, dom:"Conectividad y Cloud",        title:"Conectividad privada a nube"},
+  {qid:22, dom:"Conectividad y Cloud",        title:"Adopción de nube"},
+  {qid:23, dom:"Conectividad y Cloud",        title:"Residencia de datos"}
+];
+
+const P_DC = {
+  housing:   "Housing / Colocation en Data Center certificado",
+  cert:      "Certificación de Data Center (Tier / TIA-942)",
+  manos:     "Manos Remotas — administración de sistemas 24x7",
+  drp:       "DRP como Servicio (Disaster Recovery Plan)",
+  draas:     "DRaaS — Disaster Recovery as a Service",
+  replica:   "Replicación de datos en tiempo real / Backup avanzado",
+  refresh:   "Refresh Tecnológico de infraestructura",
+  baas:      "BaaS — Backup as a Service (cifrado e inmutable)",
+  wan:       "Enlaces WAN redundantes con diversidad de carrier",
+  cloudconn: "Cloud Connect — conectividad privada a nube pública",
+  cross:     "Cross Connect — interconexión directa con proveedores y carriers",
+  nubepub:   "Migración a Nube Pública",
+  nubepriv:  "Nube Privada",
+  hibrida:   "Estrategia de Nube Híbrida"
+};
+
 function getRecsDC(a) {
-  const narr = {}, projs = [];
-  const addProj = (proj, priority, qid) => projs.push({text: proj, priority: priority, qid: qid});
-  const add = (qid, txt) => { narr[qid] = txt; };
+  const narr = {}, all = [];
+  const add = (qid, txt, warn) => { narr[qid] = { txt, warn: !!warn }; };
+  const addProj = (key, priority, qid) => all.push({ text: P_DC[key], priority: Math.min(4, Math.max(1, priority)), qid });
+  const has = (qid, i) => Array.isArray(a[qid]) && a[qid].includes(i);
+  const missing = (qid) => { const q = Q_DC.find(x => x.id === qid); return q.opts.filter((_, i) => !has(qid, i)); };
+  const lista = (arr) => arr.map(x => `<strong>${x}</strong>`).join(", ");
 
-  const sinEnergiaBase = !(a[7] && a[7].includes(0) && a[7].includes(1)); // sin doble acometida + UPS
-  const sinControlAcceso = !(a[6] && a[6].includes(0));                    // sin control de acceso
+  const critAlta = a[2] === 2 || a[2] === 3;              // criticidad alta o crítica
+  const up = (p) => critAlta ? p - 1 : p;                  // la criticidad adelanta la prioridad
+  const sitioPropio = a[4] === 0 || a[4] === 1 || a[4] === 2;
+  const enTercero = a[4] === 3 || a[4] === 4;             // housing o nube: la facility la opera un proveedor
+  const critTxt = critAlta ? " Considerando que la infraestructura fue clasificada como de <strong>criticidad alta o crítica</strong>, este punto se prioriza." : "";
 
-  // 1. Housing / Colocation
-  if (a[4] === 0 && (sinEnergiaBase || sinControlAcceso)) {
-    add(4, `La infraestructura opera actualmente en <strong>oficina o sala técnica no diseñada como Data Center</strong>, sin los controles físicos mínimos de resiliencia energética y/o seguridad de acceso. Este es el riesgo más crítico identificado: cualquier falla eléctrica, incendio o intrusión física puede comprometer la continuidad completa del negocio. Recomendamos evaluar migración a un <strong>Data Center certificado (Housing/Colocation)</strong> como prioridad inmediata.`);
-    addProj("Housing / Colocation en Data Center certificado", 1, 4);
-  }
-
-  // 2. DRP como servicio (criticidad alta sin DRP)
-  if (a[10] !== undefined && a[10] !== 0 && (a[2] === 2 || a[2] === 3)) {
-    add(10, `La organización clasificó su infraestructura como de <strong>criticidad alta o crítica</strong>, pero no cuenta con un <strong>DRP formal</strong>. Esta combinación representa una exposición severa: ante un incidente, no existe un plan estructurado de recuperación. Recomendamos priorizar la implementación de un servicio de DRP gestionado.`);
-    addProj("DRP como Servicio (Disaster Recovery Plan)", 1, 10);
-  }
-
-  // 3. Replicación / Backup avanzado (RPO exigente sin sitio alterno)
-  if (a[13] === 0 && a[11] === 2) {
-    add(13, `El RPO requerido es <strong>menor a 15 minutos</strong>, pero no existe sitio alterno. Un RPO tan exigente sin infraestructura de replicación es una meta que hoy no se puede cumplir. Recomendamos una solución de replicación continua de datos.`);
-    addProj("Replicación de datos en tiempo real / Backup avanzado", 2, 13);
-  }
-
-  // 4. Cloud Connect / conectividad privada
-  if (a[21] === 1) {
-    add(21, `Se identificó la necesidad de <strong>conectividad privada hacia nube pública</strong> sin contar con ella actualmente. Depender de internet público para tráfico crítico hacia la nube introduce latencia variable y riesgos de seguridad. Recomendamos una solución de Cloud Connect dedicada.`);
-    addProj("Cloud Connect — conectividad privada a nube pública", 3, 21);
-  }
-
-  // 5. Refresh tecnológico
-  if (a[15] === 3 && (a[16] === 3 || a[17] === 2)) {
-    add(15, `Los servidores tienen <strong>más de 7 años de antigüedad</strong> y se registra alta utilización de recursos o almacenamiento cercano al límite. Este escenario incrementa el riesgo de fallas y limita la capacidad de crecimiento. Recomendamos evaluar un proyecto de <strong>Refresh Tecnológico</strong>.`);
-    addProj("Refresh Tecnológico de infraestructura", 2, 15);
-  }
-
-  // 6. Nube pública
-  if (a[23] === 1 && (a[2] === 0 || a[2] === 1)) {
-    add(23, `Sin restricciones regulatorias de residencia de datos y con criticidad baja/media, la organización tiene un buen perfil para migrar cargas a <strong>nube pública</strong>, optimizando costos operativos.`);
-    addProj("Migración a Nube Pública", 4, 23);
-  }
-
-  // 7. Nube privada
-  if (a[23] === 0 && a[15] === 3) {
-    add(23, `Existen <strong>restricciones regulatorias o de residencia de datos</strong>, combinadas con infraestructura legada (>7 años). Recomendamos evaluar <strong>Nube Privada</strong> como alternativa que cumple los requisitos regulatorios sin renovar hardware propio.`);
-    addProj("Nube Privada", 3, 23);
-  }
-
-  // 8. Nube híbrida
-  if (a[22] === 1 && a[21] === 1) {
-    add(22, `La organización tiene cargas <strong>parciales en nube</strong> y requiere conectividad privada — perfil típico de arquitectura <strong>híbrida</strong>. Recomendamos diseñar una estrategia de nube híbrida con conectividad dedicada entre ambos entornos.`);
-    addProj("Estrategia de Nube Híbrida", 3, 22);
-  }
-
-  // 9. Data Center certificado (brechas físicas transversales, sitio no certificado aún)
-  const numControles = a[6] ? a[6].length : 0;
-  const numResiliencia = a[7] ? a[7].length : 0;
-  if (numControles <= 2 && numResiliencia <= 2 && a[4] !== 2) {
-    add(6, `Se identificaron brechas transversales en controles de seguridad física y resiliencia energética. Recomendamos evaluar la certificación del Data Center bajo estándares internacionales (Tier/TIA-942).`);
-    addProj("Certificación de Data Center (Tier / TIA-942)", 3, 6);
-  }
-
-  // 10. Cross Connect / interconexión con terceros
-  if (a[21] === 1 || a[20] === 2) {
-    addProj("Cross Connect — interconexión directa con proveedores y carriers", 4, 20);
-  }
-
-  // 11. DRaaS
-  if ((a[10] === 1 || a[10] === 2) && a[12] !== undefined && a[12] <= 2) {
-    add(12, `Se requiere un <strong>RTO exigente (24 horas o menos)</strong> pero el DRP está incompleto o ausente. Un servicio de <strong>DRaaS</strong> permite cumplir ese objetivo sin construir un sitio de respaldo propio.`);
-    addProj("DRaaS — Disaster Recovery as a Service", 2, 12);
-  }
-
-  // 12. BaaS (backup sin cifrado/inmutabilidad)
-  const backupCompleto = a[18] && a[18].includes(1) && a[18].includes(2);
-  if (!backupCompleto && a[14] !== 0) {
-    addProj("BaaS — Backup as a Service (cifrado e inmutable)", 3, 18);
-  }
-
-  // 13. Manos remotas / administración de sistemas
-  const sinPersonal24x7 = !(a[9] && a[9].includes(0));
-  if (sinPersonal24x7 && a[4] === 3) {
-    addProj("Manos Remotas — administración de sistemas 24x7", 4, 9);
-  }
-
-  // 14. Servicios gestionados (paquete integral si 3+ proyectos operativos coinciden)
-  const operativos = ["Housing / Colocation en Data Center certificado","DRaaS — Disaster Recovery as a Service","BaaS — Backup as a Service (cifrado e inmutable)","Manos Remotas — administración de sistemas 24x7"];
-  const coincidencias = projs.filter(p => operativos.includes(p.text)).length;
-  if (coincidencias >= 3) {
-    // Se retiran los ítems individuales ya cubiertos por el paquete, para no duplicar la recomendación
-    for (let i = projs.length - 1; i >= 0; i--) {
-      if (operativos.includes(projs[i].text)) projs.splice(i, 1);
+  // ── INFRAESTRUCTURA FÍSICA ──────────────────────────────
+  if (a[4] !== undefined) {
+    const sinBase = !(has(7,0) && has(7,1)) || !has(6,0);
+    if (a[4] === 0) {
+      add(4, `La infraestructura opera en una <strong>oficina o sala técnica no diseñada como Data Center</strong>. Estos espacios no cuentan, por diseño, con energía redundante, climatización de precisión ni control de acceso adecuado, por lo que cualquier falla eléctrica, sobrecalentamiento o intrusión puede detener la operación. Recomendamos evaluar el traslado a un <strong>Data Center certificado (Housing/Colocation)</strong>.${critTxt}`, true);
+      addProj("housing", sinBase ? 1 : up(2), 4);
+    } else if (a[4] === 1) {
+      add(4, `La organización cuenta con un <strong>Data Center propio con diseño parcial</strong>. Es una base razonable, pero sin un estándar de referencia es difícil asegurar que energía, climatización y seguridad estén dimensionadas para el nivel de disponibilidad que el negocio necesita. Recomendamos evaluar su <strong>certificación bajo estándares Tier / TIA-942</strong>, o comparar el costo de adecuarlo con el de un servicio de Housing.`, true);
+      addProj("cert", up(3), 4);
+    } else if (a[4] === 2) {
+      add(4, `La organización opera un <strong>Data Center propio certificado</strong>. Es una fortaleza relevante: la infraestructura física responde a un estándar verificable. Recomendamos mantener el ciclo de recertificación y revisar periódicamente la capacidad frente al crecimiento.`, false);
+    } else if (a[4] === 3) {
+      add(4, `La infraestructura está alojada en un <strong>Data Center externo (Housing/Colocation)</strong>. La resiliencia física queda respaldada por el proveedor; lo clave es que el contrato incluya SLA de disponibilidad, reportes periódicos y soporte en sitio acordes a la criticidad del negocio.`, false);
+    } else if (a[4] === 4) {
+      add(4, `La infraestructura opera en <strong>nube pública</strong>. La facility física queda en manos del proveedor, y el foco se desplaza a la conectividad, la gobernanza de costos y la continuidad entre regiones o zonas de disponibilidad.`, false);
+    } else {
+      add(4, `La organización opera en un <strong>ambiente mixto</strong>. Es un modelo flexible, que exige coordinar la continuidad, la seguridad y la conectividad entre entornos para que no queden brechas en los puntos de unión.`, false);
     }
-    addProj("Servicios Gestionados — paquete integral (Housing + DRaaS + BaaS + Manos Remotas)", 1, null);
   }
 
-  return { narr, projs };
+  if (a[5] !== undefined) {
+    if (a[5] <= 1 && !(a[4] === 4)) {
+      add(5, `La capacidad física disponible para crecer es <strong>${a[5] === 0 ? "nula" : "limitada"}</strong>. Sin espacio, energía o refrigeración adicional, cada nuevo proyecto tecnológico queda condicionado a obras o reemplazos. Recomendamos planificar el crecimiento en un <strong>Data Center con capacidad escalable (Housing/Colocation)</strong>.`, true);
+      addProj("housing", a[5] === 0 ? up(2) : 3, 5);
+    } else {
+      add(5, `La organización declara capacidad <strong>${["nula","limitada","suficiente","amplia"][a[5]]}</strong> para crecer${a[4] === 4 ? " (en nube, la capacidad es elástica)" : ""}. Esto permite incorporar nuevos proyectos sin restricciones físicas inmediatas.`, false);
+    }
+  }
+
+  if (a[7] !== undefined) {
+    const n = Array.isArray(a[7]) ? a[7].length : 0;
+    const faltan = missing(7);
+    if (n >= 5) {
+      add(7, `La infraestructura cuenta con <strong>${n} de 6</strong> elementos de resiliencia en energía, climatización e incendios.${faltan.length ? ` Para completar la cobertura, falta: ${lista(faltan)}.` : " La cobertura es completa."}`, false);
+    } else if (enTercero) {
+      add(7, `Se marcaron <strong>${n} de 6</strong> elementos de resiliencia. Al estar alojada en un proveedor externo, recomendamos validar que el contrato y el SLA cubran explícitamente: ${lista(faltan)}. Si el proveedor no los garantiza, cada elemento ausente es un punto único de falla.`, true);
+    } else if (n >= 3) {
+      add(7, `La infraestructura cuenta con <strong>${n} de 6</strong> elementos de resiliencia. Faltan: ${lista(faltan)}. Cada elemento ausente es un punto único de falla que puede detener la operación. Recomendamos cerrar estas brechas tomando como referencia el estándar <strong>Tier / TIA-942</strong>.${critTxt}`, true);
+      addProj("cert", up(3), 7);
+    } else {
+      add(7, `La infraestructura cuenta solo con <strong>${n} de 6</strong> elementos de resiliencia. Faltan: ${lista(faltan)}. Con este nivel, un corte eléctrico, una falla de climatización o un amago de incendio puede comprometer toda la operación. Recomendamos evaluar el traslado a un <strong>Data Center certificado (Housing/Colocation)</strong>, habitualmente más rápido y económico que adecuar el sitio actual.${critTxt}`, true);
+      addProj("housing", up(2), 7);
+    }
+  }
+
+  if (a[8] !== undefined) {
+    const t = ["menos de 5 minutos","entre 5 y 30 minutos","entre 30 minutos y 4 horas","más de 4 horas","más de 24 horas"][a[8]];
+    if (a[8] <= 1 && !enTercero) {
+      add(8, `Ante un corte del suministro eléctrico de la red, la infraestructura puede operar <strong>${t}</strong>. Esa autonomía solo alcanza para un apagado ordenado, no para sostener la operación. Recomendamos asegurar respaldo con grupo generador y UPS redundante, o migrar a un <strong>Data Center con respaldo energético certificado</strong>.${critTxt}`, true);
+      addProj("housing", up(2), 8);
+    } else if (a[8] === 2 && critAlta && !enTercero) {
+      add(8, `La autonomía ante cortes del suministro eléctrico es de <strong>${t}</strong>. Para una infraestructura de criticidad alta, esto no cubre cortes prolongados. Recomendamos asegurar autonomía extendida, con contrato de abastecimiento de combustible, bajo un estándar <strong>Tier / TIA-942</strong>.`, true);
+      addProj("cert", 2, 8);
+    } else {
+      add(8, `La infraestructura puede operar <strong>${t}</strong> ante un corte del suministro eléctrico de la red${enTercero ? ", respaldada por el proveedor" : ""}. Recomendamos probar periódicamente la transferencia a generador y mantener el contrato de abastecimiento de combustible vigente.`, false);
+    }
+  }
+
+  // ── SEGURIDAD Y OPERACIÓN ───────────────────────────────
+  if (a[6] !== undefined) {
+    const n = Array.isArray(a[6]) ? a[6].length : 0;
+    const faltan = missing(6);
+    if (n >= 4) {
+      add(6, `La organización cuenta con <strong>${n} de 5</strong> controles de seguridad física.${faltan.length ? ` Para completar la cobertura, falta: ${lista(faltan)}.` : " La cobertura es completa."}`, false);
+    } else if (enTercero) {
+      add(6, `Se marcaron <strong>${n} de 5</strong> controles de seguridad física. Al operar con un proveedor externo, recomendamos validar que su SLA incluya: ${lista(faltan)}. Un acceso físico no controlado a los equipos anula cualquier control lógico.`, true);
+    } else if (n >= 2) {
+      add(6, `La organización cuenta con <strong>${n} de 5</strong> controles de seguridad física. Faltan: ${lista(faltan)}. Un acceso físico no controlado permite dañar, sustraer o manipular equipos, lo que anula cualquier control lógico. Recomendamos cerrar estas brechas bajo un estándar <strong>Tier / TIA-942</strong>.`, true);
+      addProj("cert", up(3), 6);
+    } else {
+      add(6, `La organización cuenta solo con <strong>${n} de 5</strong> controles de seguridad física. Faltan: ${lista(faltan)}. Con este nivel, el acceso a la infraestructura crítica depende de la confianza y no de controles verificables. Recomendamos evaluar un <strong>Data Center certificado (Housing/Colocation)</strong>, que incorpora estos controles desde el primer día.${critTxt}`, true);
+      addProj("housing", up(2), 6);
+    }
+  }
+
+  if (a[9] !== undefined) {
+    const n = Array.isArray(a[9]) ? a[9].length : 0;
+    const faltan = missing(9);
+    if (n === 3) {
+      add(9, `La organización tiene implementadas las <strong>3 prácticas operacionales</strong> evaluadas: personal 24x7, control de cambios y monitoreo de alarmas. Es la base de una operación predecible.`, false);
+    } else {
+      add(9, `La organización tiene <strong>${n} de 3</strong> prácticas operacionales implementadas. Falta: ${lista(faltan)}. Sin estas prácticas, las fallas se detectan tarde y los cambios no controlados se convierten en una de las principales causas de caídas. Recomendamos un servicio de <strong>Manos Remotas y administración 24x7</strong>.${critTxt}`, true);
+      addProj("manos", n === 0 ? up(2) : up(3), 9);
+    }
+  }
+
+  // ── CONTINUIDAD Y DRP ──────────────────────────────────
+  if (a[10] !== undefined) {
+    if (a[10] === 0) {
+      add(10, `La organización cuenta con un <strong>DRP formal</strong>. Recomendamos revisarlo al menos una vez al año y cada vez que cambie la infraestructura o los procesos críticos.`, false);
+    } else {
+      const estado = a[10] === 1 ? "en desarrollo" : "inexistente";
+      add(10, `El plan de recuperación ante desastres está <strong>${estado}</strong>. Sin un DRP formal, la respuesta a un incidente mayor depende de la improvisación, lo que alarga los tiempos de recuperación y aumenta la pérdida de datos. Además, la Ley Marco de Ciberseguridad exige capacidad de recuperación a los Servicios Esenciales y OIV. Recomendamos un servicio de <strong>DRP gestionado</strong>.${critAlta ? " Al tratarse de una infraestructura de <strong>criticidad alta o crítica</strong>, esta es una exposición severa y se prioriza como acción inmediata." : ""}`, true);
+      addProj("drp", critAlta ? 1 : (a[10] === 2 ? 2 : 3), 10);
+    }
+  }
+
+  if (a[11] !== undefined) {
+    if (a[11] === 2) {
+      add(11, `La organización <strong>no cuenta con un sitio alterno de respaldo</strong>. Ante la pérdida del sitio principal (incendio, corte prolongado, desastre), no hay dónde levantar los sistemas, aunque los respaldos estén disponibles. Recomendamos <strong>DRaaS</strong>, que entrega un sitio de recuperación sin construir infraestructura propia.${critTxt}`, true);
+      addProj("draas", up(2), 11);
+    } else {
+      add(11, `La organización cuenta con un <strong>sitio alterno ${a[11] === 0 ? "propio" : "contratado"}</strong>. Es una fortaleza clave de continuidad; su valor real depende de que se pruebe periódicamente (ver pruebas de recuperación).`, false);
+    }
+  }
+
+  if (a[12] !== undefined) {
+    const rto = ["menos de 1 hora","entre 1 y 4 horas","entre 4 y 24 horas","más de 24 horas"][a[12]];
+    if (a[12] === 4) {
+      add(12, `El <strong>RTO no está definido</strong>. Sin un tiempo objetivo de recuperación, no es posible dimensionar la solución de continuidad ni saber si la actual es suficiente. Recomendamos un análisis de impacto al negocio (BIA) como parte de un <strong>DRP gestionado</strong>.`, true);
+      addProj("drp", 3, 12);
+    } else if (a[12] <= 2 && a[11] === 2) {
+      add(12, `Se requiere un RTO de <strong>${rto}</strong>, pero no existe sitio alterno. Con esa combinación, el objetivo no es alcanzable hoy: reconstruir la operación desde cero toma días. <strong>DRaaS</strong> permite cumplir ese objetivo sin construir un sitio propio.`, true);
+      addProj("draas", up(2), 12);
+    } else {
+      add(12, `El RTO está definido en <strong>${rto}</strong> y es coherente con la infraestructura de continuidad declarada. Recomendamos validarlo en las pruebas de recuperación.`, false);
+    }
+  }
+
+  if (a[13] !== undefined) {
+    const rpo = ["menos de 15 minutos","entre 15 minutos y 1 hora","entre 1 y 4 horas","más de 4 horas"][a[13]];
+    if (a[13] === 4) {
+      add(13, `El <strong>RPO no está definido</strong>. Sin saber cuánta información puede perderse, no es posible definir la frecuencia de respaldo ni la necesidad de replicación. Recomendamos definirlo dentro de un <strong>DRP gestionado</strong>.`, true);
+      addProj("drp", 3, 13);
+    } else if (a[13] <= 1 && (a[11] === 2 || !has(18,0))) {
+      add(13, `Se requiere un RPO de <strong>${rpo}</strong>, pero ${a[11] === 2 ? "no existe sitio alterno" : "no hay una plataforma de respaldo dedicada"}. Un RPO tan exigente solo se cumple con replicación continua de datos. Recomendamos una solución de <strong>replicación en tiempo real</strong>.`, true);
+      addProj("replica", up(2), 13);
+    } else {
+      add(13, `El RPO está definido en <strong>${rpo}</strong> y es coherente con las capacidades de respaldo declaradas.`, false);
+    }
+  }
+
+  if (a[14] !== undefined) {
+    if (a[14] === 0) {
+      add(14, `La organización realiza <strong>pruebas de recuperación anuales con informe</strong>. Es la única forma de saber si el RTO y el RPO se cumplen de verdad.`, false);
+    } else {
+      add(14, `Las pruebas de recuperación ${a[14] === 1 ? "se realizan <strong>de forma esporádica</strong>" : "<strong>no se realizan</strong>"}. Un plan que no se prueba suele fallar cuando más se necesita: respaldos corruptos, dependencias olvidadas o tiempos muy superiores a lo esperado. Recomendamos un servicio de <strong>DRaaS</strong> que incluya pruebas periódicas documentadas.`, true);
+      addProj("draas", a[14] === 2 ? up(3) : 3, 14);
+    }
+  }
+
+  // ── INFRAESTRUCTURA TECNOLÓGICA ─────────────────────────
+  if (a[15] !== undefined) {
+    const edad = ["menos de 3 años","entre 3 y 5 años","entre 5 y 7 años","más de 7 años"][a[15]];
+    if (a[15] >= 2) {
+      add(15, `Los servidores tienen una antigüedad promedio de <strong>${edad}</strong>. Pasado el ciclo de vida del fabricante aumentan las fallas, se pierde soporte y actualizaciones de seguridad, y el consumo energético es mayor. Recomendamos planificar un <strong>Refresh Tecnológico</strong>.`, true);
+      addProj("refresh", a[15] === 3 ? up(2) : 3, 15);
+    } else {
+      add(15, `Los servidores tienen una antigüedad promedio de <strong>${edad}</strong>, dentro del ciclo de vida recomendado.`, false);
+    }
+  }
+
+  if (a[16] !== undefined) {
+    if (a[16] === 3) {
+      add(16, `La utilización promedio de CPU/RAM supera el <strong>80%</strong>. La infraestructura no tiene holgura para absorber peaks ni crecimiento, y es probable que ya afecte el rendimiento. Recomendamos un <strong>Refresh Tecnológico</strong> o ampliación de capacidad.`, true);
+      addProj("refresh", up(2), 16);
+    } else if (a[16] === 4) {
+      add(16, `La utilización de recursos <strong>no es conocida</strong>. Sin monitoreo de capacidad, los problemas se detectan cuando ya afectan al usuario. Recomendamos incorporar monitoreo permanente como parte de un servicio de <strong>administración de sistemas</strong>.`, true);
+      addProj("manos", 4, 16);
+    } else if (a[16] === 0) {
+      add(16, `La utilización promedio es <strong>menor al 30%</strong>. Hay holgura suficiente, aunque también una oportunidad de consolidar servidores o mover cargas a modelos de pago por uso para optimizar costos.`, false);
+    } else {
+      add(16, `La utilización promedio de CPU/RAM está entre <strong>${a[16] === 1 ? "30% y 60%" : "60% y 80%"}</strong>, un rango saludable.${a[16] === 2 ? " Conviene monitorear la tendencia para anticipar ampliaciones." : ""}`, false);
+    }
+  }
+
+  if (a[17] !== undefined) {
+    if (a[17] === 1 || a[17] === 2) {
+      add(17, `El almacenamiento SAN/NAS está al <strong>${a[17] === 1 ? "70-85%" : "más del 85%"}</strong> de su capacidad. Sobre el 85%, el rendimiento se degrada y el riesgo de quedarse sin espacio es real. Recomendamos ampliar o renovar el almacenamiento dentro de un <strong>Refresh Tecnológico</strong>.`, true);
+      addProj("refresh", a[17] === 2 ? up(2) : 3, 17);
+    } else {
+      const txt17 = ["El almacenamiento SAN/NAS opera <strong>bajo el 70%</strong> de su capacidad, con holgura para crecer.",
+        "La organización utiliza <strong>HCI o Cloud Storage</strong>, arquitecturas que escalan agregando nodos o capacidad bajo demanda. Recomendamos monitorear la ocupación para planificar las ampliaciones a tiempo.",
+        "La organización utiliza un <strong>esquema mixto</strong> de almacenamiento. Recomendamos consolidar el monitoreo de capacidad de todas las plataformas en una sola vista."][a[17] === 0 ? 0 : a[17] === 3 ? 1 : 2];
+      add(17, txt17, false);
+    }
+  }
+
+  if (a[18] !== undefined) {
+    const n = Array.isArray(a[18]) ? a[18].length : 0;
+    const faltan = missing(18);
+    if (n === 5) {
+      add(18, `La organización tiene implementadas las <strong>5 prácticas de respaldo</strong> evaluadas, incluida la inmutabilidad y una copia aislada. Es una defensa sólida frente a ransomware.`, false);
+    } else if (!has(18,0)) {
+      add(18, `La organización <strong>no cuenta con una plataforma de respaldo dedicada</strong>.${faltan.length > 1 ? ` Faltan además: ${lista(faltan.slice(1))}.` : ""} Los respaldos manuales o sin gestión central fallan con frecuencia y son el primer blanco de un ataque de ransomware. Recomendamos un servicio de <strong>BaaS con cifrado e inmutabilidad</strong>.${critTxt}`, true);
+      addProj("baas", up(2), 18);
+    } else {
+      const criticos = !has(18,2) || !has(18,3);
+      add(18, `La organización tiene <strong>${n} de 5</strong> prácticas de respaldo. Falta: ${lista(faltan)}.${!has(18,2) ? " Sin inmutabilidad, un ataque de ransomware puede cifrar también los respaldos." : ""}${!has(18,4) ? " Los datos en aplicaciones SaaS no quedan protegidos por el proveedor ante borrados o ataques." : ""} Recomendamos completar la protección con un servicio de <strong>BaaS</strong>.`, true);
+      addProj("baas", criticos ? up(3) : 4, 18);
+    }
+  }
+
+  if (a[19] !== undefined) {
+    if (a[19] <= 1) {
+      add(19, `La organización presenta problemas de rendimiento o capacidad <strong>${a[19] === 0 ? "frecuentes" : "ocasionales"}</strong>. Es una señal de que la infraestructura ya no acompaña la demanda del negocio. Recomendamos un diagnóstico de capacidad y un <strong>Refresh Tecnológico</strong>.`, true);
+      addProj("refresh", a[19] === 0 ? up(2) : 3, 19);
+    } else {
+      add(19, `No se reportan <strong>problemas recurrentes de rendimiento</strong>. La infraestructura responde a la demanda actual.`, false);
+    }
+  }
+
+  // ── CONECTIVIDAD Y CLOUD ───────────────────────────────
+  if (a[20] !== undefined) {
+    if (a[20] === 0) {
+      add(20, `La organización cuenta con <strong>redundancia WAN y diversidad de carrier</strong>. Es la configuración recomendada: una falla de un proveedor no interrumpe la conectividad.`, false);
+    } else {
+      add(20, a[20] === 1
+        ? `Existe <strong>redundancia WAN, pero con un solo carrier</strong>. Una falla del proveedor (corte de fibra troncal, incidente de red) afecta a ambos enlaces a la vez. Recomendamos incorporar <strong>diversidad de carrier</strong>.`
+        : `La organización <strong>no cuenta con redundancia WAN</strong>. La conectividad depende de un solo enlace: si falla, la operación queda aislada aunque el Data Center funcione. Recomendamos <strong>enlaces redundantes con diversidad de carrier</strong>.${critTxt}`, true);
+      addProj("wan", a[20] === 2 ? up(2) : 3, 20);
+    }
+  }
+
+  if (a[21] !== undefined) {
+    if (a[21] === 1) {
+      add(21, `Se requiere <strong>conectividad privada hacia nube pública</strong>, pero no se cuenta con ella. Depender de internet para tráfico crítico introduce latencia variable y exposición. Recomendamos <strong>Cloud Connect</strong> e interconexión directa en el Data Center.`, true);
+      addProj("cloudconn", 3, 21);
+      addProj("cross", 4, 21);
+    } else {
+      add(21, a[21] === 0 ? `La organización cuenta con <strong>conectividad privada hacia la nube</strong>, lo que asegura latencia predecible y tráfico fuera de internet.` : `La organización indica que la conectividad privada a nube <strong>no aplica</strong> en su escenario actual.`, false);
+    }
+  }
+
+  if (a[22] !== undefined) {
+    const restr = a[23] === 0;
+    if (a[22] === 0) {
+      add(22, `La organización tiene <strong>cargas en producción en nube pública</strong>. El foco está en la gobernanza de costos (FinOps), la seguridad de la configuración y la continuidad entre zonas de disponibilidad.`, false);
+    } else if (a[22] === 1) {
+      if (a[21] === 1) {
+        add(22, `La organización tiene cargas <strong>parcialmente en nube</strong> y requiere conectividad privada, un perfil típico de arquitectura <strong>híbrida</strong>. Recomendamos diseñar una estrategia de nube híbrida que ordene qué carga vive en cada entorno.`, true);
+        addProj("hibrida", 3, 22);
+      } else {
+        add(22, `La organización tiene cargas <strong>parcialmente en nube</strong>. Recomendamos definir criterios claros de qué cargas migran y cuáles permanecen on-premise.`, false);
+      }
+    } else if (a[22] === 2) {
+      add(22, `La organización <strong>planea migrar a la nube</strong>. Una migración sin evaluación previa suele trasladar los problemas actuales y elevar costos. Recomendamos un plan de migración por etapas${restr ? " sobre <strong>nube privada</strong>, considerando las restricciones de residencia de datos" : ""}.`, true);
+      addProj(restr ? "nubepriv" : "nubepub", 3, 22);
+    } else {
+      if (restr && a[15] >= 2) {
+        add(22, `La organización no usa nube, tiene <strong>restricciones de residencia de datos</strong> y servidores con más de 5 años. Recomendamos evaluar <strong>nube privada</strong> como alternativa a renovar hardware propio, cumpliendo las restricciones regulatorias.`, true);
+        addProj("nubepriv", 3, 22);
+      } else if (a[23] === 1 && !critAlta) {
+        add(22, `La organización no usa nube y no tiene restricciones de residencia de datos. Con criticidad baja o media, tiene un buen perfil para mover cargas a <strong>nube pública</strong> y pasar de inversión a pago por uso.`, true);
+        addProj("nubepub", 4, 22);
+      } else {
+        add(22, `La organización <strong>no utiliza nube pública</strong> actualmente. Recomendamos evaluar qué cargas no críticas podrían beneficiarse de un modelo de pago por uso.`, false);
+      }
+    }
+  }
+
+  if (a[23] !== undefined) {
+    add(23, [
+      `Existen <strong>restricciones regulatorias o de residencia de datos</strong>. Toda decisión de nube o respaldo externo debe asegurar que los datos permanezcan en la jurisdicción exigida, en línea con la Ley 21.719 de Protección de Datos Personales.`,
+      `No existen restricciones de residencia de datos, lo que amplía las alternativas de nube y respaldo. Igualmente, la Ley 21.719 exige resguardos sobre datos personales en cualquier ubicación.`,
+      `La organización <strong>no sabe</strong> si existen restricciones de residencia de datos. Es un punto a aclarar antes de cualquier decisión de nube o respaldo externo, considerando las exigencias de la Ley 21.719.`][a[23]], a[23] === 2);
+  }
+
+  // ── Consolidación: un proyecto aparece una sola vez, con su prioridad más alta ──
+  const byText = new Map();
+  all.forEach(p => {
+    const cur = byText.get(p.text);
+    if (!cur) byText.set(p.text, { text: p.text, priority: p.priority, qid: p.qid, qids: [p.qid] });
+    else { cur.qids.push(p.qid); if (p.priority < cur.priority) { cur.priority = p.priority; cur.qid = p.qid; } }
+  });
+  let projs = [...byText.values()];
+
+  // Paquete de servicios gestionados si coinciden 3+ servicios operativos
+  const operativos = [P_DC.housing, P_DC.draas, P_DC.baas, P_DC.manos];
+  const coinc = projs.filter(p => operativos.includes(p.text));
+  if (coinc.length >= 3) {
+    const pr = Math.min(...coinc.map(p => p.priority));
+    const qs = coinc.flatMap(p => p.qids);
+    projs = projs.filter(p => !operativos.includes(p.text));
+    const cortos = { [P_DC.housing]:"Housing", [P_DC.draas]:"DRaaS", [P_DC.baas]:"BaaS", [P_DC.manos]:"Manos Remotas" };
+    projs.push({ text: `Servicios Gestionados — paquete integral (${coinc.map(p => cortos[p.text]).join(" + ")})`, priority: pr, qid: qs[0], qids: qs });
+  }
+
+  // Orden: prioridad y, a igual prioridad, el dominio con mayor brecha ponderada primero
+  const doms = buildDomainDataDC();
+  const gapOf = (p) => {
+    const d = doms.find(d => d.qids && p.qids.some(q => d.qids.includes(q)));
+    return d ? (100 - d.score) * d.weight : 0;
+  };
+  projs.sort((x, y) => x.priority - y.priority || gapOf(y) - gapOf(x));
+
+  return { narr, projs, all };
 }
 
 
@@ -1426,21 +1668,26 @@ function priorityBadge(priority) {
 function renderReportDC(el) {
   const domainData = buildDomainDataDC();
   const dcmi = computeDCMI(domainData);
-  const { narr, projs } = getRecsDC(answers);
+  const { narr, projs, all } = getRecsDC(answers);
   const roadmap = buildRoadmapDC(projs);
   const mat = getMaturityDC(dcmi);
   document.getElementById("topbarStatus").textContent = "Diagnóstico completado";
 
   const answeredCount = activeQ().filter((_,i)=>isAnswered(i)).length;
 
-  const areasHtml = Object.keys(narr).map(qid => {
-    const q = Q_DC.find(x => x.id === Number(qid));
-    const title = q ? q.domain : "Hallazgo";
-    return `<div class="area-block"><div class="area-heading">${title}</div><div class="rec-box rec-warn">${narr[qid]}</div></div>`;
+  const areasHtml = SECS_DC.filter(sec => narr[sec.qid]).map(sec => {
+    const f = narr[sec.qid];
+    return `<div class="area-block"><div class="area-heading">${sec.dom} · ${sec.title}</div><div class="rec-box ${f.warn ? "rec-warn" : "rec-ok"}">${f.txt}</div></div>`;
   }).join("");
+  const solidAreas = SECS_DC.filter(sec => narr[sec.qid] && !narr[sec.qid].warn);
+  const solidHtml = solidAreas.length ? `
+    <div id="solid-areas-wrap" style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:12px 16px;margin-bottom:1.5rem;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#16A34A;margin-bottom:8px;">Áreas con buena cobertura</div>
+      <div>${solidAreas.map(sec => `<span style="display:inline-flex;align-items:center;gap:4px;background:#F0FDF4;border:1px solid #16A34A;color:#14532D;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:500;margin:3px;">✓ ${sec.title}</span>`).join("")}</div>
+    </div>` : "";
 
   const projsHtml = projs.length > 0
-    ? projs.sort((a,b)=>a.priority-b.priority).map((p,i) => `<div class="proj-item"><span class="proj-num">${String(i+1).padStart(2,"0")}</span><span>${p.text}${priorityBadge(p.priority)}</span></div>`).join("")
+    ? projs.map((p,i) => `<div class="proj-item"><span class="proj-num">${String(i+1).padStart(2,"0")}</span><span>${p.text}${priorityBadge(p.priority)}</span></div>`).join("")
     : `<div class="proj-item"><span class="proj-num" style="background:var(--success)">✓</span><span>La infraestructura evaluada muestra una postura de madurez sólida. Se recomienda mantener revisiones periódicas.</span></div>`;
 
   const roadmapHtml = renderRoadmapDC(roadmap);
@@ -1463,12 +1710,13 @@ function renderReportDC(el) {
         </div>
       </div>
     </div>
+    ${solidHtml}
     <div id="radar-wrap" style="background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:16px 12px;margin-bottom:1.5rem;">
       <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748B;margin-bottom:4px;">Madurez por Dominio</div>
       <div style="font-size:11px;color:#94A3B8;margin-bottom:8px;">El score de cada dominio es un promedio. Un punto verde con borde punteado ámbar indica que, aunque el dominio promedia bien, contiene un hallazgo puntual con prioridad alta — revisa "Proyectos Recomendados" para el detalle.</div>
-      ${renderRadarDC(domainData, projs)}
+      ${renderRadarDC(domainData, all)}
     </div>
-    <div class="section-title">Áreas con oportunidades de mejora</div>${areasHtml}
+    <div class="section-title">Hallazgos por dominio</div>${areasHtml}
     <hr class="divider">
     </div>
     <div id="pdf-content-proyectos" style="background:#fff;padding:24px 0 8px;">
