@@ -450,7 +450,6 @@
   <input type="tel" name="telefono" />
   <input type="text" name="pais" />
   <input type="text" name="tipo" />
-  <input type="text" name="modelo_financiero" /><input type="text" name="presupuesto" />
   <input type="number" name="servidores" /><input type="number" name="endpoints" />
   <input type="text" name="p1" /><input type="text" name="p2" /><input type="text" name="p3" />
   <input type="text" name="p4" /><input type="text" name="p5" /><input type="text" name="p6" />
@@ -459,10 +458,6 @@
   <input type="text" name="p13" /><input type="text" name="p14" /><input type="text" name="p15" />
   <input type="text" name="p16" /><input type="text" name="p17" /><input type="text" name="p18" />
   <input type="text" name="p19" /><input type="text" name="p20" /><input type="text" name="p21" />
-  <input type="text" name="p22" /><input type="text" name="p23" /><input type="text" name="p24" />
-  <input type="text" name="p25" /><input type="text" name="p26" /><input type="text" name="p27" />
-  <input type="text" name="p28" /><input type="text" name="p29" /><input type="text" name="p30" />
-  <input type="text" name="p31" /><input type="text" name="p32" />
   <textarea name="proyectos"></textarea>
   <input name="bot-field" />
 </form>
@@ -474,6 +469,7 @@
   <input type="text" name="empresa" />
   <input type="tel" name="telefono" />
   <input type="text" name="pais" />
+  <input type="text" name="tipo" />
   <input type="text" name="modelo_financiero" /><input type="text" name="presupuesto" />
   <input type="text" name="p1" /><input type="text" name="p2" /><input type="text" name="p3" />
   <input type="text" name="p4" /><input type="text" name="p5" /><input type="text" name="p6" />
@@ -482,10 +478,7 @@
   <input type="text" name="p13" /><input type="text" name="p14" /><input type="text" name="p15" />
   <input type="text" name="p16" /><input type="text" name="p17" /><input type="text" name="p18" />
   <input type="text" name="p19" /><input type="text" name="p20" /><input type="text" name="p21" />
-  <input type="text" name="p22" /><input type="text" name="p23" /><input type="text" name="p24" />
-  <input type="text" name="p25" /><input type="text" name="p26" /><input type="text" name="p27" />
-  <input type="text" name="p28" /><input type="text" name="p29" /><input type="text" name="p30" />
-  <input type="text" name="p31" /><input type="text" name="p32" />
+  <input type="text" name="p22" /><input type="text" name="p23" />
   <textarea name="proyectos"></textarea>
   <input name="bot-field" />
 </form>
@@ -2064,6 +2057,9 @@ async function submitContact(){
     const formName = isDC ? "assessment-dc" : "assessment";
     const nfBody = new URLSearchParams({ "form-name": formName, ...payload });
     nfBody.delete("csrfToken"); // no es un campo del form estático, se descarta
+    // Cada formulario envía solo sus propios campos (evita filas vacías en la notificación por correo)
+    const sobran = isDC ? ["servidores","endpoints"] : ["modelo_financiero","presupuesto","p22","p23"];
+    sobran.forEach(k => nfBody.delete(k));
     const nfRes = await fetch("/", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
