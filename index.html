@@ -1305,6 +1305,7 @@ const SECS_DC = [
 const P_DC = {
   housing:   "Housing / Colocation en Data Center certificado",
   cert:      "Certificación de Data Center (Tier / TIA-942)",
+  recert:    "Revisión de vigencia y recertificación del Data Center (Tier / TIA-942)",
   manos:     "Manos Remotas — administración de sistemas 24x7",
   drp:       "DRP como Servicio (Disaster Recovery Plan)",
   draas:     "DRaaS — Disaster Recovery as a Service",
@@ -1330,6 +1331,7 @@ function getRecsDC(a) {
   const critAlta = a[2] === 2 || a[2] === 3;              // criticidad alta o crítica
   const up = (p) => critAlta ? p - 1 : p;                  // la criticidad adelanta la prioridad
   const sitioPropio = a[4] === 0 || a[4] === 1 || a[4] === 2;
+  const certificado = a[4] === 2;                        // DC propio certificado
   const enTercero = a[4] === 3 || a[4] === 4;             // housing o nube: la facility la opera un proveedor
   const critTxt = critAlta ? " Considerando que la infraestructura fue clasificada como de <strong>criticidad alta o crítica</strong>, este punto se prioriza." : "";
 
@@ -1365,7 +1367,10 @@ function getRecsDC(a) {
   if (a[7] !== undefined) {
     const n = Array.isArray(a[7]) ? a[7].length : 0;
     const faltan = missing(7);
-    if (n >= 5) {
+    if (n < 5 && certificado) {
+      add(7, `La organización declara un <strong>Data Center certificado</strong>, pero marcó solo <strong>${n} de 6</strong> elementos de resiliencia. Faltan: ${lista(faltan)}. Esto no es consistente con una certificación vigente: puede que haya vencido, que no cubra toda la infraestructura o que algunos elementos se hayan degradado. Recomendamos revisar su <strong>vigencia y alcance</strong> y cerrar las brechas antes de la próxima recertificación.${critTxt}`, true);
+      addProj("recert", up(3), 7);
+    } else if (n >= 5) {
       add(7, `La infraestructura cuenta con <strong>${n} de 6</strong> elementos de resiliencia en energía, climatización e incendios.${faltan.length ? ` Para completar la cobertura, falta: ${lista(faltan)}.` : " La cobertura es completa."}`, false);
     } else if (enTercero) {
       add(7, `Se marcaron <strong>${n} de 6</strong> elementos de resiliencia. Al estar alojada en un proveedor externo, recomendamos validar que el contrato y el SLA cubran explícitamente: ${lista(faltan)}. Si el proveedor no los garantiza, cada elemento ausente es un punto único de falla.`, true);
@@ -1395,7 +1400,10 @@ function getRecsDC(a) {
   if (a[6] !== undefined) {
     const n = Array.isArray(a[6]) ? a[6].length : 0;
     const faltan = missing(6);
-    if (n >= 4) {
+    if (n < 4 && certificado) {
+      add(6, `La organización declara un <strong>Data Center certificado</strong>, pero marcó solo <strong>${n} de 5</strong> controles de seguridad física. Faltan: ${lista(faltan)}. Estos controles son parte de cualquier certificación de Data Center, por lo que conviene revisar la <strong>vigencia y el alcance</strong> de la certificación y cerrar las brechas antes de la próxima auditoría.${critTxt}`, true);
+      addProj("recert", up(3), 6);
+    } else if (n >= 4) {
       add(6, `La organización cuenta con <strong>${n} de 5</strong> controles de seguridad física.${faltan.length ? ` Para completar la cobertura, falta: ${lista(faltan)}.` : " La cobertura es completa."}`, false);
     } else if (enTercero) {
       add(6, `Se marcaron <strong>${n} de 5</strong> controles de seguridad física. Al operar con un proveedor externo, recomendamos validar que su SLA incluya: ${lista(faltan)}. Un acceso físico no controlado a los equipos anula cualquier control lógico.`, true);
@@ -1426,7 +1434,7 @@ function getRecsDC(a) {
     } else {
       const estado = a[10] === 1 ? "en desarrollo" : "inexistente";
       add(10, `El plan de recuperación ante desastres está <strong>${estado}</strong>. Sin un DRP formal, la respuesta a un incidente mayor depende de la improvisación, lo que alarga los tiempos de recuperación y aumenta la pérdida de datos. Además, la Ley Marco de Ciberseguridad exige capacidad de recuperación a los Servicios Esenciales y OIV. Recomendamos un servicio de <strong>DRP gestionado</strong>.${critAlta ? " Al tratarse de una infraestructura de <strong>criticidad alta o crítica</strong>, esta es una exposición severa y se prioriza como acción inmediata." : ""}`, true);
-      addProj("drp", critAlta ? 1 : (a[10] === 2 ? 2 : 3), 10);
+      addProj("drp", critAlta ? 1 : 2, 10);
     }
   }
 
@@ -2182,7 +2190,7 @@ async function downloadPDF() {
         tctx.fillStyle = "#64748B";
         tctx.font = `bold ${13 * 1.8}px -apple-system, sans-serif`;
         tctx.letterSpacing = "2px";
-        tctx.fillText("ÁREAS CON OPORTUNIDADES DE MEJORA", 0, 28 * 1.8);
+        tctx.fillText(assessmentType === "dc" ? "HALLAZGOS POR DOMINIO" : "ÁREAS CON OPORTUNIDADES DE MEJORA", 0, 28 * 1.8);
         await addCanvasToPDF(titleCanvas, false);
         firstArea = false;
       }
