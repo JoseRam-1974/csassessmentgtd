@@ -479,6 +479,7 @@
   <input type="text" name="p16" /><input type="text" name="p17" /><input type="text" name="p18" />
   <input type="text" name="p19" /><input type="text" name="p20" /><input type="text" name="p21" />
   <input type="text" name="p22" /><input type="text" name="p23" />
+  <input type="text" name="p24" /><input type="text" name="p25" /><input type="text" name="p26" />
   <textarea name="proyectos"></textarea>
   <input name="bot-field" />
 </form>
@@ -507,12 +508,13 @@
         <div class="lock-icon-badge dc">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="7" rx="1"/><rect x="3" y="14" width="18" height="7" rx="1"/><circle cx="7" cy="6.5" r="0.8" fill="currentColor"/><circle cx="7" cy="17.5" r="0.8" fill="currentColor"/></svg>
         </div>
-        <div class="lock-eyebrow dc-eyebrow" style="margin-bottom:0">Data Center</div>
+        <div class="lock-eyebrow dc-eyebrow" style="margin-bottom:0">Infraestructura TI</div>
       </div>
-      <h1>Assessment Data Center</h1>
-      <p>Evalúa la madurez de tu infraestructura de Data Center, conectividad y cloud readiness en 23 preguntas: Infraestructura Física, Seguridad y Operación, Continuidad y DRP, Infraestructura Tecnológica, y Conectividad y Cloud.</p>
+      <h1>Assessment de Infraestructura TI</h1>
+      <div style="font-size:14px;font-weight:600;color:var(--steel);margin:-4px 0 10px;">Data Center, Cloud y Continuidad Operacional</div>
+      <p>Evalúa la madurez de tu infraestructura TI y tu estrategia de alojamiento en 26 preguntas: Estrategia de Alojamiento, Infraestructura Física, Seguridad y Operación, Continuidad y DRP, Infraestructura Tecnológica, y Conectividad y Cloud.</p>
       <button class="btn-gtd btn-steel" onclick="startAssessment('dc')">Comenzar diagnóstico →</button>
-      <div class="lock-card-meta"><span class="lock-tag dc">23 preguntas</span><span class="lock-tag dc">5 dominios</span></div>
+      <div class="lock-card-meta"><span class="lock-tag dc">26 preguntas</span><span class="lock-tag dc">5 dominios</span></div>
     </div>
 
     <div class="lock-card ransom-card">
@@ -550,14 +552,14 @@
 // ── PREGUNTAS ─────────────────────────────────────────────────────────────────
 function startAssessment(kind){
   if(kind==='dc' && Q_DC.length===0){
-    alert('El cuestionario de Data Center está en construcción. La pantalla de selección ya está lista — el siguiente paso es cargar las 23 preguntas y el motor de scoring.');
+    alert('El cuestionario de Data Center está en construcción. La pantalla de selección ya está lista — el siguiente paso es cargar las 26 preguntas y el motor de scoring.');
     return;
   }
   assessmentType = kind;
   answers = {}; cur = 0; view = "quiz";
   document.getElementById('lockScreen').style.display='none';
   document.getElementById('app').style.display='block';
-  document.querySelector('.topbar-label').textContent = kind==='dc' ? 'Assessment Data Center' : 'Assessment de Seguridad';
+  document.querySelector('.topbar-label').textContent = kind==='dc' ? 'Assessment de Infraestructura TI' : 'Assessment de Seguridad';
   render();
 }
 
@@ -585,15 +587,21 @@ const Q = [
   { id:21, text:"¿Ha implementado un control de seguridad que inspeccione en tiempo real la interacción de los usuarios en los diferentes prompts de IA generativa para evitar la fuga de archivos e información confidencial y propietaria?", type:"radio", opts:["No existe ningún control que supervise las interacciones con herramientas de IA generativa","Se aplican restricciones básicas de acceso pero sin inspección del contenido de los prompts","Existe monitoreo parcial de algunas herramientas de IA pero no cubre todas las plataformas utilizadas","Contamos con una solución que inspecciona en tiempo real los prompts de IA generativa, previniendo fuga de información confidencial en todas las plataformas"] }
 ];
 
-// Cuestionario Data Center — 23 preguntas, 5 dominios de madurez (+ perfil de contexto)
+// Cuestionario Data Center — 26 preguntas, 5 dominios de madurez (+ estrategia y perfil de contexto)
+// Las preguntas 24 y 25 (estrategia de alojamiento) se muestran primero pero conservan id 24/25
+// para no alterar el scoring, las reglas ni los campos del formulario de las preguntas 1-23.
 const Q_DC = [
+  // Estrategia de Alojamiento (2) — contexto, sin puntaje
+  { id:24, domain:"Estrategia de Alojamiento", text:"En los próximos 12 meses, ¿dónde planea alojar principalmente su infraestructura TI crítica?", type:"radio", opts:["Data center propio (on-premise)","Data center local certificado Tier III / Tier IV (housing o colocation)","Nube pública (AWS, Azure, Google Cloud u otra)","Esquema híbrido (combinación de las anteriores)","Aún no está definido"] },
+  { id:25, domain:"Estrategia de Alojamiento", text:"En un horizonte de 1 a 3 años, ¿hacia dónde proyecta evolucionar el alojamiento de su infraestructura TI?", type:"radio", opts:["Data center propio (on-premise)","Data center local certificado Tier III / Tier IV (housing o colocation)","Nube pública (AWS, Azure, Google Cloud u otra)","Esquema híbrido (combinación de las anteriores)","Aún no está definido"] },
+
   // Dominio 1 — Perfil y Criticidad (3)
   { id:1, domain:"Perfil y Criticidad", text:"¿Cuál es la industria principal de la organización?", type:"radio", opts:["Financiero","Salud","Retail","Gobierno","Educación","Manufactura","Minería","Telecomunicaciones","Servicios profesionales","Otro"] },
   { id:2, domain:"Perfil y Criticidad", text:"¿Cuál es el nivel de criticidad de la infraestructura evaluada?", type:"radio", opts:["Bajo (procesos administrativos)","Medio (procesos operacionales)","Alto (procesos productivos o core)","Crítico (atención a clientes o procesamiento transaccional)"] },
   { id:3, domain:"Perfil y Criticidad", text:"¿Cuál es el uptime con el que cuentas actualmente?", type:"radio", opts:["99,50%","99,90%","99,95%","99,99%","Mayor a 99,99%"] },
 
   // Dominio 2 — Facility (2)
-  { id:4, domain:"Infraestructura Física", text:"¿Dónde alojas actualmente tu infraestructura?", type:"radio", opts:["Oficina o sala técnica (no diseñada como DC)","Data Center propio con diseño parcial","Data Center propio certificado","Data Center externo (Housing/Colocation)","Nube pública","Ambiente mixto"] },
+  { id:4, domain:"Infraestructura Física", text:"¿Dónde alojas actualmente tu infraestructura?", type:"radio", opts:["Oficina o sala técnica (no diseñada como DC)","Data Center propio con diseño parcial","Data Center propio certificado","Data Center externo (Housing/Colocation)","Nube pública","Ambiente híbrido"] },
   { id:5, domain:"Infraestructura Física", text:"¿Existe capacidad física disponible para crecimiento?", type:"radio", opts:["Nula","Limitada","Suficiente","Amplia"] },
 
   // Dominio 3 — Seguridad Física (1, consolidada)
@@ -608,24 +616,25 @@ const Q_DC = [
 
   // Dominio 6 — Continuidad y DRP (5, sin cambios)
   { id:10, domain:"Continuidad y DRP", text:"¿Existe un plan de recuperación ante desastres (DRP) formal?", type:"radio", opts:["Sí","En desarrollo","No"], warning:"La continuidad operacional está directamente vinculada a las exigencias de la Ley Marco de Ciberseguridad para organizaciones que prestan Servicios Esenciales u OIV (Operadores de Importancia Vital) en Chile, que exige capacidad de recuperación ante incidentes." },
-  { id:11, domain:"Continuidad y DRP", text:"¿Cuenta con un sitio alterno de respaldo?", type:"radio", opts:["Sí, propio","Sí, contratado","No"] },
+  { id:11, domain:"Continuidad y DRP", text:"¿Cuenta con un sitio alterno de contingencia?", type:"radio", opts:["Sí, propio","Sí, contratado","No"] },
   { id:12, domain:"Continuidad y DRP", text:"¿Cuál es el RTO requerido?", type:"radio", opts:["Menos de 1 hora","1 a 4 horas","4 a 24 horas","Más de 24 horas","No definido"], glossary:"<strong>RTO (Recovery Time Objective):</strong> tiempo máximo aceptable para restablecer un sistema o servicio después de una interrupción." },
   { id:13, domain:"Continuidad y DRP", text:"¿Cuál es el RPO requerido?", type:"radio", opts:["Menos de 15 min","15 min a 1 hora","1 a 4 horas","Más de 4 horas","No definido"], glossary:"<strong>RPO (Recovery Point Objective):</strong> cantidad máxima de datos, medida en tiempo, que la organización puede permitirse perder tras un incidente." },
-  { id:14, domain:"Continuidad y DRP", text:"¿Se realizan pruebas de recuperación con informes de resultado?", type:"radio", opts:["Sí, anual con informe","Sí, esporádicamente","No"] },
+  { id:14, domain:"Continuidad y DRP", text:"¿Se realizan pruebas de contingencia con informes de resultado?", type:"radio", opts:["Sí, 2 veces al año con informe","Sí, anual con informe","Sí, esporádicamente","No"] },
 
   // Dominio 7 — Infraestructura Tecnológica (5)
   { id:15, domain:"Infraestructura Tecnológica", text:"¿Cuál es la antigüedad promedio de los servidores?", type:"radio", opts:["Menos de 3 años","3 a 5 años","5 a 7 años","Más de 7 años"] },
   { id:16, domain:"Infraestructura Tecnológica", text:"¿Cuál es la utilización promedio de CPU/RAM?", type:"radio", opts:["Menos de 30%","30-60%","60-80%","Más de 80%","No conocida"] },
-  { id:17, domain:"Infraestructura Tecnológica", text:"¿Qué tipo de almacenamiento utiliza y cuál es su capacidad utilizada?", type:"radio", opts:["SAN/NAS menor a 70%","SAN/NAS 70-85%","SAN/NAS mayor a 85%","HCI o Cloud Storage","Mixto"], glossary:"<strong>SAN (Storage Area Network):</strong> red dedicada de almacenamiento en bloque, de alto rendimiento, típica en Data Centers empresariales.<br><br><strong>NAS (Network Attached Storage):</strong> almacenamiento en archivos accesible por red, más simple de administrar que una SAN.<br><br><strong>HCI (Hyper-Converged Infrastructure):</strong> arquitectura que integra cómputo, almacenamiento y virtualización en un solo clúster de nodos, simplificando la gestión.<br><br><strong>Cloud Storage:</strong> almacenamiento provisto por un proveedor de nube pública (ej. Amazon S3, Azure Blob), con capacidad elástica y pago por uso." },
+  { id:17, domain:"Infraestructura Tecnológica", text:"¿Qué tipo de almacenamiento utiliza?", type:"radio", opts:["SAN","NAS","DAS (Direct Attached Storage)","HCI","Cloud Storage","Híbrido"], glossary:"<strong>SAN (Storage Area Network):</strong> red dedicada de almacenamiento en bloque, de alto rendimiento, típica en Data Centers empresariales.<br><br><strong>NAS (Network Attached Storage):</strong> almacenamiento en archivos accesible por red, más simple de administrar que una SAN.<br><br><strong>DAS (Direct Attached Storage):</strong> discos conectados directamente a cada servidor, sin red de almacenamiento. Es simple y económico, pero difícil de escalar y compartir entre servidores.<br><br><strong>HCI (Hyper-Converged Infrastructure):</strong> arquitectura que integra cómputo, almacenamiento y virtualización en un solo clúster de nodos, simplificando la gestión.<br><br><strong>Cloud Storage:</strong> almacenamiento provisto por un proveedor de nube pública (ej. Amazon S3, Azure Blob), con capacidad elástica y pago por uso.<br><br><strong>Híbrido:</strong> combinación de dos o más de estas plataformas, por ejemplo SAN on-premise más Cloud Storage para respaldo o archivo." },
+  { id:26, domain:"Infraestructura Tecnológica", text:"¿Cuál es su capacidad de almacenamiento utilizada?", type:"radio", opts:["Menor a 70%","70% a 85%","Mayor a 85%"] },
   { id:18, domain:"Infraestructura Tecnológica", text:"¿Cuáles de estas prácticas de backup tiene implementadas?", type:"check", opts:["Backup en plataforma dedicada (on-premise o nube)","Cifrado de respaldos","Inmutabilidad de respaldos","Copia fuera del sitio o aislada","Respaldo de aplicaciones SaaS"], glossary:"<strong>Inmutabilidad:</strong> los respaldos no pueden modificarse ni borrarse durante un período definido, ni siquiera por un administrador. Es la principal defensa contra ransomware.<br><br><strong>Copia fuera del sitio o aislada (off-site / air-gap):</strong> copia guardada en otra ubicación o desconectada de la red, de modo que un incendio o un ataque no destruya al mismo tiempo los datos y sus respaldos.<br><br><strong>Respaldo de aplicaciones SaaS:</strong> copia propia de los datos en Microsoft 365, Google Workspace, Salesforce u otras plataformas. El proveedor garantiza la disponibilidad del servicio, no la recuperación ante borrados o ransomware." },
   { id:19, domain:"Infraestructura Tecnológica", text:"¿Presenta problemas recurrentes de rendimiento o capacidad?", type:"radio", opts:["Sí, frecuentemente","Ocasionalmente","No"] },
 
   // Dominio 8 — Conectividad (2)
-  { id:20, domain:"Conectividad y Cloud", text:"¿Cuenta con redundancia WAN y diversidad de carrier?", type:"radio", opts:["Sí, ambos","Solo redundancia","Ninguno"] },
+  { id:20, domain:"Conectividad y Cloud", text:"¿Cuenta con redundancia WAN y diversidad de carrier?", type:"radio", opts:["Sí, ambos","Solo redundancia WAN","Ninguno"] },
   { id:21, domain:"Conectividad y Cloud", text:"¿Requiere o cuenta con conectividad privada hacia nube pública?", type:"radio", opts:["Sí, cuenta","Requiere, no cuenta","No aplica"] },
 
   // Dominio 9 — Cloud Readiness (2)
-  { id:22, domain:"Conectividad y Cloud", text:"¿Tiene cargas actualmente en nube pública o considera migrar?", type:"radio", opts:["Sí, en producción","Parcial","Planea migrar","No"] },
+  { id:22, domain:"Conectividad y Cloud", text:"¿Tiene cargas actualmente en nube pública o considera migrar?", type:"radio", opts:["Sí","Parcial","Planea migrar","No"] },
   { id:23, domain:"Conectividad y Cloud", text:"¿Existen restricciones regulatorias o de residencia de datos?", type:"radio", opts:["Sí","No","No sabe"] }
 ];
 
@@ -971,7 +980,7 @@ function getRecs(a) {
 
 
 function getMaturityDC(dcmi) {
-  if (dcmi >= 80) return { nivel:"Enterprise", desc:"Infraestructura de Data Center con controles robustos, continuidad probada y buena capacidad de escalamiento.", icon:"●●●●", color:"#166534", bg:"#F0FDF4", border:"#16A34A" };
+  if (dcmi >= 80) return { nivel:"Enterprise", desc:"Infraestructura TI con controles robustos, continuidad probada y buena capacidad de escalamiento.", icon:"●●●●", color:"#166534", bg:"#F0FDF4", border:"#16A34A" };
   if (dcmi >= 60) return { nivel:"Avanzado", desc:"Buena base de madurez, con brechas puntuales que conviene cerrar antes de escalar la infraestructura.", icon:"●●●○", color:"#854D0E", bg:"#FEFCE8", border:"#CA8A04" };
   if (dcmi >= 35) return { nivel:"Intermedio", desc:"Existen controles básicos, pero hay brechas relevantes en continuidad, energía o seguridad física que representan riesgo real.", icon:"●●○○", color:"#9A3412", bg:"#FFF7ED", border:"#EA580C" };
   return { nivel:"Básico", desc:"La infraestructura presenta brechas críticas transversales. Se recomienda priorizar acción inmediata sobre los hallazgos de mayor riesgo.", icon:"●○○○", color:"#991B1B", bg:"#FEF2F2", border:"#DC2626" };
@@ -1078,7 +1087,7 @@ function renderQuiz(el) {
       <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
     </div>
     ${intro}
-    <div class="q-card">${badge}<div class="q-number">Pregunta ${q.id}</div><div class="q-text">${q.text}</div>${q.note ? `<div style="font-size:13px;line-height:1.55;color:#64748B;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:6px;padding:8px 12px;margin:-4px 0 14px;">${q.note}</div>` : ""}${warningHtml}${opts}${q.type==="check"?'<p class="opt-hint">Puedes seleccionar una o más opciones.</p>':""}</div>
+    <div class="q-card">${badge}<div class="q-number">Pregunta ${cur+1}</div><div class="q-text">${q.text}</div>${q.note ? `<div style="font-size:13px;line-height:1.55;color:#64748B;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:6px;padding:8px 12px;margin:-4px 0 14px;">${q.note}</div>` : ""}${warningHtml}${opts}${q.type==="check"?'<p class="opt-hint">Puedes seleccionar una o más opciones.</p>':""}</div>
     ${glossaryHtml}
     <div class="nav-bar">
       <button class="btn-back" onclick="goBack()" ${cur===0?"disabled":""}>← Anterior</button>
@@ -1153,12 +1162,13 @@ function scoreForQidDC(qid) {
     case 11: return a === 0 ? 1 : (a === 1 ? 0.8 : 0);            // sitio alterno
     case 12: return a === 4 ? 0 : 1;                              // RTO definido
     case 13: return a === 4 ? 0 : 1;                              // RPO definido
-    case 14: return a === 0 ? 1 : (a === 1 ? 0.5 : 0);            // pruebas de recuperación
+    case 14: return [1, 0.9, 0.5, 0][a];                          // pruebas de contingencia (2/año, anual, esporádica, no)
 
     // Infraestructura Tecnológica
     case 15: return [1, 0.66, 0.33, 0][a];                        // antigüedad servidores
     case 16: return [0.5, 1, 0.5, 0, 0.3][a];                     // utilización CPU/RAM
-    case 17: return [1, 0.6, 0.2, 1, 0.7][a];                     // almacenamiento
+    case 17: return [0.9, 0.8, 0.4, 1, 1, 0.8][a];                // tipo de almacenamiento (SAN, NAS, DAS, HCI, Cloud, Híbrido)
+    case 26: return [1, 0.6, 0.2][a];                             // capacidad de almacenamiento utilizada
     case 18: return Array.isArray(a) ? a.length / 5 : 0;          // backup (plataforma, cifrado, inmutabilidad, off-site, SaaS)
     case 19: return a === 0 ? 0 : (a === 1 ? 0.5 : 1);            // problemas rendimiento
 
@@ -1169,7 +1179,7 @@ function scoreForQidDC(qid) {
     // Cloud Readiness
     case 22: return [1, 0.66, 0.33, 0][a];                        // cargas en nube
 
-    default: return null; // Q1,2,3,23 = contexto, no maturity score
+    default: return null; // Q1,2,3,23 y estrategia de alojamiento (24,25) = contexto, no maturity score
   }
 }
 
@@ -1178,7 +1188,7 @@ function buildDomainDataDC() {
     { label:"Infraestructura Física", weight:28, qids:[4,5,7,8] },
     { label:"Seguridad y Operación", weight:17, qids:[6,9] },
     { label:"Continuidad y DRP", weight:23, qids:[10,11,12,13,14] },
-    { label:"Infraestructura Tecnológica", weight:17, qids:[15,16,17,18,19] },
+    { label:"Infraestructura Tecnológica", weight:17, qids:[15,16,17,26,18,19] },
     { label:"Conectividad y Cloud", weight:15, qids:[20,21,22] }
   ];
   return DOMAINS.map(d => {
@@ -1280,6 +1290,7 @@ function renderRadarDC(data, projs) {
 // Las combinaciones críticas (ej. criticidad alta sin DRP) no generan bloques extra:
 // elevan la prioridad del proyecto y refuerzan el texto del hallazgo correspondiente.
 const SECS_DC = [
+  {qid:24, dom:"Estrategia de Alojamiento",   title:"Hoja de ruta de alojamiento TI"},
   {qid:4,  dom:"Infraestructura Física",      title:"Ubicación de la infraestructura"},
   {qid:5,  dom:"Infraestructura Física",      title:"Capacidad de crecimiento"},
   {qid:7,  dom:"Infraestructura Física",      title:"Energía, climatización e incendios"},
@@ -1287,13 +1298,14 @@ const SECS_DC = [
   {qid:6,  dom:"Seguridad y Operación",       title:"Seguridad física"},
   {qid:9,  dom:"Seguridad y Operación",       title:"Operación y soporte"},
   {qid:10, dom:"Continuidad y DRP",           title:"Plan de recuperación (DRP)"},
-  {qid:11, dom:"Continuidad y DRP",           title:"Sitio alterno de respaldo"},
+  {qid:11, dom:"Continuidad y DRP",           title:"Sitio alterno de contingencia"},
   {qid:12, dom:"Continuidad y DRP",           title:"Tiempo de recuperación (RTO)"},
   {qid:13, dom:"Continuidad y DRP",           title:"Pérdida de datos tolerable (RPO)"},
-  {qid:14, dom:"Continuidad y DRP",           title:"Pruebas de recuperación"},
+  {qid:14, dom:"Continuidad y DRP",           title:"Pruebas de contingencia"},
   {qid:15, dom:"Infraestructura Tecnológica", title:"Antigüedad de servidores"},
   {qid:16, dom:"Infraestructura Tecnológica", title:"Utilización de recursos"},
-  {qid:17, dom:"Infraestructura Tecnológica", title:"Almacenamiento"},
+  {qid:17, dom:"Infraestructura Tecnológica", title:"Tipo de almacenamiento"},
+  {qid:26, dom:"Infraestructura Tecnológica", title:"Capacidad de almacenamiento"},
   {qid:18, dom:"Infraestructura Tecnológica", title:"Prácticas de respaldo"},
   {qid:19, dom:"Infraestructura Tecnológica", title:"Rendimiento y capacidad"},
   {qid:20, dom:"Conectividad y Cloud",        title:"Redundancia WAN"},
@@ -1317,7 +1329,8 @@ const P_DC = {
   cross:     "Cross Connect — interconexión directa con proveedores y carriers",
   nubepub:   "Migración a Nube Pública",
   nubepriv:  "Nube Privada",
-  hibrida:   "Estrategia de Nube Híbrida"
+  hibrida:   "Estrategia de Nube Híbrida",
+  estrategia:"Taller de Estrategia de Infraestructura y Alojamiento TI"
 };
 
 function getRecsDC(a) {
@@ -1351,7 +1364,7 @@ function getRecsDC(a) {
     } else if (a[4] === 4) {
       add(4, `La infraestructura opera en <strong>nube pública</strong>. La facility física queda en manos del proveedor, y el foco se desplaza a la conectividad, la gobernanza de costos y la continuidad entre regiones o zonas de disponibilidad.`, false);
     } else {
-      add(4, `La organización opera en un <strong>ambiente mixto</strong>. Es un modelo flexible, que exige coordinar la continuidad, la seguridad y la conectividad entre entornos para que no queden brechas en los puntos de unión.`, false);
+      add(4, `La organización opera en un <strong>ambiente híbrido</strong>. Es un modelo flexible, que exige coordinar la continuidad, la seguridad y la conectividad entre entornos para que no queden brechas en los puntos de unión.`, false);
     }
   }
 
@@ -1440,10 +1453,10 @@ function getRecsDC(a) {
 
   if (a[11] !== undefined) {
     if (a[11] === 2) {
-      add(11, `La organización <strong>no cuenta con un sitio alterno de respaldo</strong>. Ante la pérdida del sitio principal (incendio, corte prolongado, desastre), no hay dónde levantar los sistemas, aunque los respaldos estén disponibles. Recomendamos <strong>DRaaS</strong>, que entrega un sitio de recuperación sin construir infraestructura propia.${critTxt}`, true);
+      add(11, `La organización <strong>no cuenta con un sitio alterno de contingencia</strong>. Ante la pérdida del sitio principal (incendio, corte prolongado, desastre), no hay dónde levantar los sistemas, aunque los respaldos estén disponibles. Recomendamos <strong>DRaaS</strong>, que entrega un sitio de recuperación sin construir infraestructura propia.${critTxt}`, true);
       addProj("draas", up(2), 11);
     } else {
-      add(11, `La organización cuenta con un <strong>sitio alterno ${a[11] === 0 ? "propio" : "contratado"}</strong>. Es una fortaleza clave de continuidad; su valor real depende de que se pruebe periódicamente (ver pruebas de recuperación).`, false);
+      add(11, `La organización cuenta con un <strong>sitio alterno ${a[11] === 0 ? "propio" : "contratado"}</strong>. Es una fortaleza clave de continuidad; su valor real depende de que se pruebe periódicamente (ver pruebas de contingencia).`, false);
     }
   }
 
@@ -1456,7 +1469,7 @@ function getRecsDC(a) {
       add(12, `Se requiere un RTO de <strong>${rto}</strong>, pero no existe sitio alterno. Con esa combinación, el objetivo no es alcanzable hoy: reconstruir la operación desde cero toma días. <strong>DRaaS</strong> permite cumplir ese objetivo sin construir un sitio propio.`, true);
       addProj("draas", up(2), 12);
     } else {
-      add(12, `El RTO está definido en <strong>${rto}</strong> y es coherente con la infraestructura de continuidad declarada. Recomendamos validarlo en las pruebas de recuperación.`, false);
+      add(12, `El RTO está definido en <strong>${rto}</strong> y es coherente con la infraestructura de continuidad declarada. Recomendamos validarlo en las pruebas de contingencia.`, false);
     }
   }
 
@@ -1474,11 +1487,11 @@ function getRecsDC(a) {
   }
 
   if (a[14] !== undefined) {
-    if (a[14] === 0) {
-      add(14, `La organización realiza <strong>pruebas de recuperación anuales con informe</strong>. Es la única forma de saber si el RTO y el RPO se cumplen de verdad.`, false);
+    if (a[14] <= 1) {
+      add(14, `La organización realiza <strong>pruebas de contingencia ${a[14] === 0 ? "dos veces al año" : "anuales"} con informe</strong>. Es la única forma de saber si el RTO y el RPO se cumplen de verdad.`, false);
     } else {
-      add(14, `Las pruebas de recuperación ${a[14] === 1 ? "se realizan <strong>de forma esporádica</strong>" : "<strong>no se realizan</strong>"}. Un plan que no se prueba suele fallar cuando más se necesita: respaldos corruptos, dependencias olvidadas o tiempos muy superiores a lo esperado. Recomendamos un servicio de <strong>DRaaS</strong> que incluya pruebas periódicas documentadas.`, true);
-      addProj("draas", a[14] === 2 ? up(3) : 3, 14);
+      add(14, `Las pruebas de contingencia ${a[14] === 2 ? "se realizan <strong>de forma esporádica</strong>" : "<strong>no se realizan</strong>"}. Un plan que no se prueba suele fallar cuando más se necesita: respaldos corruptos, dependencias olvidadas o tiempos muy superiores a lo esperado. Recomendamos un servicio de <strong>DRaaS</strong> que incluya pruebas periódicas documentadas.`, true);
+      addProj("draas", a[14] === 3 ? up(3) : 3, 14);
     }
   }
 
@@ -1508,14 +1521,26 @@ function getRecsDC(a) {
   }
 
   if (a[17] !== undefined) {
-    if (a[17] === 1 || a[17] === 2) {
-      add(17, `El almacenamiento SAN/NAS está al <strong>${a[17] === 1 ? "70-85%" : "más del 85%"}</strong> de su capacidad. Sobre el 85%, el rendimiento se degrada y el riesgo de quedarse sin espacio es real. Recomendamos ampliar o renovar el almacenamiento dentro de un <strong>Refresh Tecnológico</strong>.`, true);
-      addProj("refresh", a[17] === 2 ? up(2) : 3, 17);
+    if (a[17] === 2) {
+      add(17, `La organización utiliza <strong>almacenamiento DAS</strong> (discos conectados directamente a cada servidor). Es simple, pero difícil de escalar, compartir y proteger de forma centralizada. Recomendamos evaluar una plataforma consolidada (SAN, HCI o Cloud Storage) dentro de un <strong>Refresh Tecnológico</strong>.`, true);
+      addProj("refresh", 3, 17);
     } else {
-      const txt17 = ["El almacenamiento SAN/NAS opera <strong>bajo el 70%</strong> de su capacidad, con holgura para crecer.",
-        "La organización utiliza <strong>HCI o Cloud Storage</strong>, arquitecturas que escalan agregando nodos o capacidad bajo demanda. Recomendamos monitorear la ocupación para planificar las ampliaciones a tiempo.",
-        "La organización utiliza un <strong>esquema mixto</strong> de almacenamiento. Recomendamos consolidar el monitoreo de capacidad de todas las plataformas en una sola vista."][a[17] === 0 ? 0 : a[17] === 3 ? 1 : 2];
-      add(17, txt17, false);
+      add(17, [
+        "La organización utiliza <strong>almacenamiento SAN</strong>, una plataforma de alto rendimiento y disponibilidad para cargas críticas.",
+        "La organización utiliza <strong>almacenamiento NAS</strong>, adecuado para archivos compartidos. Para bases de datos o cargas de alto rendimiento conviene evaluar SAN o HCI.",
+        "",
+        "La organización utiliza <strong>HCI</strong>, una arquitectura que escala agregando nodos. Recomendamos monitorear la ocupación para planificar las ampliaciones a tiempo.",
+        "La organización utiliza <strong>Cloud Storage</strong>, con capacidad elástica bajo demanda. Recomendamos controlar costos y asegurar respaldos independientes del proveedor.",
+        "La organización utiliza un <strong>esquema híbrido</strong> de almacenamiento. Recomendamos consolidar el monitoreo de capacidad de todas las plataformas en una sola vista."][a[17]], false);
+    }
+  }
+
+  if (a[26] !== undefined) {
+    if (a[26] >= 1) {
+      add(26, `El almacenamiento utilizado está <strong>${a[26] === 1 ? "entre el 70% y el 85%" : "sobre el 85%"}</strong> de su capacidad. Sobre el 85%, el rendimiento se degrada y el riesgo de quedarse sin espacio es real. Recomendamos ampliar o renovar el almacenamiento dentro de un <strong>Refresh Tecnológico</strong>.`, true);
+      addProj("refresh", a[26] === 2 ? up(2) : 3, 26);
+    } else {
+      add(26, `El almacenamiento opera <strong>bajo el 70%</strong> de su capacidad, con holgura para crecer.`, false);
     }
   }
 
@@ -1597,6 +1622,53 @@ function getRecsDC(a) {
       `Existen <strong>restricciones regulatorias o de residencia de datos</strong>. Toda decisión de nube o respaldo externo debe asegurar que los datos permanezcan en la jurisdicción exigida, en línea con la Ley 21.719 de Protección de Datos Personales.`,
       `No existen restricciones de residencia de datos, lo que amplía las alternativas de nube y respaldo. Igualmente, la Ley 21.719 exige resguardos sobre datos personales en cualquier ubicación.`,
       `La organización <strong>no sabe</strong> si existen restricciones de residencia de datos. Es un punto a aclarar antes de cualquier decisión de nube o respaldo externo, considerando las exigencias de la Ley 21.719.`][a[23]], a[23] === 2);
+  }
+
+  // ── ESTRATEGIA DE ALOJAMIENTO (Q24 corto plazo · Q25 mediano/largo plazo) — contexto, sin puntaje ──
+  // Horizonte declarado → prioridad del proyecto: 12 meses = 2 (3-12 meses), 1-3 años = 3 (12-36 meses)
+  if (a[24] !== undefined || a[25] !== undefined) {
+    const ALOJ = ["data center propio", "data center local certificado Tier III / Tier IV", "nube pública", "esquema híbrido", "aún no definido"];
+    const corto = a[24], largo = a[25];
+    const horiz = (opt) => corto === opt ? 2 : (largo === opt ? 3 : null);  // primer horizonte en que aparece
+    const restrRes = a[23] === 0;
+    const partes = [];
+    if (corto !== undefined) partes.push(`en los próximos 12 meses: <strong>${ALOJ[corto]}</strong>`);
+    if (largo !== undefined) partes.push(`en 1 a 3 años: <strong>${ALOJ[largo]}</strong>`);
+    let txt = `Hoja de ruta de alojamiento declarada por la organización — ${partes.join("; ")}.`;
+    let warn = false;
+
+    if (corto === 4 || largo === 4) {
+      txt += ` La organización <strong>no tiene definida</strong> su estrategia de alojamiento${corto === 4 && largo === 4 ? " en ningún horizonte" : " para uno de los horizontes"}. Decidir sin una evaluación de costos, riesgos y requisitos suele traducirse en inversiones duplicadas. Recomendamos un taller de estrategia de infraestructura que defina qué carga vive en cada entorno.`;
+      addProj("estrategia", 2, 24);
+      warn = true;
+    }
+    const hTier = horiz(1);
+    if (hTier && a[4] !== 3) {
+      txt += ` Proyecta alojar su infraestructura en un <strong>data center certificado Tier III / Tier IV</strong>, lo que permite asegurar disponibilidad y continuidad sin invertir en una facility propia. Recomendamos evaluar <strong>housing / colocation</strong> en un data center certificado.`;
+      addProj("housing", hTier, 24);
+      warn = true;
+    }
+    const hHib = horiz(3);
+    if (hHib) {
+      txt += ` Proyecta un <strong>esquema híbrido</strong>: el desafío es definir qué carga vive en cada entorno y conectarlos de forma privada y segura.`;
+      addProj("hibrida", hHib, 24);
+      if (a[21] !== 0) addProj("cloudconn", hHib + 1, 24);
+      warn = true;
+    }
+    const hNube = horiz(2);
+    if (hNube) {
+      txt += restrRes
+        ? ` Proyecta migrar a <strong>nube pública</strong>, pero declara restricciones de residencia de datos: la migración debe asegurar que los datos permanezcan en la jurisdicción exigida (Ley 21.719). Recomendamos evaluar <strong>nube privada</strong> o una arquitectura híbrida.`
+        : ` Proyecta migrar a <strong>nube pública</strong>. Una migración por etapas, con conectividad privada y respaldo independiente, evita trasladar los problemas actuales a la nube.`;
+      addProj(restrRes ? "nubepriv" : "nubepub", hNube, 24);
+      warn = true;
+    }
+    if ((corto === 0 || largo === 0) && !(a[4] === 2)) {
+      txt += ` Planea mantener un <strong>data center propio</strong>. Para sostener esa decisión con disponibilidad comprobable, recomendamos evaluar su <strong>certificación (Tier / TIA-942)</strong>.`;
+      addProj("cert", corto === 0 ? 3 : 4, 24);
+      warn = true;
+    }
+    add(24, txt, warn);
   }
 
   // ── Consolidación: un proyecto aparece una sola vez, con su prioridad más alta ──
@@ -1699,7 +1771,7 @@ function renderReportDC(el) {
 
   el.innerHTML = `
     <div id="pdf-content"><div class="report-hero">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"><div style="font-size:17px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.9);">Assessment Data Center</div><img src="data:image/png;base64,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" alt="GTD" height="40" class="report-hero-logo" style="opacity:0.95;"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"><div style="font-size:17px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.9);">Assessment de Infraestructura TI</div><img src="data:image/png;base64,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" alt="GTD" height="40" class="report-hero-logo" style="opacity:0.95;"></div>
       <div style="margin-bottom:1.25rem;"></div>
       <div id="pdf-client-info" style="display:none;font-size:13px;color:rgba(255,255,255,0.85);margin-bottom:1rem;padding:8px 12px;background:rgba(255,255,255,0.1);border-radius:6px;"></div>
       <div class="stats-row">
@@ -1728,7 +1800,7 @@ function renderReportDC(el) {
     <div class="section-title">Proyectos Recomendados</div>
     <div class="proj-list">${projsHtml}</div>
     ${roadmap.length ? `<div class="section-title" style="margin-top:1.5rem;">Roadmap de Evolución</div>${roadmapHtml}` : ""}
-    <div class="gtd-footer" style="margin-top:2rem;padding-bottom:1rem;">GTD · Assessment Data Center · © 2026 Todos los derechos reservados</div>
+    <div class="gtd-footer" style="margin-top:2rem;padding-bottom:1rem;">GTD · Assessment de Infraestructura TI · Data Center, Cloud y Continuidad Operacional · © 2026 Todos los derechos reservados</div>
     </div>
     <hr class="divider">
     <div style="background:#fff;border:2px solid #378ADD;border-radius:8px;padding:20px;margin-bottom:1.5rem;">
@@ -2010,7 +2082,7 @@ async function submitContact(){
 
   const payload={
     nombre:n, email:e, empresa:emp, telefono:tel, pais:pais, servidores:serv, endpoints:endp,
-    tipo: isDC ? "Data Center" : "Ciberseguridad",
+    tipo: isDC ? "Infraestructura TI" : "Ciberseguridad",
     modelo_financiero: modeloFin, presupuesto: presupuesto,
     p1:  getOptLabel(1,  answers[1]),
     p2:  getOptLabel(2,  answers[2]),
@@ -2035,6 +2107,9 @@ async function submitContact(){
     p21: getOptLabel(21, answers[21]),
     p22: isDC ? getOptLabel(22, answers[22]) : "",
     p23: isDC ? getOptLabel(23, answers[23]) : "",
+    p24: isDC ? getOptLabel(24, answers[24]) : "",
+    p25: isDC ? getOptLabel(25, answers[25]) : "",
+    p26: isDC ? getOptLabel(26, answers[26]) : "",
     proyectos: projs.length
       ? "Con base en las respuestas del diagnóstico, se recomienda avanzar en los siguientes proyectos:\n" +
         projs.map((p,i)=>`${i+1}. ${p.text||p}.`).join("\n")
@@ -2066,7 +2141,7 @@ async function submitContact(){
     const nfBody = new URLSearchParams({ "form-name": formName, ...payload });
     nfBody.delete("csrfToken"); // no es un campo del form estático, se descarta
     // Cada formulario envía solo sus propios campos (evita filas vacías en la notificación por correo)
-    const sobran = isDC ? ["servidores","endpoints"] : ["modelo_financiero","presupuesto","p22","p23"];
+    const sobran = isDC ? ["servidores","endpoints"] : ["modelo_financiero","presupuesto","p22","p23","p24","p25","p26"];
     sobran.forEach(k => nfBody.delete(k));
     const nfRes = await fetch("/", {
       method: "POST",
@@ -2216,7 +2291,7 @@ async function downloadPDF() {
     }
 
     const fechaHoy = new Date().toISOString().slice(0, 10);
-    const tipoArchivo = assessmentType === "dc" ? "DataCenter" : "Ciberseguridad";
+    const tipoArchivo = assessmentType === "dc" ? "InfraestructuraTI" : "Ciberseguridad";
     const nombreArchivo = empresa
       ? `Diagnostico_${tipoArchivo}_GTD_${empresa.replace(/\s+/g, "_")}_${fechaHoy}.pdf`
       : `Diagnostico_${tipoArchivo}_GTD_${fechaHoy}.pdf`;
