@@ -525,9 +525,9 @@
         <div class="lock-eyebrow ransom-eyebrow" style="margin-bottom:0">Ransomware</div>
       </div>
       <h1>Calculadora de Exposición</h1>
-      <p>Estima el costo económico potencial de un incidente de ransomware y tu score de riesgo en 6 variables: sector, tamaño, backups, madurez de seguridad y cobertura de seguro cibernético.</p>
+      <p>Estima el costo económico potencial de un incidente de ransomware y tu score de riesgo en 5 variables: Sector, Tamaño, Backups, Madurez de Seguridad y Cobertura de Seguro Cibernético.</p>
       <a class="btn-gtd btn-ransom" href="/ransomware-calculator/" style="text-decoration:none; text-align:center; display:block;">Calcular mi exposición →</a>
-      <div class="lock-card-meta"><span class="lock-tag ransom">6 variables</span><span class="lock-tag ransom">Score + costo USD</span></div>
+      <div class="lock-card-meta"><span class="lock-tag ransom">5 variables</span><span class="lock-tag ransom">Score + costo USD</span></div>
     </div>
   </div>
   <div class="lock-footer">Uso exclusivo · Solo personal autorizado por GTD</div>
@@ -593,7 +593,7 @@ const Q = [
 const Q_DC = [
   // Estrategia de Alojamiento (2) — contexto, sin puntaje
   { id:24, domain:"Estrategia de Alojamiento", text:"En los próximos 12 meses, ¿dónde planea alojar principalmente su infraestructura TI crítica?", type:"radio", opts:["Data center propio (on-premise)","Data center local certificado Tier III / Tier IV (housing o colocation)","Nube pública (AWS, Azure, Google Cloud u otra)","Esquema híbrido (combinación de las anteriores)","Aún no está definido"] },
-  { id:25, domain:"Estrategia de Alojamiento", text:"En un horizonte de 1 a 3 años, ¿hacia dónde proyecta evolucionar el alojamiento de su infraestructura TI?", type:"radio", opts:["Data center propio (on-premise)","Data center local certificado Tier III / Tier IV (housing o colocation)","Nube pública (AWS, Azure, Google Cloud u otra)","Esquema híbrido (combinación de las anteriores)","Aún no está definido"] },
+  { id:25, domain:"Estrategia de Alojamiento", text:"En un horizonte de 1 a 3 años, ¿hacia dónde proyecta evolucionar el alojamiento de su infraestructura TI?", note:"Puede elegir la misma opción que en la pregunta anterior si no prevé cambios.", type:"radio", opts:["Data center propio (on-premise)","Data center local certificado Tier III / Tier IV (housing o colocation)","Nube pública (AWS, Azure, Google Cloud u otra)","Esquema híbrido (combinación de las anteriores)","Aún no está definido"] },
 
   // Dominio 1 — Perfil y Criticidad (3)
   { id:1, domain:"Perfil y Criticidad", text:"¿Cuál es la industria principal de la organización?", type:"radio", opts:["Financiero","Salud","Retail","Gobierno","Educación","Manufactura","Minería","Telecomunicaciones","Servicios profesionales","Otro"] },
