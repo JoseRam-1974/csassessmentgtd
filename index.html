@@ -2117,6 +2117,12 @@ async function submitContact(){
 
   };
 
+  // Infraestructura TI: los campos p1…p26 siguen el orden en que el cliente ve las preguntas
+  // (las preguntas de estrategia de alojamiento van primero), no el id interno de cada pregunta.
+  if (isDC) {
+    Q_DC.forEach((q, i) => { payload["p" + (i + 1)] = getOptLabel(q.id, answers[q.id]); });
+  }
+
   const SHEETS_URL="/.netlify/functions/submit";
 
   // Canal Sheets/Apps Script: best-effort, no bloquea el flujo (sabemos que puede estar caído por política de TI pendiente)
