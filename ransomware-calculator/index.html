@@ -593,26 +593,29 @@ document.getElementById("calc-form").addEventListener("submit", function(e){
   const isOIV = document.getElementById("isOIV").checked;
   const handlesData = document.getElementById("handlesData").checked;
   const regBox = document.getElementById("reg-box");
-  const UTM_USD = 80; // referencial: UTM sept. 2026 ≈ CLP 71.721 / ~900 CLP por USD
+  const UTM_USD = 73; // referencial: UTM oct. 2026 = CLP 72.151 / dólar ~CLP 984 (16-oct-2026)
+  // Montos redondeados en millones de USD: el tipo de cambio varía, no tiene sentido mostrar precisión al dólar
+  const usdMM = (utm) => "hasta ~USD " + (utm * UTM_USD / 1e6).toLocaleString("es-CL", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " MM";
 
   if (isOIV || handlesData) {
     let rows = "";
     if (isOIV) {
       rows += `
-        <div class="reg-row"><div class="k">Ley 21.663 (Marco de Ciberseguridad) — infracción gravísima, OIV</div><div class="v">hasta USD ${(40000*UTM_USD).toLocaleString("es-CL")}</div></div>
-        <div class="reg-row"><div class="k">Ley 21.663 — infracción gravísima, régimen general</div><div class="v">hasta USD ${(20000*UTM_USD).toLocaleString("es-CL")}</div></div>`;
+        <div class="reg-row"><div class="k">Ley 21.663 (Marco de Ciberseguridad) — infracción gravísima, OIV</div><div class="v">${usdMM(40000)}</div></div>
+        <div class="reg-row"><div class="k">Ley 21.663 — infracción gravísima, régimen general</div><div class="v">${usdMM(20000)}</div></div>`;
     }
     if (handlesData) {
       rows += `
-        <div class="reg-row"><div class="k">Ley 21.719 (Protección de Datos Personales) — infracción gravísima</div><div class="v">hasta USD ${(20000*UTM_USD).toLocaleString("es-CL")}</div></div>
-        <div class="reg-row"><div class="k">Ley 21.719 — reincidencia (o 4% ingresos anuales si es mayor)</div><div class="v">hasta 4% ingresos</div></div>`;
+        <div class="reg-row"><div class="k">Ley 21.719 (Protección de Datos Personales) — infracción gravísima</div><div class="v">${usdMM(20000)}</div></div>
+        <div class="reg-row"><div class="k">Ley 21.719 — reincidencia gravísima, empresa de menor tamaño</div><div class="v">${usdMM(60000)}</div></div>
+        <div class="reg-row"><div class="k">Ley 21.719 — reincidencia gravísima, empresa que no es de menor tamaño</div><div class="v">hasta 4% de ingresos en Chile</div></div>`;
     }
     document.getElementById("reg-rows").innerHTML = rows;
     document.getElementById("reg-note").innerHTML =
       `Estos son <strong>techos legales máximos</strong>, no un costo promedio ni una probabilidad — no están incluidos en el "Costo total estimado" de arriba. ` +
       (isOIV ? `Ley 21.663 vigente desde marzo 2025, fiscalizada por la ANCI. ` : ``) +
       (handlesData ? `Ley 21.719 entra en plena vigencia el 1 de diciembre de 2026, fiscalizada por la Agencia de Protección de Datos Personales. ` : ``) +
-      `Valor UTM referencial (sept. 2026) y tipo de cambio aproximado — verificar cifra vigente al momento de uso.`;
+      `Montos aproximados con UTM de octubre 2026 (CLP 72.151) y dólar ~CLP 984 — verificar cifra vigente al momento de uso.`;
     regBox.classList.add("show");
   } else {
     regBox.classList.remove("show");
